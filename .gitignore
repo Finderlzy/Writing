@@ -1,0 +1,18 @@
+# MkDocs build output
+site/
+.cache/
+
+# Obsidian workspace and plugins
+docs/.obsidian/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
