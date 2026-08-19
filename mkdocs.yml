@@ -1,6 +1,9 @@
-site_name: My Blog
+site_name: Blog
+
 theme:
-  name: 'material'
-nav:
-  - Home: index.md
-  - About: about.md
+  name: material
+  language: zh
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.path
