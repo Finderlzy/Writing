@@ -22,7 +22,7 @@ pair{
 
 在使用方括号操作时，如果方括号里面的key不存在，则直接新建一个key，**value为0**.
 
-### map的[[Iterator|迭代器]]
+### map的[[../Iterator|迭代器]]
 
 ```
 map<string, int> myMap = {{“test”， 666}};

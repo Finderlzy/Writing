@@ -3,6 +3,8 @@ site_name: Writing
 theme:
   name: material
   language: zh
+  logo: assets/images/writing-logo.png
+  favicon: assets/images/writing-logo.png
   features:
     - navigation.tabs
     - navigation.tabs.sticky

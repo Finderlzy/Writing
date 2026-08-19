@@ -73,7 +73,7 @@ animator用于处理动画与动画的播放关系，例如，由静止动画变
 
 现在要建立转换的条件。
 
-![[Pasted image 20260304155206.png]]
+![[../附件/Pasted image 20260304155206.png]]
 
 	点击那个+号，再点击bool，新建一个“isMoving”的条件
 ## 9.Clean up
@@ -101,9 +101,9 @@ animator用于处理动画与动画的播放关系，例如，由静止动画变
 实现的功能：
 1. 改变角色面向——transform内置函数
 2. 改变转向参数
-![[Pasted image 20260309221817.png]]
+![[../附件/Pasted image 20260309221817.png]]
 ### FlipController() （判断何时翻转函数）
 
 这个很简单了，右边有速度但是面朝的不是右边就转向。
 左边同理。
-![[Pasted image 20260309222034.png]]
+![[../附件/Pasted image 20260309222034.png]]
