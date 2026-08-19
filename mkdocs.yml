@@ -1,4 +1,5 @@
 site_name: Writing
+site_url: https://finderlzy.github.io/Writing/
 
 theme:
   name: material
@@ -16,4 +17,5 @@ plugins:
   - pub-obsidian
 
 markdown_extensions:
+  - attr_list
   - pymdownx.mark
