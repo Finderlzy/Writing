@@ -8,3 +8,10 @@ theme:
     - navigation.tabs.sticky
     - navigation.path
     - navigation.top
+
+plugins:
+  - search
+  - pub-obsidian
+
+markdown_extensions:
+  - pymdownx.mark
