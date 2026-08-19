@@ -1,0 +1,6 @@
+site_name: My Blog
+theme:
+  name: 'material'
+nav:
+  - Home: index.md
+  - About: about.md
