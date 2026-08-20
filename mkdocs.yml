@@ -7,8 +7,6 @@ theme:
   logo: assets/images/writing-logo.png
   favicon: assets/images/writing-logo.png
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.path
     - navigation.top
 
