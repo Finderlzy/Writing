@@ -2,7 +2,7 @@
 aliases:
   - iterator
   - 迭代器
-date: 2026-04-15
+createdDate: 2026-04-15
 ---
 [迭代器库 - cppreference.cn - C++参考手册](https://cppreference.cn/w/cpp/iterator)
 ## 定义
@@ -30,7 +30,7 @@ date: 2026-04-15
 
 ## 迭代器的创建
 
-```
+```cpp
 std::set<int>::iterator iter;
 ```
 ==迭代的东西类型 :: iterator + 迭代器名字==

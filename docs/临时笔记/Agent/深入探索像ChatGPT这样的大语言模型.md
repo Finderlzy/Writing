@@ -3,6 +3,7 @@ tags: [llm, chatgpt, tokenization, neural-network, transformer]
 created: 2026-06-14
 updated: 2026-06-14
 ---
+
 ## 构建一个ChatGPT
 
 ### 预训练

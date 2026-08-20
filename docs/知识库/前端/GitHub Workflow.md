@@ -4,7 +4,7 @@
 Github Workflow就是一个机器人，可以帮我们自动完成build和deploy。
 ## 怎么用
 写一个 **`deploy.yml`** 文档就可以了。
-```
+```yaml
 // deploy.yml
 
 name: Deploy to GitHub Pages

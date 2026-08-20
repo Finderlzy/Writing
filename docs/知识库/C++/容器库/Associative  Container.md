@@ -6,13 +6,13 @@ aliases:
   - std::map
   - std::set
   - multimap
-date: 2026-04-15
+createdDate: 2026-04-15
 ---
 ## [[Associative  Container|std::map]]
 [std::map - cppreference.cn - C++参考手册](https://cppreference.cn/w/cpp/container/map)
 
 map里的每个元素是一个 [[pair]]，就像快递包裹：
-```
+```cpp
 pair{
     first = "收件人地址"  (key)
     second = "包裹内容"   (value)
@@ -24,7 +24,7 @@ pair{
 
 ### map的[[../Iterator|迭代器]]
 
-```
+```cpp
 map<string, int> myMap = {{“test”， 666}};
 map<string, int>::iterator iter = myMap.begin();
 

@@ -6,20 +6,20 @@ aliases:
   - Flip character
 ---
 
-## 7.Sprite sheet
+## 7. Sprite sheet
 
 这一节让人物有动画小人，而不是那个黄球。
 
 ==动画载入——碰撞体积修改==
 
----
 ### 精灵表的下载与插入
 
 - 去unity的资源商店下载
-	点击“在unity中打开”即可
+  - 点击“在unity中打开”即可
 
 - 去找PNG图片也可以
-	直接拖进去
+  - 直接拖进去
+
 ### 精灵表的裁剪
 
 1. 设置为multiple
@@ -42,13 +42,11 @@ aliases:
 
 
 
-## 8.Animator
+## 8. Animator
 
 这一节使人物拥有静止动画与奔跑动画，但没有处理转向问题。
 
 ==制作动画——动画切换（脚本书写）==
-
----
 
 ### 新增窗口animation和animator
 
@@ -75,34 +73,38 @@ animator用于处理动画与动画的播放关系，例如，由静止动画变
 
 ![[../附件/Pasted image 20260304155206.png]]
 
-	点击那个+号，再点击bool，新建一个“isMoving”的条件
-## 9.Clean up
+图：点击那个+号，再点击`bool`，新建一个`isMoving`的条件。
+
+## 9. Clean up
 
 这一节主要是把之前写的代码给模块化，方便维护
-
----
 
 没啥好说的了，养成一下这种习惯吧——写完一个模块后，把代码给封装一下。
 
 
 
-## 10.Flip character
+## 10. Flip character
 
 这一节让玩家可以左右转向
 
----
 ### 有关转向的参数
 
-- int facingDir
-- bool facingRight
-	`不知道为什么用了两个参数
-### Flip()（翻转函数）
+- `int facingDir`
+- `bool facingRight`
+
+> [!question] 待确认
+> 不知道为什么用了两个参数
+
+### `Flip()`（翻转函数）
 
 实现的功能：
+
 1. 改变角色面向——transform内置函数
 2. 改变转向参数
+
 ![[../附件/Pasted image 20260309221817.png]]
-### FlipController() （判断何时翻转函数）
+
+### `FlipController()`（判断何时翻转函数）
 
 这个很简单了，右边有速度但是面朝的不是右边就转向。
 左边同理。

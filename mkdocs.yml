@@ -4,11 +4,14 @@ site_url: https://finderlzy.github.io/Writing/
 theme:
   name: material
   language: zh
-  logo: assets/images/writing-logo.png
-  favicon: assets/images/writing-logo.png
+  font: false
+  logo: 附件/writing-logo.png
+  favicon: 附件/writing-logo.png
   features:
     - navigation.path
     - navigation.top
+    - navigation.instant
+    - navigation.instant.prefetch
 
 plugins:
   - search

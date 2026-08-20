@@ -8,13 +8,13 @@ aliases:
   - istringstream
   - cout
   - cin
-date: 2026-04-08
+createdDate: 2026-04-08
 ---
 ## 概述
 
-stream是C++的一个[[类]]，主要用于数据的输入和输出。
+`stream`是C++的一个[[类]]，主要用于数据的输入和输出。
 
-```
+```cpp
 #include <iostream>
 #include <sstream>
 
@@ -25,11 +25,11 @@ ostringstream oss;  // 你创建的 ostream 子类对象
 istringstream iss;  // 你创建的 istream 子类对象
 ```
 
-## ostringstream
+## `ostringstream`
 
 用于存放输入的所有数据
 
-```
+```cpp
 #include <sstream>
 using namespace std;
 
@@ -44,15 +44,15 @@ string result = oss.str();    // 取出拼好的字符串
 
 先写入[[缓冲区]]，oss再从缓冲区中把数据拿出来
 
-==要想取出oss里面的文本，必须得写“oss.str()”==
+==要想取出`oss`里面的文本，必须得写`oss.str()`==
 
-## istringstream
+## `istringstream`
 
 用于把接收到的文本分成实际的数据。
 
-从流接受的文本都是string类型的，iss可以把他们自动变为他们应该属于的类型。
+从流接受的文本都是`string`类型的，`iss`可以把他们自动变为他们应该属于的类型。
 
-```
+```cpp
 #include <sstream>
 using namespace std;
 
@@ -65,11 +65,11 @@ iss >> name >> age >> city;
 // name="张三", age=25, city="北京"
 ```
 
-### iss的读取规则
+### `iss`的读取规则
 
 直接用代码演示了
 
-```
+```cpp
 istringstream iss("  100  3.14   hello world  ");
 int i; double d; string s1, s2;
 
@@ -79,6 +79,6 @@ iss >> s1;     // 跳过空格，读"hello" → s1="hello"
 iss >> s2;     // 读"world" → s2="world"
 ```
 
-## cout
+## `cout`
 
-## cin
+## `cin`

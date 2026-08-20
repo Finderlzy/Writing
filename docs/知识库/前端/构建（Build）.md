@@ -1,7 +1,7 @@
 浏览器只看得懂三件套，但是现代前端网页通常会使用**前端框架**来实现。里面就会有不是三件套的东西。
 
 例如我今天学的[[Astro的初步了解|Astro]]：
-```
+```astro
 ---
 import '../styles/global.css';
 const pagetitle = "首页";

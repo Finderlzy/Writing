@@ -5,12 +5,12 @@
 
 1. 点击：
 
-```
+```text
 数据库 → 新建数据库
 ```
 2. 输入数据库名称，比如：
 
-```
+```text
 My Password Database
 ```
 
@@ -18,7 +18,7 @@ My Password Database
 
 这个密码非常重要，相当于整个保险箱的钥匙。
 
-注意：==**自己能记住**==。一定要记住，不然以后要用的时候忘记了就寄了。
+注意：==自己能记住==。一定要记住，不然以后要用的时候忘记了就寄了。
 
 4. 后面的设置保持默认即可。
 
@@ -38,19 +38,19 @@ My Password Database
 
 标题：
 
-```
+```text
 GitHub
 ```
 
 用户名：
 
-```
+```text
 你的GitHub用户名
 ```
 
 密码：
 
-```
+```text
 你的GitHub密码
 ```
 
@@ -66,25 +66,25 @@ GitHub
 
 然后：
 
-```
+```text
 Password and authentication
 ```
 
 找到：
 
-```
+```text
 Two-factor authentication
 ```
 
 点击：
 
-```
+```text
 Enable two-factor authentication
 ```
 
 选择：
 
-```
+```text
 Authenticator app
 ```
 
@@ -96,20 +96,20 @@ Authenticator app
 
 GitHub 通常会有：
 
-```
+```text
 Can't scan?
 Enter this text code instead
 ```
 
 类似：
 
-```
+```text
 JBSWY3DPEHPK3PXP
 ```
 
 复制下来，回到KeePassXC：
 
-```
+```text
 右键 GitHub条目
 ↓
 TOTP
@@ -129,7 +129,7 @@ Secret key
 
 然后，右键 GitHub 条目：
 
-```
+```text
 TOTP
 ↓
 Copy TOTP
@@ -137,7 +137,7 @@ Copy TOTP
 
 会得到：
 
-```
+```text
 123456
 ```
 
@@ -151,13 +151,13 @@ Copy TOTP
 
 GitHub 开启 2FA 后，会给你：
 
-```
+```text
 Recovery codes
 ```
 
 类似：
 
-```
+```text
 abcd-1234
 efgh-5678
 ...
@@ -167,7 +167,7 @@ efgh-5678
 
 建议：在 KeePassXC 新建一个条目：
 
-```
+```text
 GitHub Recovery Codes
 ```
 
@@ -179,7 +179,7 @@ GitHub Recovery Codes
 
 你的关键文件：
 
-```
+```text
 xxx.kdbx
 ```
 
@@ -187,7 +187,7 @@ xxx.kdbx
 
 例如：
 
-```
+```text
 电脑硬盘
 +
 U盘
@@ -195,7 +195,7 @@ U盘
 
 或者：
 
-```
+```text
 电脑
 +
 加密云盘
@@ -207,7 +207,7 @@ U盘
 
 完成之后，你的登录链路就是：
 
-```
+```text
 GitHub
    |
 密码

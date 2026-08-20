@@ -2,8 +2,9 @@
 aliases:
   - getline
   - getline()
-date: 2026-04-08
+createdDate: 2026-04-08
 ---
+
 ## 功能
 
 读取一整行，直到遇到换行符或者抵达缓冲区末尾
