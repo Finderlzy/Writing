@@ -1,6 +1,6 @@
 # Writing
 
-一个用于记录个人思考、学习笔记与日常写作的知识库。内容涵盖编程知识、学习总结、兴趣感想、个人反思及尚在整理中的临时笔记。
+一个用于展示自己写过的文字的web。内容涵盖各种各样的想法、知识、学习总结、兴趣感想、个人反思及尚在整理中的临时笔记。
 
 项目基于 [MkDocs](https://www.mkdocs.org/) 构建，并使用 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 主题。
 
