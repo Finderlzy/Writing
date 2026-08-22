@@ -11,7 +11,7 @@ createdDate: 2026-04-15
 ## [[Associative  Container|std::map]]
 [std::map - cppreference.cn - C++参考手册](https://cppreference.cn/w/cpp/container/map)
 
-map里的每个元素是一个 [[pair]]，就像快递包裹：
+map里的每个元素是一个 pair，就像快递包裹：
 ```cpp
 pair{
     first = "收件人地址"  (key)

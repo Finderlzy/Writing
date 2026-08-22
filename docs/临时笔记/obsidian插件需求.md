@@ -1,2 +1,3 @@
 1.add createdDay 我不想打字
-2.更新latest work，我会在首页留出最近在做什么，里面会放我最近写了哪些文章，或者对网站做了哪些修改。这个功能就是，点击之后帮我更新
+2.更新latest work。我会在首页留出最近在做什么，里面会放我最近写了哪些文章，或者对网站做了哪些修改。这个功能就是，点击之后帮我更新
+3.（还不确定）由于obsidian原生的markdown和mkdocs的markdown不一样，所以我需要一个一键转化格式功能。把obsidian原生的markdown在保持原有渲染的情况下，转化为mkdocs的markdown

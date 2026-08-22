@@ -15,10 +15,7 @@ theme:
 
 plugins:
   - search
-  - pub-obsidian:
-      backlinks:
-        enabled: false
-        
+
 markdown_extensions:
   - attr_list
-  - pymdownx.mark
+  - admonition
