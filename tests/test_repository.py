@@ -26,11 +26,11 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self.assertFalse(any(name.endswith("/redirects") for name in config["plugins"]))
 
         theme = config["theme"]
-        for setting in ("logo", "favicon"):
-            configured = theme[setting]
-            self.assertIsInstance(configured, str)
-            target = self._safe_docs_path(configured)
-            self.assertTrue(target.is_file(), f"theme {setting} does not resolve: {configured}")
+        self.assertIsNone(theme.get("logo"), "theme logo must use the Material default")
+        favicon = theme.get("favicon")
+        self.assertIsInstance(favicon, str)
+        target = self._safe_docs_path(favicon)
+        self.assertTrue(target.is_file(), f"theme favicon does not resolve: {favicon}")
 
         app_path = self.docs / ".obsidian" / "app.json"
         app = json.loads(app_path.read_text(encoding="utf-8"))
