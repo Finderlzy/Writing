@@ -2,8 +2,9 @@
 site/
 .cache/
 
-# Obsidian workspace and plugins
-docs/.obsidian/
+# Obsidian shared settings and local workspace state
+docs/.obsidian/*
+!docs/.obsidian/app.json
 
 # Python
 __pycache__/

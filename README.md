@@ -1,6 +1,6 @@
 # Writing
 
-个人文章网站，收录各种各样的想法、学习笔记、技术知识、随笔、兴趣记录和仍在整理中的临时笔记。
+个人文章网站，收录各种各样的想法、学习笔记、技术知识、随笔、兴趣记录和仍在整理中的内容。
 
 内容使用 Obsidian 编写，网站由 [MkDocs](https://www.mkdocs.org/) 和 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成，并发布到 [GitHub Pages](https://finderlzy.github.io/Writing/)。仓库内置 Obsidian → MkDocs 兼容层，可以在不修改原始笔记的前提下转换双链、Callout、高亮等语法。
 
@@ -38,10 +38,13 @@ GitHub Pages
 
 ```text
 docs/                   # 原始 Obsidian 笔记与附件
-├── 知识库/             # 编程与其他领域的学习笔记
-├── 碎碎念/             # 随笔、个人思考与兴趣记录
-├── 临时笔记/           # 尚在整理中的资料与想法
-├── 附件/               # 图片、PDF 等本地附件
+├── 00收集/             # 尚未归类、等待处理的新笔记
+├── 01系统/             # 笔记系统说明与规范
+├── 02主线/             # 持续学习和探索的问题
+├── 03概念/             # 可以反复使用的稳定认识
+├── 04项目/             # 围绕明确成果展开的工作
+├── 05碎碎念/           # 个人想法、随笔和兴趣记录
+├── 09附件/             # 图片、PDF 等本地附件
 └── index.md             # 站点首页
 tools/
 ├── build_site.py        # 转换、构建和验收入口
@@ -51,3 +54,5 @@ tests/                   # 单元测试与仓库级验收测试
 mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖
 ```
+
+一级分类由 MkDocs 和转换器动态扫描，可以按需要新增，不需要修改构建程序。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。

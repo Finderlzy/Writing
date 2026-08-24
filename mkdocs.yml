@@ -5,8 +5,6 @@ theme:
   name: material
   language: zh
   font: false
-  logo: 附件/writing-logo.png
-  favicon: 附件/writing-logo.png
   features:
     - navigation.path
     - navigation.top
