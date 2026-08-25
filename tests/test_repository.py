@@ -32,6 +32,11 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         target = self._safe_docs_path(favicon)
         self.assertTrue(target.is_file(), f"theme favicon does not resolve: {favicon}")
 
+        extra_css = config.get("extra_css", [])
+        self.assertIn("stylesheets/extra.css", extra_css)
+        extra_css_target = self._safe_docs_path("stylesheets/extra.css")
+        self.assertTrue(extra_css_target.is_file(), "extra CSS file does not resolve")
+
         app_path = self.docs / ".obsidian" / "app.json"
         app = json.loads(app_path.read_text(encoding="utf-8"))
         for setting in ("attachmentFolderPath", "newFileFolderPath"):

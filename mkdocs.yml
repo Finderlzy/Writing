@@ -12,6 +12,9 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
 
+extra_css:
+  - stylesheets/extra.css
+
 plugins:
   - search
 
