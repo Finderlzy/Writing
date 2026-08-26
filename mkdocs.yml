@@ -21,3 +21,4 @@ plugins:
 markdown_extensions:
   - attr_list
   - admonition
+  - nl2br

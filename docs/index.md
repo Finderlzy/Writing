@@ -11,7 +11,10 @@
 <!-- weekly-notes-start -->
 这个星期新写的：
 
-- [[02主线/谷歌插件开发学习1|谷歌插件开发学习1]]
+- [[02主线/Chrome扩展学习/谷歌插件开发学习1|谷歌插件开发学习1]]
 - [[04项目/DeepSeek个性化与记忆系统项目路线图|DeepSeek个性化与记忆系统项目路线图]]
 - [[01系统/文章结构观感优化|文章结构观感优化]]
+- [[02主线/Chrome扩展学习/chrome扩展学习Day2_优化版|chrome扩展学习Day2_优化版]]
+- [[02主线/Chrome扩展学习/chrome扩展学习Day2|chrome扩展学习Day2]]
+- [[03概念/chrome.storage|chrome.storage]]
 <!-- weekly-notes-end -->
