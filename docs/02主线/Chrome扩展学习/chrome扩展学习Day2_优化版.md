@@ -4,8 +4,8 @@ createdDate: 2026-08-26
 
 > 写于 2026-08-26
 
-# Chrome 扩展 Day 2：让“自定义指令 + 用户问题”一起发送
-
+## Chrome 扩展 Day 2：让“自定义指令 + 用户问题”一起发送
+---
 这个扩展的 v1 已经实现。
 
 它做的事情很简单：
@@ -30,10 +30,8 @@ content.js 读取指令
 2. content.js 怎么拿到这个指令？
 3. 怎么把“指令 + 问题”真正写进 DeepSeek 的输入框？
 
----
-
 ## 1. 保存用户的自定义指令
-
+---
 用户在插件 popup 中输入指令，因此 popup.js 负责把它保存起来。
 
 这里使用 [[../../03概念/chrome.storage|chrome.storage]]。它是 Chrome Extension 提供的存储 API，可以让扩展保存自己的数据。
@@ -65,14 +63,9 @@ popup 输入框
 chrome.storage.local
 ```
 
-涉及概念：
-- [[document.querySelector]]
-- [[DOM事件]]
-- [[../../03概念/chrome.storage|chrome.storage]]
-- [[回调函数]]
 
 ## 2. content.js 获取用户指令
-
+---
 真正修改 DeepSeek 网页的是 `content.js`，所以它还需要读取 popup 保存的数据。
 ```js
 /** scripts/content.js */
@@ -102,7 +95,7 @@ content.js 中的 instruction
 页面打开时先读取一次；之后再监听 storage 的变化，这样用户修改指令后，不需要重新打开 DeepSeek 页面。
 
 ## 3. 用户发送时，拼接“指令 + 问题”
-
+---
 当用户发送问题时，先把当前问题和 `instruction` 拼起来：
 ```js
 function handleSend(text) {
@@ -126,7 +119,7 @@ instruction + 用户输入 text
 如果没有设置 instruction，就直接使用原来的 `text`。`handleSend()` 本身不是一个通用知识点，它只是这个项目里负责组织发送流程的函数。
 
 ## 4. 把 newText 写回 DeepSeek 输入框
-
+---
 普通网页上通常可以直接：
 ```js
 input.value = newText;
@@ -165,15 +158,8 @@ DeepSeek 的前端框架知道“输入变了”
 
 > 对一些由前端框架控制的输入框，只修改 DOM 的 `value` 可能不够，还需要让网页自己的状态系统感知到变化。
 
-涉及概念：
-- [[属性描述符]]
-- [[this与call]]
-- [[DOM事件]]
-- [[dispatchEvent]]
-- [[事件冒泡]]
-
 ## 整个 v1 的数据流
-
+---
 ```text
                     popup.js
                        │
@@ -213,7 +199,7 @@ DeepSeek 的前端框架知道“输入变了”
 ```
 
 ## 这一阶段真正学到的东西
-
+---
 这一版项目并不是“学了几个函数”，而是第一次把几个不同部分串成了一条完整的数据流：
 
 ```text

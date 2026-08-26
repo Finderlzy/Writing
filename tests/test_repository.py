@@ -98,6 +98,16 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self.assertEqual([], diagnostics)
         self.assertEqual(before, after)
 
+    def test_real_current_page_block_link_uses_fragment_only(self):
+        index = VaultIndex.scan(self.docs)
+        source_path = Path("02主线/Chrome扩展学习/chrome扩展学习Day2.md")
+        result = Converter(index).convert(
+            source_path,
+            (self.docs / source_path).read_text(encoding="utf-8"),
+        )
+        self.assertIn("[text](#^57ac7b)", result.text)
+        self.assertFalse(result.diagnostics)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -54,9 +54,11 @@ def _target_file(site: Path, url_path: str) -> Path | None:
         path += "index.html"
     elif path.endswith(".md"):
         path = path[:-3] + "index.html"
-    elif not Path(path).suffix:
+    else:
         options = [site / path / "index.html", site / (path + ".html")]
-        return next((candidate for candidate in options if candidate.is_file()), None)
+        directory_target = next((candidate for candidate in options if candidate.is_file()), None)
+        if directory_target is not None:
+            return directory_target
     candidate = site / path
     return candidate if candidate.is_file() else None
 
@@ -103,4 +105,3 @@ def check_site(site: Path, site_url: str | None = None) -> list[Diagnostic]:
                 Diagnostic("E_HTML_RESIDUAL_OBSIDIAN", SourceSpan(Path(relative), 1, 1), "生成的 HTML 正文仍残留 Obsidian 标记。")
             )
     return diagnostics
-

@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import re
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote
 
-from .index import _IMAGE_SUFFIXES, VaultIndex
+from .index import _IMAGE_SUFFIXES, _normalize_candidate, VaultIndex
 from .models import ConversionResult, Diagnostic, Reference, ResolvedTarget, SourceSpan
 
 _CALLOUT_RE = re.compile(
@@ -13,6 +14,50 @@ _CALLOUT_RE = re.compile(
 _BLOCK_RE = re.compile(r"(?:^|\s)\^([A-Za-z0-9_-]+)[ \t]*$")
 _SUPPORTED_CALLOUTS = {"note", "question", "warning", "example"}
 _LIST_RE = re.compile(r"^(?P<indent>[ \t]*)(?:[-+*]|\d+[.)])[ \t]+")
+
+
+@dataclass(frozen=True)
+class _ParsedReference:
+    target: str
+    alias: str | None
+    anchor: str | None
+    error_code: str | None = None
+    error_message: str | None = None
+
+
+def _parse_reference(raw_target: str) -> _ParsedReference:
+    target = raw_target
+    alias = None
+    if "|" in target:
+        target, alias = target.split("|", 1)
+        target = target.strip()
+        alias = alias.strip()
+
+    anchor = None
+    if "#" in target:
+        target, anchor = target.split("#", 1)
+        target = target.strip()
+        anchor = anchor.strip()
+        if not anchor or anchor == "^":
+            return _ParsedReference(
+                target,
+                alias,
+                anchor,
+                "E_ANCHOR_EMPTY",
+                "锚点标题或块 ID 不能为空。",
+            )
+    else:
+        target = target.strip()
+
+    if not target and anchor is None:
+        return _ParsedReference(
+            target,
+            alias,
+            anchor,
+            "E_REFERENCE_EMPTY",
+            "引用目标不能为空。",
+        )
+    return _ParsedReference(target, alias, anchor)
 
 
 def _relative_url(current: Path, target: Path) -> str:
@@ -192,7 +237,11 @@ class Converter:
                     break
                 raw_target = text[index + len(marker) : end]
                 reference, replacement, ref_diags = self._resolve_reference(
-                    current, raw_target, marker == "![[", span
+                    current,
+                    raw_target,
+                    marker == "![[",
+                    span,
+                    text[index : end + 2],
                 )
                 references.append(reference)
                 diagnostics.extend(ref_diags)
@@ -230,33 +279,57 @@ class Converter:
         return "".join(result), diagnostics, references
 
     def _resolve_reference(
-        self, current: Path, raw_target: str, is_embed: bool, span: SourceSpan
+        self,
+        current: Path,
+        raw_target: str,
+        is_embed: bool,
+        span: SourceSpan,
+        original: str,
     ) -> tuple[Reference, str, list[Diagnostic]]:
-        alias = None
-        target = raw_target
-        if "|" in raw_target:
-            target, alias = raw_target.split("|", 1)
-            target = target.strip()
-            alias = alias.strip()
-        anchor = None
-        if "#" in target:
-            target, anchor = target.split("#", 1)
-        target = target.strip()
-        ref = Reference("embed" if is_embed else "link", target, alias, anchor, span)
-        diagnostics: list[Diagnostic] = []
+        parsed = _parse_reference(raw_target)
+        ref = Reference("embed" if is_embed else "link", parsed.target, parsed.alias, parsed.anchor, span)
+        if parsed.error_code:
+            return (
+                ref,
+                original,
+                [Diagnostic(parsed.error_code, span, parsed.error_message or "引用结构无效。")],
+            )
 
-        if is_embed and alias:
+        diagnostics: list[Diagnostic] = []
+        if is_embed and parsed.alias:
             diagnostics.append(Diagnostic("E_UNSUPPORTED_EMBED_OPTION", span, "首期不支持附件嵌入尺寸或其他选项。"))
-        suffix = Path(target).suffix.casefold()
-        attachment_candidates = self.index.resolve_attachment_candidates(current, target)
-        page_candidates = self.index.resolve_page_candidates(current, target)
+
+        if not parsed.target:
+            if is_embed:
+                diagnostics.append(Diagnostic("E_UNSUPPORTED_PAGE_EMBED", span, "首期不支持页面嵌入。"))
+                return ref, original, diagnostics
+            record = self.index.current_page(current)
+            if record is None:
+                diagnostics.append(Diagnostic("E_LINK_MISSING", span, f"找不到当前页面 “{current.as_posix()}”。"))
+                return ref, original, diagnostics
+            return self._resolve_page_reference(current, record, parsed, ref, span, original)
+
+        normalized_target = _normalize_candidate(parsed.target)
+        if normalized_target is None:
+            diagnostics.append(
+                Diagnostic(
+                    "E_REFERENCE_INVALID_PATH",
+                    span,
+                    f"引用路径无效，必须包含有效文件名：“{parsed.target}”。",
+                )
+            )
+            return ref, original, diagnostics
+
+        suffix = normalized_target.suffix.casefold()
+        attachment_candidates = self.index.resolve_attachment_candidates(current, parsed.target)
+        page_candidates = self.index.resolve_page_candidates(current, parsed.target)
         if is_embed and suffix not in _IMAGE_SUFFIXES and not attachment_candidates:
             diagnostics.append(Diagnostic("E_UNSUPPORTED_PAGE_EMBED", span, "首期不支持页面嵌入。"))
-            return ref, raw_target, diagnostics
+            return ref, original, diagnostics
 
-        if is_embed and suffix in _IMAGE_SUFFIXES or (is_embed and attachment_candidates):
+        if is_embed and (suffix in _IMAGE_SUFFIXES or attachment_candidates):
             if not attachment_candidates:
-                variants = self.index.case_variants(Path(target), page=False)
+                variants = self.index.case_variants(normalized_target, page=False)
                 if variants:
                     diagnostics.append(
                         Diagnostic(
@@ -267,46 +340,102 @@ class Converter:
                         )
                     )
                 else:
-                    diagnostics.append(Diagnostic("E_ATTACHMENT_MISSING", span, f"找不到附件 “{target}”。"))
-                return ref, raw_target, diagnostics
+                    diagnostics.append(Diagnostic("E_ATTACHMENT_MISSING", span, f"找不到附件 “{parsed.target}”。"))
+                return ref, original, diagnostics
             if len(attachment_candidates) > 1:
-                diagnostics.append(Diagnostic("E_ATTACHMENT_AMBIGUOUS", span, f"附件 “{target}”匹配到多个文件。", tuple(v.source_path for v in attachment_candidates)))
-                return ref, raw_target, diagnostics
+                diagnostics.append(
+                    Diagnostic(
+                        "E_ATTACHMENT_AMBIGUOUS",
+                        span,
+                        f"附件 “{parsed.target}”匹配到多个文件。",
+                        tuple(v.source_path for v in attachment_candidates),
+                    )
+                )
+                return ref, original, diagnostics
             record = attachment_candidates[0]
             href = _relative_url(current, record.output_path)
-            label = alias or Path(target).name
-            if is_embed:
-                return ref, f"![{label}]({href})", diagnostics
-            return ref, f"[{label}]({href})", diagnostics
+            label = parsed.alias or normalized_target.name
+            return ref, f"![{label}]({href})", diagnostics
 
         if not page_candidates:
-            variants = self.index.case_variants(Path(target), page=True)
+            variants = self.index.case_variants(normalized_target, page=True)
             if variants:
-                diagnostics.append(Diagnostic("E_CASE_MISMATCH", span, f"页面路径大小写不一致，应使用 “{variants[0].as_posix()}”。", tuple(variants)))
+                diagnostics.append(
+                    Diagnostic(
+                        "E_CASE_MISMATCH",
+                        span,
+                        f"页面路径大小写不一致，应使用 “{variants[0].as_posix()}”。",
+                        tuple(variants),
+                    )
+                )
             else:
-                diagnostics.append(Diagnostic("E_LINK_MISSING", span, f"找不到页面 “{target}”。"))
-            return ref, raw_target, diagnostics
+                diagnostics.append(Diagnostic("E_LINK_MISSING", span, f"找不到页面 “{parsed.target}”。"))
+            return ref, original, diagnostics
         if len(page_candidates) > 1:
-            diagnostics.append(Diagnostic("E_LINK_AMBIGUOUS", span, f"“{target}”匹配到多个页面，请写明路径。", tuple(v.source_path for v in page_candidates)))
-            return ref, raw_target, diagnostics
-        record = page_candidates[0]
+            diagnostics.append(
+                Diagnostic(
+                    "E_LINK_AMBIGUOUS",
+                    span,
+                    f"“{parsed.target}”匹配到多个页面，请写明路径。",
+                    tuple(v.source_path for v in page_candidates),
+                )
+            )
+            return ref, original, diagnostics
+        return self._resolve_page_reference(current, page_candidates[0], parsed, ref, span, original)
+
+    def _resolve_page_reference(
+        self,
+        current: Path,
+        record,
+        parsed: _ParsedReference,
+        ref: Reference,
+        span: SourceSpan,
+        original: str,
+    ) -> tuple[Reference, str, list[Diagnostic]]:
+        diagnostics: list[Diagnostic] = []
         fragment = None
-        if anchor:
-            if anchor.startswith("^"):
-                if anchor[1:] not in record.block_ids:
-                    diagnostics.append(Diagnostic("E_BLOCK_MISSING", span, f"页面 “{record.source_path.as_posix()}”不存在块 ID “{anchor}”。"))
-                fragment = anchor
+        label = parsed.alias
+        if parsed.anchor:
+            if parsed.anchor.startswith("^"):
+                if parsed.anchor[1:] not in record.block_ids:
+                    diagnostics.append(
+                        Diagnostic(
+                            "E_BLOCK_MISSING",
+                            span,
+                            f"页面 “{record.source_path.as_posix()}”不存在块 ID “{parsed.anchor}”。",
+                        )
+                    )
+                else:
+                    fragment = parsed.anchor
+                    label = label or parsed.anchor[1:]
             else:
-                count = self.index.page_heading_count(record, anchor)
-                heading = self.index.page_heading(record, anchor)
+                count = self.index.page_heading_count(record, parsed.anchor)
+                heading = self.index.page_heading(record, parsed.anchor)
                 if count == 0 or heading is None:
-                    diagnostics.append(Diagnostic("E_ANCHOR_MISSING", span, f"页面 “{record.source_path.as_posix()}”不存在标题 “{anchor}”。"))
+                    diagnostics.append(
+                        Diagnostic(
+                            "E_ANCHOR_MISSING",
+                            span,
+                            f"页面 “{record.source_path.as_posix()}”不存在标题 “{parsed.anchor}”。",
+                        )
+                    )
                 elif count > 1:
-                    diagnostics.append(Diagnostic("E_ANCHOR_AMBIGUOUS", span, f"页面 “{record.source_path.as_posix()}”中的标题 “{anchor}”重复。"))
+                    diagnostics.append(
+                        Diagnostic(
+                            "E_ANCHOR_AMBIGUOUS",
+                            span,
+                            f"页面 “{record.source_path.as_posix()}”中的标题 “{parsed.anchor}”重复。",
+                        )
+                    )
                 else:
                     fragment = heading[1]
-        href = _relative_url(current, record.output_path)
-        if fragment:
+                    label = label or heading[0]
+
+        if diagnostics:
+            return ref, original, diagnostics
+        href = "#" + quote(fragment, safe="-._~^") if not parsed.target else _relative_url(current, record.output_path)
+        if parsed.target and fragment:
             href += "#" + quote(fragment, safe="-._~^")
-        label = alias or Path(target).stem
+        if label is None:
+            label = Path(parsed.target).stem
         return ref, f"[{label}]({href})", diagnostics

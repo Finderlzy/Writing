@@ -12,10 +12,29 @@ from .slug import unique_toc_slugs, visible_text
 _IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"}
 _HEADING_RE = re.compile(r"^(#{1,6})[ \t]+(.+?)[ \t]*#?[ \t]*$")
 _BLOCK_RE = re.compile(r"(?:^|\s)\^([A-Za-z0-9_-]+)[ \t]*$")
+_WINDOWS_DRIVE_RE = re.compile(r"^[A-Za-z]:($|/)")
 
 
 def _relative(path: Path) -> Path:
     return Path(PurePosixPath(posixpath.normpath(path.as_posix())))
+
+
+def _normalize_candidate(candidate: Path | str) -> Path | None:
+    """Normalize a user-supplied relative candidate without creating invalid Paths."""
+    raw = candidate.as_posix() if isinstance(candidate, Path) else str(candidate)
+    raw = raw.replace("\\", "/")
+    if not raw or not raw.strip() or "\x00" in raw:
+        return None
+    if raw.startswith("/") or raw.endswith("/") or _WINDOWS_DRIVE_RE.match(raw):
+        return None
+
+    normalized = posixpath.normpath(raw)
+    if normalized in {".", "..", "/"} or normalized.endswith("/"):
+        return None
+    path = PurePosixPath(normalized)
+    if path.is_absolute() or not path.name or path.name in {".", ".."}:
+        return None
+    return Path(path)
 
 
 @dataclass
@@ -87,18 +106,26 @@ class VaultIndex:
         self._by_name.setdefault(relative.stem, []).append(record)
 
     def _page_at(self, candidate: Path) -> PageRecord | None:
-        candidate = _relative(candidate)
+        candidate = _normalize_candidate(candidate)
+        if candidate is None:
+            return None
         if candidate.suffix.casefold() != ".md":
-            candidate = candidate.with_suffix(".md")
+            candidate = Path(f"{candidate.as_posix()}.md")
         return self.pages.get(candidate)
 
     def _attachment_at(self, candidate: Path) -> AttachmentRecord | None:
-        return self.attachments.get(_relative(candidate))
+        candidate = _normalize_candidate(candidate)
+        return self.attachments.get(candidate) if candidate is not None else None
+
+    def current_page(self, current: Path) -> PageRecord | None:
+        return self._page_at(current)
 
     def case_variants(self, path: Path, *, page: bool) -> list[Path]:
-        normalized = _relative(path)
+        normalized = _normalize_candidate(path)
+        if normalized is None:
+            return []
         if page and normalized.suffix.casefold() != ".md":
-            normalized = normalized.with_suffix(".md")
+            normalized = Path(f"{normalized.as_posix()}.md")
         wanted = normalized.as_posix().casefold()
         values = self.pages if page else self.attachments
         if page and "/" not in normalized.as_posix():
@@ -107,15 +134,18 @@ class VaultIndex:
 
     def resolve_page_candidates(self, current: Path, target: str) -> list[PageRecord]:
         target = target.replace("\\", "/")
+        normalized_target = _normalize_candidate(target)
+        if normalized_target is None:
+            return []
         candidates: list[PageRecord] = []
         explicit = target.startswith("./") or target.startswith("../")
         has_path = "/" in target
         if explicit or has_path:
             paths = []
             if explicit or has_path:
-                paths.append(_relative(current.parent / target))
+                paths.append(_relative(current.parent / normalized_target))
             if has_path and not explicit:
-                paths.append(_relative(Path(target)))
+                paths.append(_relative(normalized_target))
             for path in paths:
                 record = self._page_at(path)
                 if record and record not in candidates:
@@ -129,13 +159,16 @@ class VaultIndex:
 
     def resolve_attachment_candidates(self, current: Path, target: str) -> list[AttachmentRecord]:
         target = target.replace("\\", "/")
+        normalized_target = _normalize_candidate(target)
+        if normalized_target is None:
+            return []
         candidates: list[AttachmentRecord] = []
         explicit = target.startswith("./") or target.startswith("../")
         has_path = "/" in target
         if explicit or has_path:
-            paths = [_relative(current.parent / target)]
+            paths = [_relative(current.parent / normalized_target)]
             if has_path and not explicit:
-                paths.append(_relative(Path(target)))
+                paths.append(_relative(normalized_target))
             for path in paths:
                 record = self._attachment_at(path)
                 if record and record not in candidates:

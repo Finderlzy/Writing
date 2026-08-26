@@ -53,7 +53,15 @@ def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
         source = DOCS / record.source_path
         result = converter.convert(record.source_path, source.read_text(encoding="utf-8"))
         diagnostics.extend(result.diagnostics)
-        diagnostics.extend(residual_diagnostics(record.source_path, result.text))
+        reference_spans = {reference.span for reference in result.references}
+        diagnostics.extend(
+            diagnostic
+            for diagnostic in residual_diagnostics(record.source_path, result.text)
+            if not (
+                diagnostic.code == "E_RESIDUAL_OBSIDIAN"
+                and diagnostic.span in reference_spans
+            )
+        )
         destination = CACHE / record.source_path
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(result.text, encoding="utf-8", newline="")

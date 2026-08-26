@@ -96,12 +96,75 @@ class CompatibilityTests(unittest.TestCase):
         )
         result = Converter(index).convert(Path("当前.md"), (root / "当前.md").read_text(encoding="utf-8"))
         self.assertIn("#_2", result.text)
+        self.assertIn("[[目标#缺失]]", result.text)
+        self.assertIn("[[目标#^nope]]", result.text)
         self.assertEqual({"E_ANCHOR_MISSING", "E_BLOCK_MISSING"}, {item.code for item in result.diagnostics})
+
+    def test_current_page_heading_and_block_references(self):
+        root, index = self.make_index(
+            {
+                "当前.md": "# 当前页\n## 标题\n正文 ^block-id\n",
+            }
+        )
+        result = Converter(index).convert(
+            Path("当前.md"),
+            "[[#标题]] [[#^block-id|别名]] [[#^block-id]]\n",
+        )
+        self.assertEqual(
+            "[标题](#_2) [别名](#^block-id) [block-id](#^block-id)\n",
+            result.text,
+        )
+        self.assertFalse(result.diagnostics)
+        self.assertEqual(
+            [("", "标题"), ("", "^block-id"), ("", "^block-id")],
+            [(reference.target, reference.anchor) for reference in result.references],
+        )
+
+    def test_reference_boundary_matrix_is_diagnostic_and_preserved(self):
+        root, index = self.make_index({"当前.md": "# 当前\n"})
+        text = "[[]] [[ ]] [[|别名]] [[#]] [[#^]] [[.]] [[./]] [[../]] [[a/..]] [[/]] [[\\\\]]\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertEqual(text, result.text)
+        self.assertEqual(
+            [
+                "E_REFERENCE_EMPTY",
+                "E_REFERENCE_EMPTY",
+                "E_REFERENCE_EMPTY",
+                "E_ANCHOR_EMPTY",
+                "E_ANCHOR_EMPTY",
+                "E_REFERENCE_INVALID_PATH",
+                "E_REFERENCE_INVALID_PATH",
+                "E_REFERENCE_INVALID_PATH",
+                "E_REFERENCE_INVALID_PATH",
+                "E_REFERENCE_INVALID_PATH",
+                "E_REFERENCE_INVALID_PATH",
+            ],
+            [item.code for item in result.diagnostics],
+        )
+
+    def test_index_invalid_candidates_are_safe_and_parent_links_work(self):
+        root, index = self.make_index(
+            {
+                "目录/当前.md": "# 当前\n",
+                "目标.md": "# 目标\n",
+            }
+        )
+        invalid = ("", " ", ".", "./", "../", "a/..", "/", "\\")
+        for target in invalid:
+            with self.subTest(target=target):
+                self.assertEqual([], index.resolve_page_candidates(Path("目录/当前.md"), target))
+                self.assertEqual([], index.resolve_attachment_candidates(Path("目录/当前.md"), target))
+                self.assertEqual([], index.case_variants(target, page=True))
+
+        result = Converter(index).convert(Path("目录/当前.md"), "[[../目标]]\n")
+        self.assertEqual("[目标](../%E7%9B%AE%E6%A0%87.md)\n", result.text)
+        self.assertFalse(result.diagnostics)
 
     def test_unsupported_embed_and_unclosed_syntax(self):
         root, index = self.make_index({"当前.md": "# 当前\n", "目标.md": "# 目标\n"})
         result = Converter(index).convert(Path("当前.md"), "![[目标]] ==未闭合\n")
         self.assertEqual({"E_UNSUPPORTED_PAGE_EMBED", "E_UNCLOSED_HIGHLIGHT"}, {item.code for item in result.diagnostics})
+        self.assertIn("![[目标]]", result.text)
 
 
 if __name__ == "__main__":
