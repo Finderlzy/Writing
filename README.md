@@ -16,7 +16,7 @@ site/ 最终 HTML
 GitHub Pages
 ```
 
-每次构建都会重新生成缓存和站点。`docs/` 始终是内容源，构建过程会检查其前后摘要，避免转换意外修改原始笔记。
+每次构建都会重新生成缓存和站点。`docs/` 始终是内容源，`theme/extra.css` 是站点样式源；构建入口会把它注入 `.cache/converted-docs/stylesheets/` 后再交给 MkDocs。构建过程会检查 `docs/` 前后摘要，避免转换意外修改原始笔记。
 
 ## 支持的 Obsidian 语法
 
@@ -53,6 +53,8 @@ tools/
 ├── build_site.py        # 转换、构建和验收入口
 └── obsidian_compat/     # 索引、解析、转换及 HTML 检查
 tests/                   # 单元测试与仓库级验收测试
+theme/
+└── extra.css            # 站点样式源；由构建入口注入转换缓存
 开发文档/               # 设计文档
 mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖

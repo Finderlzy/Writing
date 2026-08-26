@@ -9,6 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
 CACHE = ROOT / ".cache" / "converted-docs"
 SITE = ROOT / "site"
+THEME = ROOT / "theme"
+EXTRA_CSS_SOURCE = THEME / "extra.css"
+EXTRA_CSS_DESTINATION = CACHE / "stylesheets" / "extra.css"
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -72,6 +75,13 @@ def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
     return diagnostics
 
 
+def _copy_theme_assets() -> None:
+    if not EXTRA_CSS_SOURCE.is_file():
+        raise FileNotFoundError(f"主题样式源文件不存在：{EXTRA_CSS_SOURCE}")
+    EXTRA_CSS_DESTINATION.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(EXTRA_CSS_SOURCE, EXTRA_CSS_DESTINATION)
+
+
 def build() -> int:
     before = _manifest(DOCS)
     try:
@@ -82,6 +92,7 @@ def build() -> int:
         if diagnostics:
             emit_diagnostics(diagnostics)
             return 1
+        _copy_theme_assets()
 
         from mkdocs.commands.build import build as mkdocs_build
         from mkdocs.config import load_config

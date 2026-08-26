@@ -34,8 +34,14 @@ class RepositoryAcceptanceTests(unittest.TestCase):
 
         extra_css = config.get("extra_css", [])
         self.assertIn("stylesheets/extra.css", extra_css)
-        extra_css_target = self._safe_docs_path("stylesheets/extra.css")
-        self.assertTrue(extra_css_target.is_file(), "extra CSS file does not resolve")
+        self.assertFalse(
+            (self.docs / "stylesheets" / "extra.css").exists(),
+            "site CSS must not be stored in the Obsidian docs tree",
+        )
+        self.assertTrue(
+            (self.root / "theme" / "extra.css").is_file(),
+            "extra CSS source must live under theme/",
+        )
 
         app_path = self.docs / ".obsidian" / "app.json"
         app = json.loads(app_path.read_text(encoding="utf-8"))

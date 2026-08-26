@@ -17,4 +17,5 @@
 - [[02主线/Chrome扩展学习/chrome扩展学习Day2_优化版|chrome扩展学习Day2_优化版]]
 - [[02主线/Chrome扩展学习/chrome扩展学习Day2|chrome扩展学习Day2]]
 - [[03概念/chrome.storage|chrome.storage]]
+- [[06作品/作品与碎碎念|作品与碎碎念]]
 <!-- weekly-notes-end -->
