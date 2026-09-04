@@ -11,6 +11,7 @@ theme:
     - navigation.top
     - navigation.instant
     - navigation.instant.prefetch
+    - navigation.tabs
 
 extra_css:
   - stylesheets/extra.css
