@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import tempfile
 import re
 import unittest
 from pathlib import Path
@@ -82,6 +83,56 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self.assertTrue(target == docs or docs in target.parents, f"path leaves docs/: {configured}")
         return target
 
+    def _unique_page_by_file_name(self, index: VaultIndex, file_name: str):
+        matches = sorted(
+            (record for record in index.pages.values() if record.file_name == file_name),
+            key=lambda record: record.source_path.as_posix(),
+        )
+        if not matches:
+            self.fail(f"页面身份缺失：file_name={file_name!r}")
+        if len(matches) > 1:
+            candidates = ", ".join(record.source_path.as_posix() for record in matches)
+            self.fail(f"页面身份不唯一：file_name={file_name!r}; candidates={candidates}")
+        return matches[0]
+
+    def _is_depth_dependent_central_attachment_embed(self, reference, current: Path) -> bool:
+        target = reference.target.replace("\\", "/")
+        if reference.kind != "embed" or not target.startswith("../"):
+            return False
+        resolved = (self.docs / current.parent / Path(target)).resolve()
+        attachment_root = (self.docs / "09附件").resolve()
+        return resolved != attachment_root and attachment_root in resolved.parents
+
+    def test_page_identity_lookup_requires_exactly_one_match(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "a").mkdir()
+            (root / "b").mkdir()
+            (root / "a" / "唯一.md").write_text("# 唯一\n", encoding="utf-8")
+            index = VaultIndex.scan(root)
+            self.assertEqual(Path("a/唯一.md"), self._unique_page_by_file_name(index, "唯一").source_path)
+            with self.assertRaises(AssertionError):
+                self._unique_page_by_file_name(index, "不存在")
+            (root / "b" / "唯一.md").write_text("# 唯一\n", encoding="utf-8")
+            index = VaultIndex.scan(root)
+            with self.assertRaisesRegex(AssertionError, r"a/唯一\.md.*b/唯一\.md"):
+                self._unique_page_by_file_name(index, "唯一")
+
+    def test_central_attachment_embed_path_rule_uses_real_references(self):
+        index = VaultIndex.scan(self.docs)
+        current = Path("03思考/二次元/当前.md")
+        result = Converter(index).convert(
+            current,
+            "---\nexample: ![[../../09附件/foo.webp]]\n---\n\n"
+            "```md\n![[../../09附件/foo.webp]]\n```\n\n"
+            "`![[../../09附件/foo.webp]]`\n"
+            "![[../../09附件/foo.webp]] ![[09附件/foo.webp]]\n",
+        )
+        embeds = [reference for reference in result.references if reference.kind == "embed"]
+        self.assertEqual(["../../09附件/foo.webp", "09附件/foo.webp"], [item.target for item in embeds])
+        self.assertTrue(self._is_depth_dependent_central_attachment_embed(embeds[0], current))
+        self.assertFalse(self._is_depth_dependent_central_attachment_embed(embeds[1], current))
+
     def test_all_repository_notes_convert_without_diagnostics_or_mutation(self):
         before = {
             path.relative_to(self.docs).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
@@ -96,6 +147,12 @@ class RepositoryAcceptanceTests(unittest.TestCase):
                 (self.docs / record.source_path).read_text(encoding="utf-8"),
             )
             diagnostics.extend(result.diagnostics)
+            for reference in result.references:
+                if self._is_depth_dependent_central_attachment_embed(reference, record.source_path):
+                    self.fail(
+                        "禁止使用依赖目录深度的中央附件嵌入："
+                        f"{reference.span} target={reference.target!r}"
+                    )
         after = {
             path.relative_to(self.docs).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in self.docs.rglob("*")
@@ -106,7 +163,7 @@ class RepositoryAcceptanceTests(unittest.TestCase):
 
     def test_real_current_page_block_link_uses_fragment_only(self):
         index = VaultIndex.scan(self.docs)
-        source_path = Path("02主线/Chrome扩展学习/chrome扩展学习Day2.md")
+        source_path = self._unique_page_by_file_name(index, "chrome扩展学习Day2").source_path
         result = Converter(index).convert(
             source_path,
             (self.docs / source_path).read_text(encoding="utf-8"),
