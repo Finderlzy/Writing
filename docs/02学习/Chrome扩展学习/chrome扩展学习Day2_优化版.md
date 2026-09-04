@@ -34,7 +34,7 @@ content.js 读取指令
 ---
 用户在插件 popup 中输入指令，因此 popup.js 负责把它保存起来。
 
-这里使用 [[../../03概念/chrome.storage|chrome.storage]]。它是 Chrome Extension 提供的存储 API，可以让扩展保存自己的数据。
+这里使用 [[../01概念/chrome.storage|chrome.storage]]。它是 Chrome Extension 提供的存储 API，可以让扩展保存自己的数据。
 ```js
 /** scripts/popup.js */
 

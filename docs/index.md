@@ -11,8 +11,7 @@
 <!-- weekly-notes-start -->
 这个星期新写的：
 
-- [[02主线/离散数学/关系的基础|关系的基础]]
-- [[02主线/离散数学/集合|集合]]
-- [[05碎碎念/二次元/追番/未命名|未命名]]
-- [[05碎碎念/二次元/追番/CLANNAD~AFTER STORY~|CLANNAD~AFTER STORY~]]
+- [[02学习/02主线/离散数学/关系的基础|关系的基础]]
+- [[02学习/02主线/离散数学/集合|集合]]
+- [[03思考/二次元（主要在谈二次元/CLANNAD~AFTER STORY~|CLANNAD~AFTER STORY~]]
 <!-- weekly-notes-end -->
