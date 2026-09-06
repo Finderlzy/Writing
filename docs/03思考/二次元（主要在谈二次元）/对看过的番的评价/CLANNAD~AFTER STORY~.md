@@ -3,7 +3,7 @@ createdDate: 2026-09-04
 ---
 > 写于 2026-09-04
 > ⭐⭐⭐⭐⭐
-> 上一季：[[CLANNAD]]
+> 上一季：[[对看过的番的评价/CLANNAD]]
 
 ![[09附件/DM_20260904073926_001.webp]]
 
@@ -46,5 +46,6 @@ emmm，最后的最后，我看的不是很明白。我看别人说，是因为�
 
 汐真的好可爱，可爱到爆炸！全宇宙第一可爱！她的声音一出来我就被她可爱死了。[冈崎汐♡](https://www.bilibili.com/video/BV1Z3411U7T1/?spm_id_from=333.337.search-card.all.click&vd_source=e34338ce320efbbe06647a04ed069077)
 
+## 其他观后感
 
 [[我讨厌BE结局]]
