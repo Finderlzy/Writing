@@ -61,6 +61,28 @@ class CompatibilityTests(unittest.TestCase):
         self.assertEqual("[目标](%E7%9B%AE%E6%A0%87.md) [Ave Mujica](../%E8%BF%BD%E7%95%AA/Ave%20Mujica.md)\n", result.text)
         self.assertFalse(result.diagnostics)
 
+    def test_root_attachment_embed_survives_note_depth_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            attachment = root / "09附件" / "中文 图片.png"
+            attachment.parent.mkdir()
+            attachment.write_bytes(b"fixture")
+            index = VaultIndex.scan(root)
+            for current, prefix in (
+                (Path("当前.md"), ""),
+                (Path("一级/当前.md"), "../"),
+                (Path("一级/二级/当前.md"), "../../"),
+            ):
+                with self.subTest(current=current):
+                    candidates = index.resolve_attachment_candidates(current, "09附件/中文 图片.png")
+                    self.assertEqual([Path("09附件/中文 图片.png")], [c.source_path for c in candidates])
+                    result = Converter(index).convert(current, "![[09附件/中文 图片.png]]\n")
+                    self.assertFalse(result.diagnostics)
+                    self.assertEqual(
+                        f"![中文 图片.png]({prefix}09%E9%99%84%E4%BB%B6/%E4%B8%AD%E6%96%87%20%E5%9B%BE%E7%89%87.png)\n",
+                        result.text,
+                    )
+
     def test_missing_and_ambiguous_targets(self):
         root, index = self.make_index(
             {

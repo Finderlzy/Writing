@@ -52,7 +52,11 @@ class RepositoryAcceptanceTests(unittest.TestCase):
             target = self._safe_docs_path(configured)
             self.assertTrue(target.is_dir(), f"Obsidian {setting} does not resolve: {configured}")
         self.assertEqual("folder", app["newFileLocation"])
-        self.assertEqual("relative", app["newLinkFormat"])
+        self.assertEqual(
+            "absolute", app["newLinkFormat"],
+            "Obsidian 内部链接类型应选择“基于仓库根目录的绝对路径”，"
+            "避免新插入的中央附件引用依赖笔记目录深度。",
+        )
         self.assertTrue(app["alwaysUpdateLinks"])
 
         checked_text = "\n".join(
@@ -103,6 +107,39 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         attachment_root = (self.docs / "09附件").resolve()
         return resolved != attachment_root and attachment_root in resolved.parents
 
+    def _assert_no_depth_dependent_central_attachment_embeds(self, references):
+        violations = []
+        for reference in references:
+            current = reference.span.path
+            if self._is_depth_dependent_central_attachment_embed(reference, current):
+                target = reference.target.replace("\\", "/")
+                suggested = (self.docs / current.parent / target).resolve().relative_to(
+                    self.docs.resolve()
+                ).as_posix()
+                violations.append(
+                    f"{reference.span} target={reference.target!r} "
+                    f"建议路径={suggested!r}"
+                )
+        if violations:
+            self.fail("禁止使用依赖目录深度的中央附件嵌入：\n" + "\n".join(violations))
+
+    def test_central_attachment_violations_are_reported_together(self):
+        index = VaultIndex.scan(self.docs)
+        references = []
+        for current, target in (
+            (Path("一级/当前.md"), "../09附件/甲.png"),
+            (Path("一级/二级/当前.md"), "../../09附件/乙.png"),
+        ):
+            references.extend(Converter(index).convert(current, f"![[{target}]]\n").references)
+        with self.assertRaises(AssertionError) as caught:
+            self._assert_no_depth_dependent_central_attachment_embeds(references)
+        message = str(caught.exception)
+        for reference in references:
+            self.assertIn(str(reference.span), message)
+            self.assertIn(f"target={reference.target!r}", message)
+        self.assertIn("建议路径='09附件/甲.png'", message)
+        self.assertIn("建议路径='09附件/乙.png'", message)
+
     def test_page_identity_lookup_requires_exactly_one_match(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -141,25 +178,22 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         }
         index = VaultIndex.scan(self.docs)
         diagnostics = list(index.diagnostics)
+        references = []
         for record in index.pages.values():
             result = Converter(index).convert(
                 record.source_path,
                 (self.docs / record.source_path).read_text(encoding="utf-8"),
             )
             diagnostics.extend(result.diagnostics)
-            for reference in result.references:
-                if self._is_depth_dependent_central_attachment_embed(reference, record.source_path):
-                    self.fail(
-                        "禁止使用依赖目录深度的中央附件嵌入："
-                        f"{reference.span} target={reference.target!r}"
-                    )
+            references.extend(result.references)
         after = {
             path.relative_to(self.docs).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in self.docs.rglob("*")
             if path.is_file() and ".obsidian" not in path.parts
         }
-        self.assertEqual([], diagnostics)
         self.assertEqual(before, after)
+        self._assert_no_depth_dependent_central_attachment_embeds(references)
+        self.assertEqual([], diagnostics)
 
     def test_real_current_page_block_link_uses_fragment_only(self):
         index = VaultIndex.scan(self.docs)
