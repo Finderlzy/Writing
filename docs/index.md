@@ -11,6 +11,7 @@
 <!-- weekly-notes-start -->
 这个星期新写的：
 
-- [[02学习/02主线/java学习/day03/工具类|工具类]]
-- [[02学习/02主线/java学习/day03/static|static]]
+- [[02学习/02主线/java学习/面向对象进阶/static/工具类|工具类]]
+- [[02学习/02主线/java学习/面向对象进阶/static/static|static]]
+- [[02学习/02主线/java学习/面向对象进阶/static/static的注意事项|static的注意事项]]
 <!-- weekly-notes-end -->

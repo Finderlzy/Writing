@@ -1,6 +1,6 @@
 {
   "attachmentFolderPath": "09附件",
-  "newLinkFormat": "relative",
+  "newLinkFormat": "absolute",
   "newFileLocation": "folder",
   "newFileFolderPath": "00收集",
   "alwaysUpdateLinks": true
