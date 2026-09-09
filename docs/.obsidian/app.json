@@ -3,5 +3,7 @@
   "newLinkFormat": "absolute",
   "newFileLocation": "folder",
   "newFileFolderPath": "00收集",
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "focusNewTab": true,
+  "useMarkdownLinks": false
 }
