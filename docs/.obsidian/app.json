@@ -6,5 +6,6 @@
   "alwaysUpdateLinks": true,
   "focusNewTab": true,
   "useMarkdownLinks": false,
-  "promptDelete": false
+  "promptDelete": false,
+  "showUnsupportedFiles": true
 }
