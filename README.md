@@ -2,7 +2,7 @@
 
 个人文章网站，收录各种各样的想法、学习笔记、技术知识、随笔、兴趣记录和仍在整理中的内容。
 
-内容使用 Obsidian 编写，网站由 [MkDocs](https://www.mkdocs.org/) 和 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成，并发布到 [GitHub Pages](https://finderlzy.github.io/Writing/)。仓库内置 Obsidian → MkDocs 兼容层，可以在不修改原始笔记的前提下转换双链、Callout、高亮等语法。
+内容使用 Obsidian 编写，网站由 [MkDocs](https://www.mkdocs.org/) 和 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成，并发布到 [GitHub Pages](https://finderlzy.github.io/Writing/)。仓库内置 Obsidian → MkDocs 兼容层，可以在不修改原始笔记的前提下转换双链、Callout、高亮、LaTeX 数学公式等语法。
 
 ## 工作原理
 
@@ -29,8 +29,9 @@ GitHub Pages
 | `![[图片.png]]` | 嵌入本地图片 |
 | `==重点==` | 文字高亮 |
 | `> [!note]` | Callout；支持 `note`、`question`、`warning`、`example` |
+| `$x$`、`$$...$$` | LaTeX 数学公式（基于 MathJax 3 渲染） |
 
-转换器会避开 YAML front matter、代码围栏和行内代码。它也会修正常见的宽松列表格式，避免列表被 MkDocs 当成普通段落。
+转换器会避开 YAML front matter、代码围栏、公式块和行内代码。它也会修正常见的宽松列表格式与紧贴正文的公式块，避免其被 MkDocs 当成普通段落或被换行规则打断。
 
 当前不支持页面嵌入、Callout 折叠标记和附件尺寸选项。PDF 等非图片附件请暂时使用普通 Markdown 链接。页面内存在重复标题时，建议不要链接到重复项。
 

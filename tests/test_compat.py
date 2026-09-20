@@ -182,6 +182,39 @@ class CompatibilityTests(unittest.TestCase):
         self.assertEqual("[目标](../%E7%9B%AE%E6%A0%87.md)\n", result.text)
         self.assertFalse(result.diagnostics)
 
+    def test_math_block_isolation_and_spacing(self):
+        root, index = self.make_index({"当前.md": "# 当前\n"})
+        text = "前文说明：\n$$\\bar{x} = 1$$\n后文说明。\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertFalse(result.diagnostics)
+        self.assertEqual("前文说明：\n\n$$\\bar{x} = 1$$\n\n后文说明。\n", result.text)
+
+    def test_multiline_math_block_isolation_and_superscript(self):
+        root, index = self.make_index({"当前.md": "# 当前\n"})
+        text = "公式如下：\n$$\nf(x) = x ^2\n$$ ^my-eq\n后续说明。\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertFalse(result.diagnostics)
+        self.assertIn('<a id="^my-eq"></a>', result.text)
+        self.assertNotIn('<a id="^^2"></a>', result.text)
+        self.assertIn("$$\nf(x) = x ^2\n$$", result.text)
+        self.assertTrue(result.text.startswith("公式如下：\n\n"))
+        self.assertTrue(result.text.endswith('<a id="^my-eq"></a>\n\n后续说明。\n'))
+
+    def test_inline_math_and_syntax_coexistence(self):
+        root, index = self.make_index({"当前.md": "# 当前\n", "目标.md": "# 目标\n"})
+        text = "由 $E=mc^2$ 与 ==重点== 可得 [[目标]]。\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertFalse(result.diagnostics)
+        self.assertIn("$E=mc^2$", result.text)
+        self.assertIn("<mark>重点</mark>", result.text)
+        self.assertIn("[目标](%E7%9B%AE%E6%A0%87.md)", result.text)
+
+    def test_unclosed_math_block_reports_diagnostic(self):
+        root, index = self.make_index({"当前.md": "# 当前\n"})
+        text = "$$\nf(x) = 1\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertEqual({"E_UNCLOSED_MATH_BLOCK"}, {item.code for item in result.diagnostics})
+
     def test_unsupported_embed_and_unclosed_syntax(self):
         root, index = self.make_index({"当前.md": "# 当前\n", "目标.md": "# 目标\n"})
         result = Converter(index).convert(Path("当前.md"), "![[目标]] ==未闭合\n")

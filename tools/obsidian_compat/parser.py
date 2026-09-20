@@ -18,6 +18,7 @@ def body_lines(text: str):
                 start = index + 1
                 break
     fence: str | None = None
+    in_math_block: bool = False
     for index in range(start, len(lines)):
         line = lines[index].rstrip("\r\n")
         stripped = line.lstrip()
@@ -25,6 +26,14 @@ def body_lines(text: str):
             match = re.match(r"(`{3,}|~{3,})", stripped)
             if match:
                 fence = match.group(1)[0]
+                continue
+            if in_math_block:
+                if stripped.endswith("$$") or "$$" in stripped:
+                    in_math_block = False
+                    yield index + 1, line
+                continue
+            if stripped.startswith("$$") and not (len(stripped) > 2 and stripped[2:].find("$$") >= 0):
+                in_math_block = True
                 continue
             yield index + 1, line
         elif re.match(re.escape(fence) + r"{3,}[ \t]*$", stripped):
@@ -50,10 +59,31 @@ def strip_inline_code(text: str) -> str:
     return "".join(result)
 
 
+def strip_inline_math(text: str) -> str:
+    result: list[str] = []
+    index = 0
+    while index < len(text):
+        if text[index] != "$":
+            result.append(text[index])
+            index += 1
+            continue
+        if index > 0 and text[index - 1] == "\\":
+            result.append(text[index])
+            index += 1
+            continue
+        run = 2 if text.startswith("$$", index) else 1
+        end = text.find("$" * run, index + run)
+        if end < 0:
+            break
+        result.append(" " * (end + run - index))
+        index = end + run
+    return "".join(result)
+
+
 def residual_diagnostics(path: Path, text: str) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
     for line_number, line in body_lines(text):
-        visible = strip_inline_code(line)
+        visible = strip_inline_math(strip_inline_code(line))
         match = _RESIDUAL_RE.search(visible)
         if match:
             diagnostics.append(
@@ -64,4 +94,3 @@ def residual_diagnostics(path: Path, text: str) -> list[Diagnostic]:
                 )
             )
     return diagnostics
-

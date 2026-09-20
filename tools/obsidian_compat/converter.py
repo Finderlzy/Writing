@@ -115,6 +115,7 @@ class Converter:
         diagnostics: list[Diagnostic] = []
         references: list[Reference] = []
         fence: str | None = None
+        in_math_block: bool = False
         frontmatter = bool(lines and lines[0].strip() == "---")
         in_frontmatter = frontmatter
         line_number = 0
@@ -143,6 +144,46 @@ class Converter:
             if fence_match:
                 fence = fence_match.group(1)[0]
                 output.append(raw)
+                index += 1
+                continue
+
+            if in_math_block:
+                if "$$" in body:
+                    anchor = _BLOCK_RE.search(body)
+                    block_id = None
+                    if anchor:
+                        block_id = anchor.group(1)
+                        body = body[: anchor.start()] + body[anchor.end() :].rstrip()
+                    output.append(body + newline)
+                    in_math_block = False
+                    if block_id:
+                        output.append(f'\n<a id="^{block_id}"></a>\n')
+                    if index + 1 < len(lines) and lines[index + 1].strip():
+                        output.append("\n")
+                else:
+                    output.append(body + newline)
+                index += 1
+                continue
+
+            if stripped.startswith("$$"):
+                anchor = _BLOCK_RE.search(body)
+                block_id = None
+                clean_body = body
+                if anchor:
+                    block_id = anchor.group(1)
+                    clean_body = body[: anchor.start()] + body[anchor.end() :].rstrip()
+                clean_stripped = clean_body.strip()
+                has_closing = len(clean_stripped) > 2 and clean_stripped[2:].find("$$") >= 0
+                if output and output[-1].strip():
+                    output.append("\n")
+                output.append(clean_body + newline)
+                if has_closing:
+                    if block_id:
+                        output.append(f'\n<a id="^{block_id}"></a>\n')
+                    if index + 1 < len(lines) and lines[index + 1].strip():
+                        output.append("\n")
+                else:
+                    in_math_block = True
                 index += 1
                 continue
 
@@ -205,6 +246,10 @@ class Converter:
         if fence is not None:
             diagnostics.append(
                 Diagnostic("E_UNCLOSED_FENCE", SourceSpan(source_path, len(lines), 1), "代码围栏未闭合。")
+            )
+        if in_math_block:
+            diagnostics.append(
+                Diagnostic("E_UNCLOSED_MATH_BLOCK", SourceSpan(source_path, len(lines), 1), "公式块未闭合。")
             )
         return ConversionResult(_normalize_loose_lists("".join(output)), diagnostics, references)
 
