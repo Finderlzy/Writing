@@ -210,6 +210,32 @@ class Converter:
                         )
                     )
                 title = callout.group("title").strip()
+                if title:
+                    title_offset = body.find(callout.group("title"))
+                    title, title_diags, title_refs = self._convert_inline(
+                        source_path, line_number, title, source_path
+                    )
+                    title_diags = [
+                        Diagnostic(
+                            item.code,
+                            SourceSpan(item.span.path, item.span.line, item.span.column + title_offset),
+                            item.message,
+                            item.candidates,
+                        )
+                        for item in title_diags
+                    ]
+                    title_refs = [
+                        Reference(
+                            item.kind,
+                            item.target,
+                            item.alias,
+                            item.anchor,
+                            SourceSpan(item.span.path, item.span.line, item.span.column + title_offset),
+                        )
+                        for item in title_refs
+                    ]
+                    diagnostics.extend(title_diags)
+                    references.extend(title_refs)
                 title_part = f' "{title.replace(chr(34), chr(92) + chr(34))}"' if title else ""
                 output.append(f"!!! {kind}{title_part}\n")
                 index += 1
