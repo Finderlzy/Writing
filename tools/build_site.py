@@ -12,6 +12,8 @@ SITE = ROOT / "site"
 THEME = ROOT / "theme"
 EXTRA_CSS_SOURCE = THEME / "extra.css"
 EXTRA_CSS_DESTINATION = CACHE / "stylesheets" / "extra.css"
+# 只在本地 Obsidian 中保留、不部署到网站的一级目录
+UNPUBLISHED_DIRS = ("07自己",)
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -52,10 +54,19 @@ def _clean_output(path: Path, parent: Path) -> None:
 
 def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
     diagnostics = list(index.diagnostics)
+    public_embeds: set[Path] = set()
+    unpublished_embeds: set[Path] = set()
     for record in index.pages.values():
         source = DOCS / record.source_path
         result = converter.convert(record.source_path, source.read_text(encoding="utf-8"))
         diagnostics.extend(result.diagnostics)
+        unpublished = converter.is_unpublished(record.source_path)
+        for reference in result.references:
+            if reference.kind == "embed" and reference.target:
+                for attachment in index.resolve_attachment_candidates(record.source_path, reference.target):
+                    (unpublished_embeds if unpublished else public_embeds).add(attachment.source_path)
+        if unpublished:
+            continue
         reference_spans = {reference.span for reference in result.references}
         diagnostics.extend(
             diagnostic
@@ -69,6 +80,10 @@ def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(result.text, encoding="utf-8", newline="")
     for record in index.attachments.values():
+        if converter.is_unpublished(record.source_path) or (
+            record.source_path in unpublished_embeds and record.source_path not in public_embeds
+        ):
+            continue
         destination = CACHE / record.output_path
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(DOCS / record.source_path, destination)
@@ -88,7 +103,7 @@ def build() -> int:
         _clean_output(CACHE, ROOT / ".cache")
         _clean_output(SITE, ROOT)
         index = VaultIndex.scan(DOCS)
-        diagnostics = _copy_and_convert(index, Converter(index))
+        diagnostics = _copy_and_convert(index, Converter(index, UNPUBLISHED_DIRS))
         if diagnostics:
             emit_diagnostics(diagnostics)
             return 1
@@ -112,7 +127,8 @@ def build() -> int:
             changed = [path for path in changed if before.get(path) != after.get(path)]
             print(f"[E_SOURCE_MUTATED] 构建期间源文件发生变化：{', '.join(changed)}", file=sys.stderr)
             return 1
-        print(f"build succeeded: {len(index.pages)} pages, {len(index.attachments)} attachments")
+        published = sum(1 for path in index.pages if not path.parts or path.parts[0] not in UNPUBLISHED_DIRS)
+        print(f"build succeeded: {published} pages published, {len(index.pages) - published} unpublished")
         return 0
     except (ImportError, ModuleNotFoundError) as exc:
         print(f"[E_TOOL_CONFIG] 构建依赖不可用：{exc}", file=sys.stderr)

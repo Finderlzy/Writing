@@ -122,8 +122,12 @@ def _normalize_loose_lists(text: str) -> str:
 
 
 class Converter:
-    def __init__(self, index: VaultIndex):
+    def __init__(self, index: VaultIndex, unpublished_dirs: tuple[str, ...] = ()):
         self.index = index
+        self.unpublished_dirs = unpublished_dirs
+
+    def is_unpublished(self, path: Path) -> bool:
+        return bool(path.parts) and path.parts[0] in self.unpublished_dirs
 
     def convert(self, source_path: Path, text: str) -> ConversionResult:
         lines = text.splitlines(keepends=True)
@@ -526,9 +530,11 @@ class Converter:
 
         if diagnostics:
             return ref, original, diagnostics
+        if label is None:
+            label = Path(parsed.target).stem
+        if self.is_unpublished(record.source_path) and not self.is_unpublished(current):
+            return ref, label, diagnostics
         href = "#" + quote(fragment, safe="-._~^") if not parsed.target else _relative_url(current, record.output_path)
         if parsed.target and fragment:
             href += "#" + quote(fragment, safe="-._~^")
-        if label is None:
-            label = Path(parsed.target).stem
         return ref, f"[{label}]({href})", diagnostics

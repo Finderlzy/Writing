@@ -61,6 +61,21 @@ class CompatibilityTests(unittest.TestCase):
         self.assertEqual("[目标](%E7%9B%AE%E6%A0%87.md) [Ave Mujica](../%E8%BF%BD%E7%95%AA/Ave%20Mujica.md)\n", result.text)
         self.assertFalse(result.diagnostics)
 
+    def test_links_to_unpublished_pages_become_plain_text(self):
+        root, index = self.make_index(
+            {
+                "公开/当前.md": "# 当前\n",
+                "私密/目标.md": "# 目标\n\n## 小节\n",
+                "私密/另一篇.md": "# 另一篇\n",
+            }
+        )
+        converter = Converter(index, ("私密",))
+        result = converter.convert(Path("公开/当前.md"), "[[私密/目标]] [[私密/目标#小节|别名]]\n")
+        self.assertEqual("目标 别名\n", result.text)
+        self.assertFalse(result.diagnostics)
+        result = converter.convert(Path("私密/另一篇.md"), "[[目标]]\n")
+        self.assertEqual("[目标](%E7%9B%AE%E6%A0%87.md)\n", result.text)
+
     def test_root_attachment_embed_survives_note_depth_changes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
