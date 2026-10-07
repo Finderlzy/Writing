@@ -43,7 +43,7 @@ VPS 负责“翻出去”，住宅 IP 负责“最后一跳”。这样 anthropi
 
 1. **买住宅代理**：商家会给你协议、IP、端口和账号密码。下单前先找商家要 IP，用 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/) 交叉测一下，重点看 IP 类型是不是“住宅/ISP”、风险分数高不高。（ping0.cc 会出卖你国内真实 IP 地址，不建议用它）
 2. **新增出站**：在 3x-ui 的 Xray 设置里添加一个出站，填入住宅 IP 的信息，标签起个好认的名字，比如 `residential`。
-3. **新增路由规则**：让 gpt 相关的域名走住宅 IP，出站标签选 `residential`：
+3. **新增路由规则**：让 claude 相关的域名走住宅 IP，出站标签选 `residential`：
 
 ```
 domain
