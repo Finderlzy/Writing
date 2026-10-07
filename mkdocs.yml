@@ -19,8 +19,8 @@ extra:
     repo: Finderlzy/Writing
     repo_id: R_kgDOT9EtHA
     category: Comments
-    # 开启 Discussions 并安装 Giscus App 后，从 https://giscus.app/zh-CN 复制 data-category-id
-    category_id: ""
+    # 分类 ID 可在 https://giscus.app/zh-CN 查询；留空则不显示评论区
+    category_id: DIC_kwDOT9EtHM4DHOm0
 
 extra_css:
   - stylesheets/extra.css

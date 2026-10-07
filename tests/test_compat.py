@@ -221,6 +221,29 @@ class CompatibilityTests(unittest.TestCase):
         self.assertEqual({"E_UNSUPPORTED_PAGE_EMBED", "E_UNCLOSED_HIGHLIGHT"}, {item.code for item in result.diagnostics})
         self.assertIn("![[目标]]", result.text)
 
+    def test_callout_aliases_map_to_material_types(self):
+        root, index = self.make_index({"当前.md": "# 当前\n"})
+        text = "> [!important] 重要\n> 内容\n\n> [!TIP]\n> 提示\n\n> [!custom]\n> 其他\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertIn('!!! tip "重要"\n    内容', result.text)
+        self.assertIn("!!! tip\n    提示", result.text)
+        self.assertEqual(["E_UNSUPPORTED_CALLOUT"], [item.code for item in result.diagnostics])
+
+    def test_escaped_pipe_alias_inside_table(self):
+        root, index = self.make_index({"当前.md": "# 当前\n", "概念/甲.md": "# 甲\n"})
+        text = "|名称|说明|\n|---|---|\n|安全|[[概念/甲\\|甲]]|\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertFalse(result.diagnostics)
+        self.assertIn("|安全|[甲](%E6%A6%82%E5%BF%B5/%E7%94%B2.md)|", result.text)
+
+    def test_image_embed_size_becomes_attributes(self):
+        root, index = self.make_index({"当前.md": "# 当前\n", "图.png": ""})
+        text = "![[图.png|262]] ![[图.png|300x200]] ![[图.png|说明]]\n"
+        result = Converter(index).convert(Path("当前.md"), text)
+        self.assertIn('![图.png](%E5%9B%BE.png){ width="262" }', result.text)
+        self.assertIn('![图.png](%E5%9B%BE.png){ width="300" height="200" }', result.text)
+        self.assertEqual(["E_UNSUPPORTED_EMBED_OPTION"], [item.code for item in result.diagnostics])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -12,7 +12,22 @@ _CALLOUT_RE = re.compile(
     r"^(?P<prefix>[ \t]*)>[ \t]*\[!(?P<kind>[A-Za-z]+)(?P<collapse>[+-])?\][ \t]*(?P<title>.*)$"
 )
 _BLOCK_RE = re.compile(r"(?:^|\s)\^([A-Za-z0-9_-]+)[ \t]*$")
-_SUPPORTED_CALLOUTS = {"note", "question", "warning", "example"}
+# Obsidian Callout 类型（含别名）到 Material admonition 类型的映射。
+_CALLOUT_TYPES = {
+    "note": "note",
+    "abstract": "abstract", "summary": "abstract", "tldr": "abstract",
+    "info": "info", "todo": "info",
+    "tip": "tip", "hint": "tip", "important": "tip",
+    "success": "success", "check": "success", "done": "success",
+    "question": "question", "help": "question", "faq": "question",
+    "warning": "warning", "caution": "warning", "attention": "warning",
+    "failure": "failure", "fail": "failure", "missing": "failure",
+    "danger": "danger", "error": "danger",
+    "bug": "bug",
+    "example": "example",
+    "quote": "quote", "cite": "quote",
+}
+_EMBED_SIZE_RE = re.compile(r"^(?P<width>\d+)(?:x(?P<height>\d+))?$")
 _LIST_RE = re.compile(r"^(?P<indent>[ \t]*)(?:[-+*]|\d+[.)])[ \t]+")
 
 
@@ -30,7 +45,8 @@ def _parse_reference(raw_target: str) -> _ParsedReference:
     alias = None
     if "|" in target:
         target, alias = target.split("|", 1)
-        target = target.strip()
+        # 表格内的双链需写成 [[目标\|别名]]，避免 | 被当成列分隔符。
+        target = target.removesuffix("\\").strip()
         alias = alias.strip()
 
     anchor = None
@@ -189,13 +205,13 @@ class Converter:
 
             callout = _CALLOUT_RE.match(body)
             if callout:
-                kind = callout.group("kind").casefold()
-                if kind not in _SUPPORTED_CALLOUTS:
+                kind = _CALLOUT_TYPES.get(callout.group("kind").casefold())
+                if kind is None:
                     diagnostics.append(
                         Diagnostic(
                             "E_UNSUPPORTED_CALLOUT",
                             SourceSpan(source_path, line_number, body.find("[!") + 1),
-                            f"不支持的 Callout 类型 “{kind}”。",
+                            f"不支持的 Callout 类型 “{callout.group('kind').casefold()}”。",
                         )
                     )
                     output.append(raw)
@@ -367,8 +383,9 @@ class Converter:
             )
 
         diagnostics: list[Diagnostic] = []
-        if is_embed and parsed.alias:
-            diagnostics.append(Diagnostic("E_UNSUPPORTED_EMBED_OPTION", span, "首期不支持附件嵌入尺寸或其他选项。"))
+        size = _EMBED_SIZE_RE.match(parsed.alias) if is_embed and parsed.alias else None
+        if is_embed and parsed.alias and not size:
+            diagnostics.append(Diagnostic("E_UNSUPPORTED_EMBED_OPTION", span, "附件嵌入只支持尺寸选项，例如 |300 或 |300x200。"))
 
         if not parsed.target:
             if is_embed:
@@ -425,6 +442,11 @@ class Converter:
                 return ref, original, diagnostics
             record = attachment_candidates[0]
             href = _relative_url(current, record.output_path)
+            if size:
+                attrs = f'width="{size.group("width")}"'
+                if size.group("height"):
+                    attrs += f' height="{size.group("height")}"'
+                return ref, f"![{normalized_target.name}]({href}){{ {attrs} }}", diagnostics
             label = parsed.alias or normalized_target.name
             return ref, f"![{label}]({href})", diagnostics
 
