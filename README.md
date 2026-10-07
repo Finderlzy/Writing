@@ -56,12 +56,18 @@ tools/
 tests/                   # 单元测试与仓库级验收测试
 theme/
 └── extra.css            # 站点样式源；由构建入口注入转换缓存
+overrides/
+└── partials/comments.html  # Material 主题覆盖：Giscus 评论区
 开发文档/               # 设计文档
 mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖
 ```
 
 一级分类由 MkDocs 和转换器动态扫描，可以按需要新增，不需要修改构建程序。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
+
+## 评论区
+
+除首页外的页面底部显示 [Giscus](https://giscus.app/zh-CN) 评论区，留言存放在本仓库的 GitHub Discussions，读者需登录 GitHub 才能留言。参数位于 `mkdocs.yml` 的 `extra.giscus`；`category_id` 为空时不渲染评论区。页面与讨论帖按 URL 路径对应，移动或重命名笔记后，旧留言不会跟到新页面。
 
 ## Obsidian 链接设置
 

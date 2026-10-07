@@ -3,6 +3,7 @@ site_url: https://finderlzy.github.io/Writing/
 
 theme:
   name: material
+  custom_dir: overrides
   language: zh
   font: false
   favicon: 09附件/writing-logo.png
@@ -12,6 +13,14 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tabs
+
+extra:
+  giscus:
+    repo: Finderlzy/Writing
+    repo_id: R_kgDOT9EtHA
+    category: Comments
+    # 开启 Discussions 并安装 Giscus App 后，从 https://giscus.app/zh-CN 复制 data-category-id
+    category_id: ""
 
 extra_css:
   - stylesheets/extra.css

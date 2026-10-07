@@ -123,6 +123,22 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         if violations:
             self.fail("禁止使用依赖目录深度的中央附件嵌入：\n" + "\n".join(violations))
 
+    def test_giscus_comments_are_wired_through_theme_override(self):
+        config = load_config(str(self.root / "mkdocs.yml"))
+        self.assertEqual(
+            str(self.root / "overrides"), config["theme"].custom_dir,
+            "theme custom_dir must point to overrides/",
+        )
+        partial = self.root / "overrides" / "partials" / "comments.html"
+        self.assertTrue(partial.is_file())
+        self.assertIn("giscus.app/client.js", partial.read_text(encoding="utf-8"))
+
+        giscus = config["extra"]["giscus"]
+        self.assertEqual("Finderlzy/Writing", giscus["repo"])
+        self.assertRegex(giscus["repo_id"], r"^R_\w+$")
+        if giscus["category_id"]:
+            self.assertRegex(giscus["category_id"], r"^DIC_\w+$")
+
     def test_central_attachment_violations_are_reported_together(self):
         index = VaultIndex.scan(self.docs)
         references = []

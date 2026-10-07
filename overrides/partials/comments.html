@@ -1,0 +1,23 @@
+{#- Giscus 评论区：除首页外的所有页面显示，数据存放在仓库的 GitHub Discussions。
+    参数见 mkdocs.yml 的 extra.giscus；category_id 为空时不渲染。 -#}
+{% set giscus = config.extra.giscus %}
+{% if giscus and giscus.repo_id and giscus.category_id and not page.is_homepage %}
+  <h2 id="__comments">留言</h2>
+  <script
+    src="https://giscus.app/client.js"
+    data-repo="{{ giscus.repo }}"
+    data-repo-id="{{ giscus.repo_id }}"
+    data-category="{{ giscus.category }}"
+    data-category-id="{{ giscus.category_id }}"
+    data-mapping="pathname"
+    data-strict="1"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+{% endif %}
