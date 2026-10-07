@@ -49,8 +49,10 @@ docs/                   # 原始 Obsidian 笔记与附件
 ├── 02学习/             # 持续学习和探索的问题
 ├── 03思考/             # 对自我、学习和兴趣的思考
 ├── 04作品/             # 已完成或正在整理的创作
+├── 05技术/             # 技术实践与操作记录
 ├── 08归档/             # 暂时归档的学习和技术资料
 ├── 09附件/             # 图片、PDF 等本地附件
+├── javascripts/         # 站点脚本：访问统计、MathJax 配置
 └── index.md             # 站点首页
 tools/
 ├── build_site.py        # 转换、构建和验收入口
@@ -60,7 +62,7 @@ theme/
 └── extra.css            # 站点样式源；由构建入口注入转换缓存
 overrides/
 └── partials/comments.html  # Material 主题覆盖：Giscus 评论区
-开发文档/               # 设计文档
+开发文档/               # 设计文档与开发日志（版本记录）
 mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖
 ```
