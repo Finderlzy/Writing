@@ -173,7 +173,7 @@ class RepositoryAcceptanceTests(unittest.TestCase):
 
     def test_central_attachment_embed_path_rule_uses_real_references(self):
         index = VaultIndex.scan(self.docs)
-        current = Path("03思考/二次元/当前.md")
+        current = Path("05二次元（主要在谈二次元）/对看过的番的评价/当前.md")
         result = Converter(index).convert(
             current,
             "---\nexample: ![[../../09附件/foo.webp]]\n---\n\n"
