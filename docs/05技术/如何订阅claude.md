@@ -27,7 +27,7 @@ createdDate: 2026-10-07
 你的电脑 → VPS → 住宅IP → claude.ai
 ```
 
-VPS 负责“翻出去”，住宅 IP 负责“最后一跳”。这样 openAI 看到的是一个家庭宽带的 IP，而不是机房 IP，也不是机场 IP。
+VPS 负责“翻出去”，住宅 IP 负责“最后一跳”。这样 anthropic 看到的是一个家庭宽带的 IP，而不是机房 IP，也不是机场 IP。
 
 ### 1. 自建节点
 
