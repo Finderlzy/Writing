@@ -122,12 +122,12 @@ def _normalize_loose_lists(text: str) -> str:
 
 
 class Converter:
-    def __init__(self, index: VaultIndex, unpublished_dirs: tuple[str, ...] = ()):
+    def __init__(self, index: VaultIndex, unpublished_paths: tuple[str, ...] = ()):
         self.index = index
-        self.unpublished_dirs = unpublished_dirs
+        self.unpublished_paths = unpublished_paths
 
     def is_unpublished(self, path: Path) -> bool:
-        return bool(path.parts) and path.parts[0] in self.unpublished_dirs
+        return bool(path.parts) and path.parts[0] in self.unpublished_paths
 
     def convert(self, source_path: Path, text: str) -> ConversionResult:
         lines = text.splitlines(keepends=True)

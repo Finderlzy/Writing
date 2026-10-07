@@ -72,7 +72,7 @@ requirements.txt         # 固定版本的 Python 依赖
 
 一级分类由 MkDocs 和转换器动态扫描，可以按需要新增，不需要修改构建程序。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
 
-`tools/build_site.py` 中的 `UNPUBLISHED_DIRS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录（目前为 `07自己`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
+`tools/build_site.py` 中的 `UNPUBLISHED_PATHS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录或根目录文件（目前为 `07自己` 和 `AGENTS.md`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
 
 ## 评论区
 

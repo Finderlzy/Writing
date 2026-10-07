@@ -12,8 +12,8 @@ SITE = ROOT / "site"
 THEME = ROOT / "theme"
 EXTRA_CSS_SOURCE = THEME / "extra.css"
 EXTRA_CSS_DESTINATION = CACHE / "stylesheets" / "extra.css"
-# 只在本地 Obsidian 中保留、不部署到网站的一级目录
-UNPUBLISHED_DIRS = ("07自己",)
+# 只在本地 Obsidian 中保留、不部署到网站的一级目录或根目录文件
+UNPUBLISHED_PATHS = ("07自己", "AGENTS.md")
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -103,7 +103,7 @@ def build() -> int:
         _clean_output(CACHE, ROOT / ".cache")
         _clean_output(SITE, ROOT)
         index = VaultIndex.scan(DOCS)
-        diagnostics = _copy_and_convert(index, Converter(index, UNPUBLISHED_DIRS))
+        diagnostics = _copy_and_convert(index, Converter(index, UNPUBLISHED_PATHS))
         if diagnostics:
             emit_diagnostics(diagnostics)
             return 1
@@ -127,7 +127,7 @@ def build() -> int:
             changed = [path for path in changed if before.get(path) != after.get(path)]
             print(f"[E_SOURCE_MUTATED] 构建期间源文件发生变化：{', '.join(changed)}", file=sys.stderr)
             return 1
-        published = sum(1 for path in index.pages if not path.parts or path.parts[0] not in UNPUBLISHED_DIRS)
+        published = sum(1 for path in index.pages if not path.parts or path.parts[0] not in UNPUBLISHED_PATHS)
         print(f"build succeeded: {published} pages published, {len(index.pages) - published} unpublished")
         return 0
     except (ImportError, ModuleNotFoundError) as exc:
