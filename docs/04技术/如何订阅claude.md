@@ -287,6 +287,8 @@ Google 会给每个账号关联一个国家/地区。查看方法：打开 polic
 
 订阅之后，可以在 iPhone 的“设置”→ 你的名字 →“订阅”里管理或取消。
 
+如果提示“购买未完成”（Purchase Not Completed）或付款被拒绝，先别反复重试，看文末常见问题里的「订阅时提示购买未完成怎么办？」。
+
 ## 订阅成功后
 ---
 首先恭喜你成功订阅🎉。我成功订阅的时候，就像我发的帖子说的，手在微微发抖。但是有一些注意事项你要知道：
@@ -358,6 +360,31 @@ claude 桌面端的部分请求、系统发出的 DNS 查询，可能会直接�
 - **地址**：选免税州是为了不扣销售税，余额刚好够付订阅费。地址要是真实存在、格式正确的美国地址，但不一定是你所在的地址，去网上搜都可以找到免税州地址。
 
 - **礼品卡金额**：以 claude app 里显示的价格为准。app 内价格可能和网页版不一样，所以比订阅价格多充一点。
+
+### 订阅时提示购买未完成怎么办？
+
+我遇到过：在 app 里订阅 Pro 时提示“Purchase Not Completed”，付款被拒绝，没订阅上。我的处理过程是这样的：
+
+1. **先确认有没有扣款**。在 App Store 的购买记录里看看有没有 claude 的记录。没有的话，说明钱没扣，也没订阅上。
+2. **联系 Apple Support**。在线客服用英文说明情况就行，比如：
+
+```
+I'm trying to purchase Claude Pro through the App Store, but I'm getting a "Purchase Not Completed" error.
+```
+
+客服可能会让你去 account.apple.com 生成一个 Support PIN 来验证身份。如果你的 iCloud 账号和 App Store 账号不是同一个（按本文的做法就是这样），要跟客服说清楚，你说的是 App Store 那个账号：
+
+```
+I use a different Apple Account for iCloud and for the App Store.
+```
+
+3. **按客服说的等**。我的情况是客服提交了处理请求，让我**等 72 小时再买，期间不要尝试购买**。会给你一个 Case ID，记下来。
+4. **等待期间什么都别改**。账号不换，付款信息也不要反复修改。
+5. **72 小时后再买**。还是失败的话，带着 Case ID 再联系客服，让他们升级处理：
+
+```
+My purchase is still not going through after waiting 72 hours. My case ID is xxxxxxxxx.
+```
 
 ## 致谢
 ---
