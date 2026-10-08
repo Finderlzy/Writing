@@ -78,6 +78,10 @@ requirements.txt         # 固定版本的 Python 依赖
 
 除首页外的页面底部显示 [Giscus](https://giscus.app/zh-CN) 评论区，留言存放在本仓库的 GitHub Discussions，读者需登录 GitHub 才能留言。参数位于 `mkdocs.yml` 的 `extra.giscus`；`category_id` 为空时不渲染评论区。页面与讨论帖按 URL 路径对应，移动或重命名笔记后，旧留言不会跟到新页面。
 
+## 仓库与社交链接
+
+顶栏右侧链接到本仓库（`mkdocs.yml` 的 `repo_url`），页脚图标链接到个人主页（`extra.social`）。新增社交媒体时在 `extra.social` 下追加一项 `icon`、`link`、`name`，图标名可在 [Material 图标库](https://squidfunk.github.io/mkdocs-material/reference/icons-emojis/#search) 查询，例如 `fontawesome/brands/bilibili`、`fontawesome/brands/zhihu`。
+
 ## Obsidian 链接设置
 
 在“文件与链接”中，将“内部链接类型”设为“基于仓库根目录的绝对路径”（`newLinkFormat: "absolute"`），附件目录保持 `09附件`，并开启“始终更新内部链接”。其他设备使用此仓库时也应保持这些设置。

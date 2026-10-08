@@ -1,5 +1,7 @@
 site_name: Writing
 site_url: https://finderlzy.github.io/Writing/
+repo_url: https://github.com/Finderlzy/Writing
+repo_name: Finderlzy/Writing
 
 theme:
   name: material
@@ -7,6 +9,8 @@ theme:
   language: zh
   font: false
   favicon: 09附件/writing-logo.png
+  icon:
+    repo: fontawesome/brands/github
   features:
     - navigation.path
     - navigation.top
@@ -15,6 +19,19 @@ theme:
     - navigation.tabs
 
 extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Finderlzy
+      name: Finderlzy 的 GitHub
+    - icon: fontawesome/brands/x-twitter
+      link: https://x.com/finderlzy
+      name: X
+    - icon: fontawesome/brands/bilibili
+      link: https://space.bilibili.com/1276546447
+      name: 哔哩哔哩
+    - icon: fontawesome/brands/tiktok
+      link: https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10
+      name: 抖音
   giscus:
     repo: Finderlzy/Writing
     repo_id: R_kgDOT9EtHA
