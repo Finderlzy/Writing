@@ -143,7 +143,7 @@ domain:ipinfo.io
 
 ## 七、订阅（iPhone）
 ---
-安卓用户：我没有验证过的方案。
+安卓用户：我没有验证过的方案。听说可以使用 Google Play ，但我没试过。
 
 ### 1. 注册美区 Apple ID
 
