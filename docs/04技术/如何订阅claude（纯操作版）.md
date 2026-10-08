@@ -242,26 +242,11 @@ domain:ipinfo.io
 
 ## 附：购买未完成
 ---
-1. App Store 购买记录里看有没有 claude 的扣款。
-2. 联系 Apple Support 在线客服，用英文说：
-
-```
-I'm trying to purchase Claude Pro through the App Store, but I'm getting a "Purchase Not Completed" error.
-```
-
-   客服让生成 Support PIN 的话，去 account.apple.com 生成。如果 iCloud 和 App Store 登录的不是同一个账号，告诉客服：
-
-```
-I use a different Apple Account for iCloud and for the App Store.
-```
-
-3. 按客服说的做。我遇到时，客服先让我确认“App 内购买项目”是“允许”，然后让我**等 72 小时再买，期间不要尝试购买**。记下 Case ID。
-4. 等待期间不换账号，不改付款信息。
-5. 72 小时后再买。还失败的话，带着 Case ID 再联系客服：
-
-```
-My purchase is still not going through after waiting 72 hours. My case ID is xxxxxxxxx.
-```
+1. 把报错截图和 App Store 账户设置的截图发给 AI（claude 免费版、ChatGPT 都可以），说明情况，让它帮你检查设置。
+2. 还是不行，按 AI 说的，打开苹果自带的“支持”app（Apple Support）联系在线客服。
+3. “支持”app 里登录的是 iCloud 主账号（国区），订阅用的是美区账号，所以大概率会转到说英文的海外客服。**继续靠 AI**：客服发一句，复制给 AI；AI 的回答，再复制给客服。记得让 AI 跟客服说清楚，要处理的是 App Store 上的美区账号。
+4. 客服让你等 72 小时的话，记下 Case ID，**这 72 小时里什么都别做**：不购买、不换账号、不改付款信息和账单地址。
+5. 72 小时后再买。还失败的话，带着 Case ID 再联系客服，同样让 AI 帮你沟通。
 
 ## 致谢
 ---

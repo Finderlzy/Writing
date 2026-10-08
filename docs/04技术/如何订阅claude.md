@@ -432,28 +432,13 @@ claude 桌面端的部分请求、系统发出的 DNS 查询，可能会直接�
 
 ### 订阅时提示购买未完成怎么办？
 
-我遇到过：在 app 里订阅 Pro 时提示“Purchase Not Completed”，付款被拒绝，没订阅上。我的处理过程是这样的：
+我遇到过：在 app 里订阅 Pro 时提示“Purchase Not Completed”，付款被拒绝，没订阅上。我的建议是：**别自己硬扛，让 AI 带着你走完。**
 
-1. **先确认有没有扣款**。在 App Store 的购买记录里看看有没有 claude 的记录。没有的话，说明钱没扣，也没订阅上。
-2. **联系 Apple Support**。在线客服用英文说明情况就行，比如：
-
-```
-I'm trying to purchase Claude Pro through the App Store, but I'm getting a "Purchase Not Completed" error.
-```
-
-客服可能会让你去 account.apple.com 生成一个 Support PIN 来验证身份。如果你的 iCloud 账号和 App Store 账号不是同一个（按本文的做法就是这样），要跟客服说清楚，你说的是 App Store 那个账号：
-
-```
-I use a different Apple Account for iCloud and for the App Store.
-```
-
-3. **按客服说的做**。客服先让我检查手机是否允许 App 内购买：“设置”→“屏幕使用时间”→“内容与隐私访问限制”→“iTunes 与 App Store 购买项目”→“App 内购买项目”，选“允许”。然后客服提交了处理请求，让我**等 72 小时再买，期间不要尝试购买**。会给你一个 Case ID，记下来。
-4. **等待期间什么都别改**。账号不换，付款信息也不要反复修改。
-5. **72 小时后再买**。还是失败的话，带着 Case ID 再联系客服，让他们升级处理：
-
-```
-My purchase is still not going through after waiting 72 hours. My case ID is xxxxxxxxx.
-```
+1. **先问 AI**。把报错截图、App Store 账户设置的截图发给 AI（比如 claude 免费版、ChatGPT 都可以），说明你在用美区 Apple ID 订阅 claude 时提示购买未完成。它会帮你逐项检查设置，比如付款方式、账单地址、是否允许 App 内购买。
+2. **按 AI 说的联系客服**。检查完还是不行的话，AI 最后一般会让你联系 Apple 客服。打开苹果自带的“支持”app（Apple Support），在里面找在线客服。
+3. **注意账号的区别**。用来订阅的是美区账号，但“支持”app 里登录的是你 iCloud 的主账号，也就是国区账号。所以客服大概率会给你转接海外客服，对方说英文。**别担心，继续靠 AI**：客服发一句，你复制给 AI；AI 给出回答，你再复制给客服。开头记得让 AI 帮你跟客服说清楚，你要处理的是 App Store 上登录的那个美区账号，不是 iCloud 账号。
+4. **最好的情况是客服让你等 72 小时**。我就是这样。客服会给你一个 Case ID，记下来。**这 72 小时里什么都别做**：不要尝试购买，不换账号，也不要改付款信息和账单地址。
+5. **72 小时后再买**。还是失败的话，带着 Case ID 再联系客服，同样让 AI 帮你沟通。
 
 ## 致谢
 ---
