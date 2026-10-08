@@ -290,6 +290,8 @@ Google 会给每个账号关联一个国家/地区。查看方法：打开 polic
 
 注册好之后，在 **App Store（不是设置）** 里登录这个美区账号，设置里的账号可以是你原来就用的账号，然后下载 Claude 官方 app。
 
+登录之后，还要确认手机允许 App 内购买。这是我遇到“购买未完成”时，Apple 客服让我检查的地方，最好提前设置好：“设置”→“屏幕使用时间”→“内容与隐私访问限制”→“iTunes 与 App Store 购买项目”→“App 内购买项目”，选“允许”。
+
 ### 2. 买礼品卡充值
 
 我是在 pockyt shop 用支付宝买的：
@@ -402,7 +404,7 @@ I'm trying to purchase Claude Pro through the App Store, but I'm getting a "Purc
 I use a different Apple Account for iCloud and for the App Store.
 ```
 
-3. **按客服说的等**。我的情况是客服提交了处理请求，让我**等 72 小时再买，期间不要尝试购买**。会给你一个 Case ID，记下来。
+3. **按客服说的做**。客服先让我检查手机是否允许 App 内购买：“设置”→“屏幕使用时间”→“内容与隐私访问限制”→“iTunes 与 App Store 购买项目”→“App 内购买项目”，选“允许”。然后客服提交了处理请求，让我**等 72 小时再买，期间不要尝试购买**。会给你一个 Case ID，记下来。
 4. **等待期间什么都别改**。账号不换，付款信息也不要反复修改。
 5. **72 小时后再买**。还是失败的话，带着 Case ID 再联系客服，让他们升级处理：
 
