@@ -50,7 +50,7 @@ createdDate: 2026-10-07
 
 简单说就是：买一台 VPS → SSH 连上去 → 装 3x-ui 面板 → 放行端口 → 建一个 VLESS + Reality 的节点 → 导入代理软件。
 
-自建的好处是这个节点只有你自己在用，IP 不会被别人用脏。但普通云 VPS 的 IP 是机房 IP，OpenAI 能识别出来，所以还要再套一层住宅 IP。
+自建的好处是这个节点只有你自己在用，IP 不会被别人用脏。但普通云 VPS 的 IP 是机房 IP，anthropic能识别出来，所以还要再套一层住宅 IP。
 
 **2. 套住宅 IP**
 
@@ -63,7 +63,7 @@ createdDate: 2026-10-07
 ```
 domain
 
-geosite:openai
+geosite:anthropic
 ```
 
 4. 保存并重启 Xray，不重启不生效。
@@ -74,7 +74,7 @@ geosite:openai
 
 如果你愿意自建，但嫌链式代理麻烦，可以直接买一台**自带住宅 IP 的服务器**。服务器本身的出口就是住宅 IP，只要在上面自建节点，不用再套一层。
 
-推荐的购买地址：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M)（我使用的是它家的云VPS，网上关于住宅服务器的**主要的负面评价。** 那篇帖子的标题就是提醒大家小心。楼主测出来的结果是：这个产品不是真正的家庭宽带，也不是双 ISP。）
+推荐的购买地址：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M)（我使用的是它家的云VPS，住宅服务器**我没有使用过**。网上关于住宅服务器的主要的负面评价是：这个产品不是真正的家庭宽带，也不是双 ISP，所以仅供参考。）
 
 1. 买之前先测服务器 IP，确认是“住宅/ISP”类型、风险分数低。
 2. 拿到服务器后，按方案一的「自建节点」教程走一遍：SSH 连上 → 装 3x-ui → 放行端口 → 建 VLESS + Reality 节点 → 导入代理软件。
@@ -88,10 +88,10 @@ geosite:openai
 
 **还没有节点**
 
-推荐的购买地址（国内可直接打开）：[ipequal](https://www.ipequal.com/?ref=6adabd0307)
+推荐的购买地址（国内可直接打开）：[ipequal](https://www.ipequal.com/?ref=6adabd0307)（**我没用过**，因为一直买不到。我在研究网络环境时，看到很多大佬推荐过 IPEqual，它是直接卖带住宅 IP 的订阅，不用自己搭。建议先买一个月试试。）
 
 ```
-你的电脑 → 住宅节点 → chatgpt.com
+你的电脑 → 住宅节点 → claude.ai
 ```
 
 1. 注册并购买独享套餐。
@@ -103,25 +103,25 @@ geosite:openai
 推荐的购买地址（需要开代理打开）：[ipequal](https://www.equaldcdn.com/?ref=6adabd0307)
 
 ```
-你的电脑 → 住宅节点 → chatgpt.com（OpenAI 相关）
+你的电脑 → 住宅节点 → claude.ai（anthropic 相关）
 你的电脑 → 原来的节点 → 其他网站
 ```
 
 1. 注册并购买独享套餐，把订阅链接导入代理软件。
-2. 在代理软件里加分流规则，让 OpenAI 相关的域名走住宅节点，其他流量照旧走原来的节点。这样住宅流量只花在刀刃上。
+2. 在代理软件里加分流规则，让 anthropic 相关的域名走住宅节点，其他流量照旧走原来的节点。这样住宅流量只花在刀刃上。
 3. 嫌分流麻烦，也可以直接把全部流量切到住宅节点，只是流量消耗会快一些。
 
 ### 确认出口 IP
 
 不管用哪种方案，最后都要确认一下出口。
 
-开着代理访问 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，显示的是住宅 IP、类型是住宅/ISP，就说明成功了。如果你只让 OpenAI 的域名走住宅 IP（方案一的分流，或方案三“已经有节点”的分流），要把 `ipinfo.io` 也加进同一条规则，否则测出来的是原来节点或 VPS 的 IP。方案一在 3x-ui 里加：
+开着代理访问 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，显示的是住宅 IP、类型是住宅/ISP，就说明成功了。如果你只让 anthropic 的域名走住宅 IP（方案一的分流，或方案三“已经有节点”的分流），要把 `ipinfo.io` 也加进同一条规则，否则测出来的是原来节点或 VPS 的 IP。方案一在 3x-ui 里加：
 
 ```
 domain:ipinfo.io
 ```
 
-记住这个 IP 所在的地区，后面的时区、Google 账号地区都要和它对上。
+记住这个 IP 所在的地区，后面的Google 账号地区要和它对上。
 
 ## 配置代理软件
 ---
@@ -205,7 +205,7 @@ iOS 上的 Shadowrocket 这类软件本身就是以 VPN 的方式接管整台手
 
 ## 修改 Google 账号关联地区
 ---
-我是用 Google 账号注册 claude 的，所以 Google 账号这边也要和住宅 IP 对上。
+我是用 Google 账号注册 claude 的，所以 Google 账号这边也要和住宅 IP 对上。这个做法网络上并没有依据，**只是我个人觉得**如果Google账号关联地区和IP对上会好一点。
 
 Google 会给每个账号关联一个国家/地区。查看方法：打开 policies.google.com/terms ，页面上会写“国家/地区版本”。
 
