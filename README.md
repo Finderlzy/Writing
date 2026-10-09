@@ -44,7 +44,7 @@ GitHub Pages
 
 ```text
 docs/                   # 原始 Obsidian 笔记与附件
-├── 00收集/             # 尚未归类、等待处理的新笔记
+├── 00收集/             # 尚未归类、等待处理的新笔记（不部署到网站）
 ├── 01系统/             # 笔记系统说明与规范
 ├── 02学习/             # 持续学习和探索的问题
 ├── 03学习方法论/       # 对学习方法、课程与实习规划的思考
@@ -70,9 +70,9 @@ mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖
 ```
 
-一级分类由 MkDocs 和转换器动态扫描，可以按需要新增，不需要修改构建程序。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
+一级分类由 MkDocs 和转换器动态扫描，可以按需要新增；新增时需在 `tools/build_site.py` 的 `SECTION_SLUGS` 中补充英文网址前缀（见“页面网址”）。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
 
-`tools/build_site.py` 中的 `UNPUBLISHED_PATHS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录或根目录文件（目前为 `07自己` 和 `AGENTS.md`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
+`tools/build_site.py` 中的 `UNPUBLISHED_PATHS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录或根目录文件（目前为 `00收集`、`07自己` 和 `AGENTS.md`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
 
 ## 页面网址
 

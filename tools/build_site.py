@@ -13,7 +13,7 @@ THEME = ROOT / "theme"
 EXTRA_CSS_SOURCE = THEME / "extra.css"
 EXTRA_CSS_DESTINATION = CACHE / "stylesheets" / "extra.css"
 # 只在本地 Obsidian 中保留、不部署到网站的一级目录或根目录文件
-UNPUBLISHED_PATHS = ("07自己", "AGENTS.md")
+UNPUBLISHED_PATHS = ("00收集", "07自己", "AGENTS.md")
 # 一级目录在网址中的英文前缀：04技术/xxx.md → /tech/<slug>/
 SECTION_SLUGS = {
     "00收集": "inbox",
