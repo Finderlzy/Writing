@@ -49,9 +49,10 @@ updatedDate: 2026-10-08
 
 1. 按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 搭好自己的节点。
 2. 在 [proxy.qsu.hk](https://proxy.qsu.hk/) 买住宅代理（不是主站 qsu.hk，主站卖的是方案二的服务器），记下协议、IP、端口、账号密码。
+   **免费套餐**：注册账号后选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998` 即可免费获得。流量额度以下单页面为准。
 3. 按 [[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]] 操作：
-   1. 3x-ui → Xray 设置 → 新增出站，填住宅 IP 的信息，标签填 `residential`。
-   2. 新增路由规则，出站标签选 `residential`，domain 填：
+   4. 3x-ui → Xray 设置 → 新增出站，填住宅 IP 的信息，标签填 `residential`。
+   5. 新增路由规则，出站标签选 `residential`，domain 填：
 
 ```
 geosite:anthropic
