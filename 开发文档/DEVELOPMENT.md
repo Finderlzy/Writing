@@ -1,5 +1,13 @@
 # 开发日志
 
+## 2026-10-09 — 1.11.0
+
+- 新增：页面网址改为 `/p/<slug>/`。front matter 的 `slug` 用于手写英文网址，没写的页面按源文件路径生成 8 位短 ID；实现位于 `tools/obsidian_compat/urls.py`。
+- 新增：构建时为每个页面的原中文路径生成跳转页，旧链接继续可用。
+- 新增：slug 格式错误或重复时报 `E_SLUG_INVALID`、`E_SLUG_DUPLICATE`，旧路径与现有页面冲突时报 `E_REDIRECT_CONFLICT`。
+- 内容：`04技术` 的 6 篇文章写上了 slug。
+- 兼容性：不改动 Obsidian 文件名、目录和双链；评论区（按 pathname 匹配）和不蒜子访问统计会按新网址重新计数。
+
 ## 2026-10-08 — 1.10.0
 
 - 新增：顶栏右侧链接到 GitHub 仓库（`mkdocs.yml` 的 `repo_url`），页脚显示 GitHub、X、哔哩哔哩、抖音图标（`extra.social`）。

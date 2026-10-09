@@ -1,4 +1,5 @@
 ---
+slug: win11-ubuntu-dual-boot
 createdDate: 2026-10-03
 ---
 > 写于 2026-10-03

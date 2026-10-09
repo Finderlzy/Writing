@@ -74,6 +74,15 @@ requirements.txt         # 固定版本的 Python 依赖
 
 `tools/build_site.py` 中的 `UNPUBLISHED_PATHS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录或根目录文件（目前为 `07自己` 和 `AGENTS.md`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
 
+## 页面网址
+
+所有页面都发布在 `/p/<slug>/` 下，Obsidian 里的中文文件名和目录不受影响：
+
+- 在 front matter 写 `slug: vless-reality`，页面网址就是 `https://finderlzy.github.io/Writing/p/vless-reality/`。slug 只能用小写字母、数字和单个连字符。
+- 没写 slug 的页面会根据源文件路径自动生成 8 位短 ID（如 `/p/c319381c/`）。文件改名或移动后，这个 ID 也会变，所以要分享的文章最好手写 slug。
+- 原来的中文路径会保留为跳转页，自动跳到新网址。
+- slug 不合法或重复时，构建会报 `E_SLUG_INVALID`、`E_SLUG_DUPLICATE` 并停止。
+
 ## 评论区
 
 除首页外的页面底部显示 [Giscus](https://giscus.app/zh-CN) 评论区，留言存放在本仓库的 GitHub Discussions，读者需登录 GitHub 才能留言。参数位于 `mkdocs.yml` 的 `extra.giscus`；`category_id` 为空时不渲染评论区。页面与讨论帖按 URL 路径对应，移动或重命名笔记后，旧留言不会跟到新页面。

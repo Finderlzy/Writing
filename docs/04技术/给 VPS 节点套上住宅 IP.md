@@ -1,4 +1,5 @@
 ---
+slug: vps-residential-ip
 createdDate: 2026-09-26
 updatedDate: 2026-10-07
 ---

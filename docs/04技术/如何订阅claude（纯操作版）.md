@@ -1,4 +1,5 @@
 ---
+slug: subscribe-claude-quick
 createdDate: 2026-10-08
 updatedDate: 2026-10-08
 ---

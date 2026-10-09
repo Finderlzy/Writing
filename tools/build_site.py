@@ -24,6 +24,7 @@ from tools.obsidian_compat.diagnostics import emit_diagnostics
 from tools.obsidian_compat.html_check import check_site
 from tools.obsidian_compat.index import VaultIndex
 from tools.obsidian_compat.parser import residual_diagnostics
+from tools.obsidian_compat.urls import PageUrlPlugin, plan_page_urls, write_redirects
 
 
 def _safe_child(path: Path, parent: Path) -> Path:
@@ -103,7 +104,10 @@ def build() -> int:
         _clean_output(CACHE, ROOT / ".cache")
         _clean_output(SITE, ROOT)
         index = VaultIndex.scan(DOCS)
-        diagnostics = _copy_and_convert(index, Converter(index, UNPUBLISHED_PATHS))
+        converter = Converter(index, UNPUBLISHED_PATHS)
+        diagnostics = _copy_and_convert(index, converter)
+        page_urls, url_diagnostics = plan_page_urls(DOCS, index.pages, converter.is_unpublished)
+        diagnostics.extend(url_diagnostics)
         if diagnostics:
             emit_diagnostics(diagnostics)
             return 1
@@ -116,8 +120,11 @@ def build() -> int:
         config["docs_dir"] = str(CACHE)
         config["site_dir"] = str(SITE)
         config["strict"] = True
+        url_plugin = PageUrlPlugin(page_urls)
+        config.plugins["page-urls"] = url_plugin
         mkdocs_build(config)
-        html_diagnostics = check_site(SITE, config.get("site_url"))
+        html_diagnostics = write_redirects(SITE, url_plugin.redirects, config.get("site_url"))
+        html_diagnostics.extend(check_site(SITE, config.get("site_url")))
         if html_diagnostics:
             emit_diagnostics(html_diagnostics)
             return 1

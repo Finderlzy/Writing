@@ -1,4 +1,5 @@
 ---
+slug: subscribe-claude
 createdDate: 2026-10-07
 updatedDate: 2026-10-08
 ---
