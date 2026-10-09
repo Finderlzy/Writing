@@ -13,8 +13,6 @@ from mkdocs.plugins import BasePlugin
 
 from .models import Diagnostic, SourceSpan
 
-# 所有页面统一发布在 /p/<slug>/ 下，网址不随标题或栏目变化
-URL_PREFIX = "p"
 _SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 _SLUG_LINE_RE = re.compile(r"^slug:[ \t]*(.*?)[ \t]*$")
 
@@ -51,12 +49,23 @@ def plan_page_urls(
     docs: Path,
     pages: Iterable[Path],
     is_unpublished: Callable[[Path], bool],
+    sections: dict[str, str],
 ) -> tuple[dict[str, str], list[Diagnostic]]:
-    """Map published page src_uri to its directory URL, e.g. `p/vless-reality/`."""
+    """Map published page src_uri to `<一级目录英文名>/<slug>/`, e.g. `tech/vless-reality/`."""
     diagnostics: list[Diagnostic] = []
     owners: dict[str, list[tuple[Path, int]]] = {}
     for source_path in sorted(pages, key=lambda item: item.as_posix()):
         if is_unpublished(source_path) or source_path == Path("index.md"):
+            continue
+        section = sections.get(source_path.parts[0]) if len(source_path.parts) > 1 else None
+        if section is None:
+            diagnostics.append(
+                Diagnostic(
+                    "E_URL_SECTION_MISSING",
+                    SourceSpan(source_path, 1, 1),
+                    f"一级目录“{source_path.parts[0]}”没有对应的英文网址前缀，请在 build_site.py 的 SECTION_SLUGS 中添加。",
+                )
+            )
             continue
         found = front_matter_slug((docs / source_path).read_text(encoding="utf-8"))
         if found is None:
@@ -72,22 +81,22 @@ def plan_page_urls(
                     )
                 )
                 continue
-        owners.setdefault(slug, []).append((source_path, line))
+        owners.setdefault(f"{section}/{slug}/", []).append((source_path, line))
 
     urls: dict[str, str] = {}
-    for slug, sources in owners.items():
+    for url, sources in owners.items():
         if len(sources) > 1:
             for source_path, line in sources:
                 diagnostics.append(
                     Diagnostic(
                         "E_SLUG_DUPLICATE",
                         SourceSpan(source_path, line, 1),
-                        f"slug “{slug}”被多个页面使用。",
+                        f"网址“{url}”被同一目录下的多个页面使用。",
                         tuple(other for other, _ in sources if other != source_path),
                     )
                 )
             continue
-        urls[sources[0][0].as_posix()] = f"{URL_PREFIX}/{slug}/"
+        urls[sources[0][0].as_posix()] = url
     return urls, diagnostics
 
 

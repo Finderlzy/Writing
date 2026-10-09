@@ -14,6 +14,19 @@ EXTRA_CSS_SOURCE = THEME / "extra.css"
 EXTRA_CSS_DESTINATION = CACHE / "stylesheets" / "extra.css"
 # 只在本地 Obsidian 中保留、不部署到网站的一级目录或根目录文件
 UNPUBLISHED_PATHS = ("07自己", "AGENTS.md")
+# 一级目录在网址中的英文前缀：04技术/xxx.md → /tech/<slug>/
+SECTION_SLUGS = {
+    "00收集": "inbox",
+    "01系统": "system",
+    "02学习": "learning",
+    "03学习方法论": "study-methods",
+    "04技术": "tech",
+    "05二次元": "acg",
+    "06读书": "reading",
+    "07自己": "self",
+    "08作品": "works",
+    "09归档": "archive",
+}
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -106,7 +119,7 @@ def build() -> int:
         index = VaultIndex.scan(DOCS)
         converter = Converter(index, UNPUBLISHED_PATHS)
         diagnostics = _copy_and_convert(index, converter)
-        page_urls, url_diagnostics = plan_page_urls(DOCS, index.pages, converter.is_unpublished)
+        page_urls, url_diagnostics = plan_page_urls(DOCS, index.pages, converter.is_unpublished, SECTION_SLUGS)
         diagnostics.extend(url_diagnostics)
         if diagnostics:
             emit_diagnostics(diagnostics)

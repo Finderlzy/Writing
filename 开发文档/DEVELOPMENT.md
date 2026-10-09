@@ -1,5 +1,11 @@
 # 开发日志
 
+## 2026-10-09 — 1.12.0
+
+- 调整：页面网址前缀由统一的 `/p/` 改为一级目录的英文名，如 `/tech/<slug>/`；对照表为 `tools/build_site.py` 的 `SECTION_SLUGS`，缺少映射时报 `E_URL_SECTION_MISSING`。
+- 调整：slug 只需在同一栏目内唯一。
+- 兼容性：1.11.0 的 `/p/…` 网址只上线了几分钟，不再保留；原中文路径的跳转页改为指向新网址。
+
 ## 2026-10-09 — 1.11.0
 
 - 新增：页面网址改为 `/p/<slug>/`。front matter 的 `slug` 用于手写英文网址，没写的页面按源文件路径生成 8 位短 ID；实现位于 `tools/obsidian_compat/urls.py`。
