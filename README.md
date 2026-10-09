@@ -78,7 +78,7 @@ requirements.txt         # 固定版本的 Python 依赖
 
 页面发布在 `/<栏目英文名>/<slug>/` 下，Obsidian 里的中文文件名和目录不受影响：
 
-- 栏目英文名由一级目录决定，对照表是 `tools/build_site.py` 的 `SECTION_SLUGS`（如 `04技术 → tech`、`08作品 → works`）。新增一级目录时要在这里补上，否则构建报 `E_URL_SECTION_MISSING`。
+- 栏目英文名由一级目录决定，对照表是 `tools/build_site.py` 的 `SECTION_SLUGS`（如 `04技术 → tech`、`08作品 → opus`）。新增一级目录时要在这里补上，否则构建报 `E_URL_SECTION_MISSING`。
 - 在 front matter 写 `slug: vless-reality`，`04技术` 下的页面网址就是 `https://finderlzy.github.io/Writing/tech/vless-reality/`。slug 只能用小写字母、数字和单个连字符，同一栏目内不能重复。
 - 没写 slug 的页面会根据源文件路径自动生成 8 位短 ID（如 `/learning/c319381c/`）。文件改名或移动后，这个 ID 也会变，所以要分享的文章最好手写 slug。文章换到别的栏目时，网址前缀也会跟着变。
 - 原来的中文路径会保留为跳转页，自动跳到新网址。

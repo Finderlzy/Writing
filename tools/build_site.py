@@ -24,7 +24,7 @@ SECTION_SLUGS = {
     "05二次元": "acg",
     "06读书": "reading",
     "07自己": "self",
-    "08作品": "works",
+    "08作品": "opus",
     "09归档": "archive",
 }
 sys.dont_write_bytecode = True
