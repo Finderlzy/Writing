@@ -52,7 +52,7 @@ updatedDate: 2026-10-10
 
 ### 方案一：普通服务器 + 白嫖住宅 IP
 
-**流程：** 买服务器 → 白嫖住宅 IP → 运行脚本，按脚本的问题填前两步拿到的信息。
+**流程：** 先把服务器和住宅 IP 都买好 → 再连上服务器，运行脚本，按脚本的问题填前两步拿到的信息，一次做完。
 
 #### 1. 买服务器
 
@@ -60,12 +60,12 @@ updatedDate: 2026-10-10
 
 **怎么选**：
 
-| 选项 | 怎么选 |
-| --- | --- |
-| 系统 | **Ubuntu 22.04 / 24.04** 或 **Debian 12**（脚本只支持这两种） |
-| 配置 | 1 核 CPU、1 GB 内存就够 |
-| 流量 | 每月几百 GB 足够 |
-| 机房位置 | 美国、日本、新加坡等 |
+| 选项   | 怎么选                                                |
+| ---- | -------------------------------------------------- |
+| 系统   | **Ubuntu 22.04 / 24.04** 或 **Debian 12**（脚本只支持这两种） |
+| 配置   | 1 核 CPU、1 GB 内存就够                                  |
+| 流量   | 每月几百 GB 足够                                         |
+| 机房位置 | 美国、日本、新加坡等                                         |
 
 **买完记下三样东西**（在商家控制台的服务器详情页，或者发到你的邮箱）：
 
@@ -74,6 +74,21 @@ updatedDate: 2026-10-10
 - **密码**：root 的密码。
 
 顺便看一眼商家后台有没有“防火墙”“安全组”菜单，有的话记住位置，第 3 步要用。
+
+#### 2. 白嫖住宅 IP
+
+1. 打开 [proxy.qsu.hk](https://proxy.qsu.hk/) 注册账号（不是主站 qsu.hk，主站卖的是住宅服务器）。
+2. 选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998`，就能免费拿到一个住宅 IP。流量额度以下单页面为准。
+3. 记下商家给的**住宅 IP、端口、用户名、密码**，第 3 步要填。
+
+拿到后用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 查一下这个住宅 IP：类型要是“住宅/ISP”，风险分数要低。不要用 ping0.cc 测。
+
+#### 3. 连上服务器，运行脚本
+
+> [!tip] 只要复制一行命令
+> 连上服务器后，只需要粘贴**一行命令**，不用改任何内容。运行的时候它会一个个问你问题，到时候再填第 1、2 步记下的信息。
+
+脚本会先测试住宅代理能不能用，再装好 3x-ui 面板，在面板里建好节点、套上住宅 IP，开好防火墙，最后自己连一次节点，确认能用。
 
 **用 SSH 连上服务器**：
 
@@ -90,209 +105,56 @@ ssh root@你的服务器IP
 4. 出现 `password:` 时，输入 root 密码回车。**输入时屏幕上什么都不显示，是正常的**。可以复制密码后在命令行里右键粘贴。
 5. 命令行开头变成 `root@...:~#`，就连上了。后面的命令都在这个窗口里输入。
 
-#### 2. 白嫖住宅 IP
+**运行脚本**：
 
-1. 打开 [proxy.qsu.hk](https://proxy.qsu.hk/) 注册账号（不是主站 qsu.hk，主站卖的是住宅服务器）。
-2. 选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998`，就能免费拿到一个住宅 IP。流量额度以下单页面为准。
-3. 记下商家给的**住宅 IP、端口、用户名、密码**，第 3 步要填。
-
-拿到后用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 查一下这个住宅 IP：类型要是“住宅/ISP”，风险分数要低。不要用 ping0.cc 测。
-
-#### 3. 运行脚本
-
-> [!tip] 脚本不用改
-> 下面的脚本**整段直接复制就行，不用改任何内容**。运行的时候它会一个个问你问题，到时候再填第 1、2 步记下的信息。
-
-脚本会先测试住宅代理能不能用，再装好 3x-ui 面板，在面板里建好节点、套上住宅 IP，开好防火墙，最后自己连一次节点，确认能用。
-
-1. 在 VPS 上输入下面的命令，回车，会打开一个空白的编辑器：
+1. 在这个窗口里粘贴下面这行命令，回车：
 
 ```bash
-nano setup.sh
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/Writing/main/scripts/setup.sh)
 ```
 
-2. 复制下面整段脚本，在编辑器里右键（或 `Ctrl + Shift + V`）粘贴：
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-read -rp "服务器 IP（就是你 SSH 连接用的 IP）: " IP
-read -rp "节点端口（直接回车用 8555）: " PORT; PORT=${PORT:-8555}
-read -rp "面板端口（直接回车用 8080）: " PANEL_PORT; PANEL_PORT=${PANEL_PORT:-8080}
-read -rp "住宅代理 IP（方案二直接回车跳过）: " RES_IP
-if [ -n "$RES_IP" ]; then
-  read -rp "住宅代理端口: " RES_PORT
-  read -rp "住宅代理用户名: " RES_USER
-  read -rp "住宅代理密码: " RES_PASS
-fi
-if [ -z "$IP" ]; then echo "服务器 IP 不能为空"; exit 1; fi
-if [ -e /etc/x-ui ]; then echo "这台服务器装过 3x-ui，请换一台全新的 VPS"; exit 1; fi
-
-apt update
-apt install -y curl openssl ufw python3
-
-# ---- 先测住宅代理，不通就不往下装 ----
-if [ -n "$RES_IP" ]; then
-  echo "== 测试住宅代理 =="
-  RES_OUT=$(curl -s -m 15 --socks5-hostname "$RES_IP:$RES_PORT" --proxy-user "$RES_USER:$RES_PASS" https://ipinfo.io/ip || true)
-  if [ -z "$RES_OUT" ]; then
-    echo "住宅代理连不上。去商家后台检查：端口、用户名密码、IP 白名单（把 $IP 加进去）、套餐是否生效。"
-    exit 1
-  fi
-  echo "住宅代理可用，出口 IP：$RES_OUT"
-fi
-
-# ---- 安装 3x-ui（面板只监听本机，用 SSH 隧道访问）----
-XUI_NONINTERACTIVE=1 XUI_PANEL_PORT=$PANEL_PORT XUI_SSL_MODE=none XUI_SERVER_IP=$IP XUI_ENABLE_FAIL2BAN=false \
-  bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/v3.9.0/install.sh) v3.9.0 </dev/null
-/usr/local/x-ui/x-ui setting -listenIP 127.0.0.1 >/dev/null
-systemctl restart x-ui
-. /etc/x-ui/install-result.env
-B="http://127.0.0.1:$PANEL_PORT/$XUI_WEB_BASE_PATH"
-for i in $(seq 1 30); do curl -s -o /dev/null "$B/" && break; sleep 1; done
-
-# ---- 在面板里建入站、客户端、住宅出站 ----
-export IP PORT B XUI_API_TOKEN RES_IP RES_PORT="${RES_PORT:-}" RES_USER="${RES_USER:-}" RES_PASS="${RES_PASS:-}"
-python3 - <<'PY'
-import json, os, secrets, urllib.parse, urllib.request
-
-E = os.environ
-def api(path, form=None, body=None):
-    data, headers = None, {"Authorization": "Bearer " + E["XUI_API_TOKEN"]}
-    if form is not None:
-        data = urllib.parse.urlencode(form).encode()
-    elif body is not None:
-        data, headers["Content-Type"] = json.dumps(body).encode(), "application/json"
-    req = urllib.request.Request(E["B"] + path, data=data, headers=headers, method="POST" if data is not None or path.endswith("/") else "GET")
-    res = json.load(urllib.request.urlopen(req, timeout=120))
-    if not res.get("success"):
-        raise SystemExit(f"面板接口出错：{path} {res.get('msg')}")
-    return res["obj"]
-
-# 伪装目标：和面板里点“扫描”一样，挑第一个可用的
-for target in ["www.microsoft.com:443", "www.apple.com:443", "www.amazon.com:443"]:
-    scan = api("/panel/api/server/scanRealityTarget", form={"target": target})
-    if scan.get("feasible"):
-        break
-else:
-    raise SystemExit("几个伪装网站都不可用，请到面板里手动扫描换一个")
-print("伪装网站：" + target)
-
-keys = api("/panel/api/server/getNewX25519Cert")
-uuid = api("/panel/api/server/getNewUUID")["uuid"]
-port = int(E["PORT"])
-settings = {"clients": [{"id": uuid, "flow": "xtls-rprx-vision", "email": "me", "limitIp": 0, "totalGB": 0,
-                         "expiryTime": 0, "enable": True, "tgId": "", "subId": secrets.token_hex(8), "reset": 0}],
-            "decryption": "none", "fallbacks": []}
-stream = {"network": "tcp", "security": "reality",
-          "externalProxy": [{"forceTls": "same", "dest": E["IP"], "port": port, "remark": ""}],
-          "realitySettings": {"show": False, "xver": 0, "target": target, "serverNames": scan["serverNames"],
-                              "privateKey": keys["privateKey"], "minClientVer": "", "maxClientVer": "",
-                              "maxTimediff": 0, "shortIds": [secrets.token_hex(4)],
-                              "settings": {"publicKey": keys["publicKey"], "fingerprint": "chrome",
-                                           "serverName": "", "spiderX": "/"}},
-          "tcpSettings": {"acceptProxyProtocol": False, "header": {"type": "none"}}}
-sniffing = {"enabled": True, "destOverride": ["http", "tls", "quic"], "metadataOnly": False, "routeOnly": True}
-api("/panel/api/inbounds/add", body={"up": 0, "down": 0, "total": 0, "remark": "my-node", "enable": True,
-                                     "expiryTime": 0, "listen": "", "port": port, "protocol": "vless",
-                                     "settings": json.dumps(settings), "streamSettings": json.dumps(stream),
-                                     "sniffing": json.dumps(sniffing)})
-
-if E["RES_IP"]:
-    xray = json.loads(api("/panel/api/xray/"))["xraySetting"]
-    xray["outbounds"].append({"tag": "residential", "protocol": "socks", "settings": {"servers": [{
-        "address": E["RES_IP"], "port": int(E["RES_PORT"]),
-        "users": [{"user": E["RES_USER"], "pass": E["RES_PASS"]}]}]}})
-    xray["routing"]["rules"].insert(1, {"type": "field", "outboundTag": "residential",
-                                        "domain": ["geosite:anthropic", "domain:ipinfo.io"]})
-    api("/panel/api/xray/update", form={"xraySetting": json.dumps(xray)})
-api("/panel/api/server/restartXrayService", form={})
-
-link = api("/panel/api/inbounds/allLinks")[0]
-open("/root/vless.txt", "w").write(link + "\n")
-PY
-
-# ---- 防火墙：放行 SSH 和节点端口 ----
-SSH_PORT=$(ss -tlnpH | awk '/sshd/ {sub(/.*:/, "", $4); print $4; exit}')
-ufw allow "${SSH_PORT:-22}"/tcp
-ufw allow "$PORT"/tcp
-ufw --force enable
-
-# ---- 自测：服务器自己连自己的节点 ----
-sleep 3
-export LINK=$(cat /root/vless.txt) XRAY=$(ls /usr/local/x-ui/bin/xray-linux-* | head -1)
-python3 - <<'PY'
-import json, os, subprocess, time, urllib.parse
-u = urllib.parse.urlparse(os.environ["LINK"]); q = dict(urllib.parse.parse_qsl(u.query))
-client = {"inbounds": [{"port": 10899, "listen": "127.0.0.1", "protocol": "socks"}],
-          "outbounds": [{"protocol": "vless", "settings": {"vnext": [{"address": "127.0.0.1", "port": u.port,
-              "users": [{"id": u.username, "encryption": "none", "flow": q.get("flow", "")}]}]},
-              "streamSettings": {"network": "tcp", "security": "reality", "realitySettings": {
-                  "serverName": q["sni"], "fingerprint": q.get("fp", "chrome"), "publicKey": q["pbk"],
-                  "shortId": q.get("sid", ""), "spiderX": q.get("spx", "")}}}]}
-json.dump(client, open("/root/selftest.json", "w"))
-p = subprocess.Popen([os.environ["XRAY"], "run", "-c", "/root/selftest.json"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-time.sleep(2)
-def via_node(url, fmt):
-    return subprocess.run(["curl", "-s", "-m", "15", "-x", "socks5h://127.0.0.1:10899", "-o", "/dev/null" if fmt else "-",
-                           "-w", fmt, url], capture_output=True, text=True).stdout.strip()
-ok = via_node("https://www.google.com/generate_204", "%{http_code}") == "204"
-print("== 节点自测：" + ("成功" if ok else "失败") + " ==")
-if ok and os.environ.get("RES_IP"):
-    print("== 走节点访问 ipinfo.io 的出口 IP：" + (via_node("https://ipinfo.io/ip", "") or "取不到") + " ==")
-p.terminate(); os.remove("/root/selftest.json")
-PY
-
-echo
-echo "===== 完成 ====="
-echo "节点链接（复制下面这行导入代理软件，也存在 /root/vless.txt）："
-cat /root/vless.txt
-echo
-echo "面板（排查用，只能通过 SSH 隧道打开）："
-echo "  1. 在自己电脑上运行：ssh -L $PANEL_PORT:127.0.0.1:$PANEL_PORT root@$IP"
-echo "  2. 浏览器打开：http://127.0.0.1:$PANEL_PORT/$XUI_WEB_BASE_PATH"
-echo "  3. 用户名：$XUI_USERNAME  密码：$XUI_PASSWORD"
-echo "  忘了的话运行：cat /etc/x-ui/install-result.env"
-```
-
-3. 按 `Ctrl + O`，再按回车保存；按 `Ctrl + X` 退出编辑器。
-4. 运行脚本：
-
-```bash
-bash setup.sh
-```
-
-5. 按提示回答问题：
+2. 按提示回答问题：
 
 | 问题 | 怎么填 |
 | --- | --- |
-| 服务器 IP | 第 1 步记下的服务器 IP，就是 SSH 连接时用的那个 |
-| 节点端口 | 直接回车，用默认的 **8555** |
-| 面板端口 | 直接回车，用默认的 **8080** |
+| 服务器 IP 是 xxx 吗？ | 和第 1 步记下的服务器 IP 一样就直接回车；不一样就输入第 1 步的 IP |
 | 住宅代理 IP、端口、用户名、密码 | 第 2 步记下的。方案二：住宅代理 IP 直接回车，后面三个不会再问 |
 
-6. 等脚本跑完，要几分钟（中途弹出紫色/蓝色对话框就直接回车）。看到 `节点自测：成功` 就说明节点能用。
-7. 复制“节点链接”下面那行 `vless://` 开头的链接，**通过剪贴板**导入代理软件。**这个链接不要发给别人。** 忘了的话，在 VPS 上运行 `cat /root/vless.txt` 再看一次。
-8. 把最后打印的“面板”那几行**截图保存**，以后排查要用。
-9. 商家后台有防火墙/安全组的话，放行 **TCP 8555**。面板端口不用放行。
+3. 等脚本跑完，要几分钟（中途弹出紫色/蓝色对话框就直接回车）。看到 `节点自测：成功` 就说明节点能用。
+4. 复制“节点链接”下面那行 `vless://` 开头的链接，**通过剪贴板**导入代理软件。**这个链接不要发给别人。** 忘了的话，在 VPS 上运行 `cat /root/vless.txt` 再看一次。
+5. 把最后打印的“面板”那几行**截图保存**，以后排查要用。
+6. 商家后台有防火墙/安全组的话，放行 **TCP 8555**。面板端口不用放行。
 
-脚本报错停下了，把报错截图保存好，去完整版对照排查。提示“住宅代理连不上”的，去商家后台检查端口、用户名密码、IP 白名单和套餐状态，改好后重新运行 `bash setup.sh`。
+脚本报错停下了，把报错截图保存好，去完整版对照排查。提示“住宅代理连不上”的，去商家后台检查端口、用户名密码、IP 白名单和套餐状态，改好后再粘贴一次那行命令。
 
-> [!tip] 以后要排查，打开面板
-> 面板只监听服务器本机，要用 SSH 隧道打开：
-> 1. 在自己电脑上运行脚本最后打印的那条 `ssh -L ...` 命令，输入 root 密码，**这个窗口不要关**。
-> 2. 浏览器打开脚本打印的 `http://127.0.0.1:8080/...` 地址，用打印的用户名和密码登录。
->
-> 节点、客户端、住宅出站都在面板里，和手动建的一样，可以直接查看和修改。忘了面板地址或密码，在 VPS 上运行 `cat /etc/x-ui/install-result.env`。
+想看脚本具体做了什么，可以打开 [setup.sh](https://github.com/Finderlzy/Writing/blob/main/scripts/setup.sh) 查看。
+
+**以后要排查，打开面板**
+
+节点、客户端、住宅出站都在 3x-ui 面板里，和手动建的一样，可以直接查看和修改。面板只监听服务器本机，要用 SSH 隧道打开：
+
+1. 在**自己电脑**的命令行里运行下面的命令（脚本最后也打印了这条），`你的服务器IP` 换成真实 IP，输入 root 密码。连上后**这个窗口不要关**：
+
+```bash
+ssh -L 8080:127.0.0.1:8080 root@你的服务器IP
+```
+
+2. 浏览器打开 `http://127.0.0.1:8080/访问路径`，用脚本打印的用户名和密码登录。
+3. 忘了访问路径、用户名或密码，在第 1 步那个窗口里运行：
+
+```bash
+cat /etc/x-ui/install-result.env
+```
+
+`XUI_WEB_BASE_PATH` 是访问路径，`XUI_USERNAME` 和 `XUI_PASSWORD` 是用户名和密码。
 
 ### 方案二：住宅 IP 服务器
 
 方案二就是方案一**去掉“白嫖住宅 IP”这一步**：服务器本身就是住宅 IP，不用再套一层。
 
 1. 买一台住宅 IP 服务器：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 或 [QSU](https://qsu.hk/aff/GAZUQBSL)（这两家的住宅服务器我都没用过）。买之前先找商家要 IP，用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 测一下：类型要是“住宅/ISP”，风险分数要低。
-2. 系统怎么选、买完记什么、怎么 SSH 连上，和方案一的「1. 买服务器」一样。
-3. 跳过「2. 白嫖住宅 IP」，直接做方案一的「3. 运行脚本」。**问到住宅代理 IP 时直接回车跳过。**
+2. 系统怎么选、买完记什么，和方案一的「1. 买服务器」一样。
+3. 跳过「2. 白嫖住宅 IP」，直接做方案一的「3. 连上服务器，运行脚本」。**问到住宅代理 IP 时直接回车跳过。**
 
 ### 方案三：直接买住宅节点
 
