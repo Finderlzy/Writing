@@ -33,30 +33,28 @@ updatedDate: 2026-10-10
 
 ## 一、准备住宅 IP
 ---
-三选一，选好后只看对应的那一条，做完跳到「确认出口 IP」。
-
-| 方案 | 折腾程度 | 适合谁 |
-| --- | --- | --- |
-| 一：自建节点 + 套住宅 IP | 高 | 喜欢折腾 |
-| 二：住宅 IP 服务器 + 自建节点 | 中 | 愿意自建，不想配链式代理 |
-| 三：直接买住宅节点 | 低 | 不想碰服务器 |
-
-**买之前**：先找商家要 IP，用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 测一下，类型要是“住宅/ISP”，风险分数要低。不要用 ping0.cc 测。
+**流程：** 买服务器 → 白嫖住宅 IP → 运行脚本，按脚本的问题填前两步拿到的信息 → 确认出口 IP。
 
 **不要用机场节点。**
 
-### 方案一：自建节点 + 套住宅 IP
+### 1. 买服务器
 
-1. 在 [proxy.qsu.hk](https://proxy.qsu.hk/) 买住宅代理（不是主站 qsu.hk，主站卖的是方案二的服务器），记下协议、IP、端口、账号密码。
-   **免费套餐**：注册账号后选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998` 即可免费获得。流量额度以下单页面为准。
-2. 买一台 VPS 并用 SSH 连上：按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality#一、购买 VPS|自建梯子]] 的“一、购买 VPS”和“二、远程连接 VPS”做。
-3. 搭节点并套上住宅 IP，二选一：
-   - **命令版**（快）：看下面的「命令版：一个脚本搞定」。
-   - **面板版**：看下面的「面板版：3x-ui」。
+按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality#一、购买 VPS|自建梯子]] 的“一、购买 VPS”和“二、远程连接 VPS”做：买一台 VPS，用 SSH 连上。
 
-#### 命令版：一个脚本搞定
+- 记下**服务器 IP**，第 3 步要填。
+- **要用一台全新的 VPS**，装过 3x-ui 的不要用。
 
-不装 3x-ui 面板，一个脚本装好 Xray、建好节点、套上住宅 IP、开好防火墙。**要用一台全新的 VPS**，装过 3x-ui 的不要用。
+### 2. 白嫖住宅 IP
+
+1. 打开 [proxy.qsu.hk](https://proxy.qsu.hk/) 注册账号（不是主站 qsu.hk，主站卖的是住宅服务器）。
+2. 选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998`，就能免费拿到一个住宅 IP。流量额度以下单页面为准。
+3. 记下商家给的**住宅 IP、端口、用户名、密码**，第 3 步要填。
+
+拿到后用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 查一下这个住宅 IP：类型要是“住宅/ISP”，风险分数要低。不要用 ping0.cc 测。
+
+### 3. 运行脚本
+
+脚本会装好 Xray、建好节点、套上住宅 IP、开好防火墙。
 
 1. 在 VPS 上输入下面的命令，回车，会打开一个空白的编辑器：
 
@@ -70,14 +68,17 @@ nano setup.sh
 #!/usr/bin/env bash
 set -euo pipefail
 
-read -rp "节点端口（直接回车用 443）: " PORT; PORT=${PORT:-443}
+read -rp "服务器 IP（就是你 SSH 连接用的 IP）: " IP
+read -rp "节点端口（直接回车用 8555）: " PORT; PORT=${PORT:-8555}
 read -rp "伪装网站（直接回车用 www.microsoft.com）: " SNI; SNI=${SNI:-www.microsoft.com}
-read -rp "住宅代理 IP（不套住宅 IP 就直接回车）: " RES_IP
+read -rp "住宅代理 IP: " RES_IP
 if [ -n "$RES_IP" ]; then
   read -rp "住宅代理端口: " RES_PORT
   read -rp "住宅代理用户名: " RES_USER
   read -rp "住宅代理密码: " RES_PASS
 fi
+
+if [ -z "$IP" ]; then echo "服务器 IP 不能为空"; exit 1; fi
 
 apt update
 apt install -y curl openssl ufw
@@ -88,7 +89,6 @@ KEYS=$(xray x25519)
 PRI=$(echo "$KEYS" | grep -i 'private' | awk -F': ' '{print $2}' | tr -d ' ')
 PUB=$(echo "$KEYS" | grep -iE 'public|password' | awk -F': ' '{print $2}' | tr -d ' ')
 SID=$(openssl rand -hex 8)
-IP=$(curl -s4 https://api.ipify.org)
 SSH_PORT=$(ss -tlnpH | awk '/sshd/ {sub(/.*:/, "", $4); print $4; exit}')
 SSH_PORT=${SSH_PORT:-22}
 
@@ -149,55 +149,17 @@ bash setup.sh
 
 | 问题 | 怎么填 |
 | --- | --- |
-| 节点端口 | 直接回车（用 443） |
-| 伪装网站 | 直接回车（用 www.microsoft.com） |
-| 住宅代理 IP、端口、用户名、密码 | 填第 1 步商家给的 |
+| 服务器 IP | 第 1 步记下的服务器 IP，就是 SSH 连接时用的那个 |
+| 节点端口 | 直接回车，用默认的 **8555** |
+| 伪装网站 | 直接回车，用默认的 www.microsoft.com |
+| 住宅代理 IP、端口、用户名、密码 | 第 2 步记下的 |
 
 6. 等脚本跑完（中途弹出紫色/蓝色对话框就直接回车）。最后一行是 `vless://` 开头的链接，复制下来，**通过剪贴板**导入代理软件。**这个链接不要发给别人。**
-7. 商家后台有防火墙/安全组的话，放行 **TCP 443**。
+7. 商家后台有防火墙/安全组的话，放行 **TCP 8555**。
 
-脚本报错停下了，把报错截图保存好，去完整版或 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 对照排查，或者改用面板版。
+脚本报错停下了，把报错截图保存好，去完整版对照排查。
 
-#### 面板版：3x-ui
-
-1. 按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 搭好自己的节点。
-2. 新增出站：3x-ui → Xray 设置 → 出站 → 添加出站，按下表填写：
-
-| 设置项     | 填写内容                           |
-| ------- | ------------------------------ |
-| 协议      | SOCKS5                         |
-| 标签（Tag） | `residential`                  |
-| 地址      | 住宅 IP 地址                       |
-| 端口      | 商家给的端口                         |
-| 用户名、密码  | 商家给的账号密码                       |
-
-3. 新增路由规则：Xray 设置 → 路由规则 → 添加规则，出站标签选 `residential`，domain 填：
-
-```
-geosite:anthropic
-domain:ipinfo.io
-```
-
-4. 先点保存，再点“重启 Xray”，不重启不生效。
-
-详细说明见 [[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
-
-### 方案二：住宅 IP 服务器 + 自建节点
-
-1. 买一台住宅 IP 服务器：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 或 [QSU](https://qsu.hk/aff/GAZUQBSL)（这两家的住宅服务器我都没用过）。
-2. 搭节点，不用再套住宅 IP。二选一：
-   - 命令版：SSH 连上后，按方案一「命令版：一个脚本搞定」做，问到住宅代理 IP 时**直接回车跳过**。
-   - 面板版：按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 在上面搭节点。
-
-### 方案三：直接买住宅节点
-
-1. 在 ipequal 买套餐，**使用类型选“1 人独享”**。国内能打开的地址：[ipequal](https://www.ipequal.com/?ref=6adabd0307)；开代理才能打开的地址：[ipequal](https://www.equaldcdn.com/?ref=6adabd0307)。（我没用过，是很多人推荐的。建议先买一个月。）
-2. 复制订阅链接，**通过剪贴板**导入代理软件。
-3. 用 claude 时选中这个住宅节点。
-
-已经有别的节点、想只让 claude 走住宅节点的，看文末「分流规则」。
-
-### 确认出口 IP
+### 4. 确认出口 IP
 
 开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)：
 
@@ -345,25 +307,6 @@ domain:ipinfo.io
 - 刚开始少用，慢慢增加使用量。
 - 一直用同一个节点、同一个住宅 IP。
 - 不要在很多设备上登录，没走代理的设备上绝对不要登录。
-
-## 附：分流规则
----
-只让 claude 走住宅节点、其他网站走原来的节点时用。规则放在最前面，`住宅节点` 换成你的节点或策略组名字。
-
-**Clash Verge**（住宅节点和原来的节点要在同一份配置里）：
-
-```
-- DOMAIN-SUFFIX,claude.ai,住宅节点
-- DOMAIN-SUFFIX,claude.com,住宅节点
-- DOMAIN-SUFFIX,anthropic.com,住宅节点
-- DOMAIN-SUFFIX,ipinfo.io,住宅节点
-```
-
-**Shadowrocket**：配置 → 规则 → 新增 `DOMAIN-SUFFIX` 规则，域名同上，策略选住宅节点。
-
-**v2rayN**：不方便分流，用 claude 时直接切到住宅节点。
-
-看不懂就不分流，用 claude 时全局走住宅节点。
 
 ## 附：购买未完成
 ---
