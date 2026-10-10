@@ -17,6 +17,7 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tabs
+    - content.code.copy
 
 extra:
   social:
