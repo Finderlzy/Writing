@@ -28,7 +28,7 @@ updatedDate: 2026-10-10
 
 **前置条件**：
 
-- **一个 Gmail 账号**：注册 claude 和美区 Apple ID 都要用。
+- **一个 Gmail 邮箱**：注册 claude 和美区 Apple ID 都要用。
 - **会用代理**：会导入节点、切换节点、打开和关闭代理。
 - **一部 iPhone**：订阅是在 iPhone 的 Claude app 里完成的。
 
