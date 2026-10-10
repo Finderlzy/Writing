@@ -22,16 +22,21 @@ def toc_slug(text: str) -> str:
     return value
 
 
+_IDCOUNT_RE = re.compile(r"^(.*)_([0-9]+)$")
+
+
 def unique_toc_slugs(headings: list[str]) -> list[str]:
+    """Match Python-Markdown's toc.unique(): duplicates get _1, _2, ..."""
     used: set[str] = set()
     result: list[str] = []
     for title in headings:
-        base = toc_slug(title)
-        candidate = base or "_1"
-        suffix = 1
-        while candidate in used:
-            suffix += 1
-            candidate = f"{base}_{suffix}" if base else f"_{suffix}"
+        candidate = toc_slug(title)
+        while candidate in used or not candidate:
+            match = _IDCOUNT_RE.match(candidate)
+            if match:
+                candidate = f"{match.group(1)}_{int(match.group(2)) + 1}"
+            else:
+                candidate = f"{candidate}_1"
         used.add(candidate)
         result.append(candidate)
     return result

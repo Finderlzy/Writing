@@ -137,6 +137,17 @@ class CompatibilityTests(unittest.TestCase):
         self.assertIn("[[目标#^nope]]", result.text)
         self.assertEqual({"E_ANCHOR_MISSING", "E_BLOCK_MISSING"}, {item.code for item in result.diagnostics})
 
+    def test_duplicate_heading_slugs_match_python_markdown(self):
+        root, index = self.make_index(
+            {
+                "当前.md": "# 当前\n[[目标#5. 导出]]\n",
+                "目标.md": "# 目标\n## 5. 保存\n## 5. 用 SSH\n## 5. 导出\n",
+            }
+        )
+        result = Converter(index).convert(Path("当前.md"), (root / "当前.md").read_text(encoding="utf-8"))
+        self.assertIn("#5_1", result.text)
+        self.assertFalse(result.diagnostics)
+
     def test_current_page_heading_and_block_references(self):
         root, index = self.make_index(
             {
