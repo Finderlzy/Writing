@@ -1,7 +1,7 @@
 ---
 slug: subscribe-claude-quick
 createdDate: 2026-10-08
-updatedDate: 2026-10-08
+updatedDate: 2026-10-10
 ---
 > 写于 2026-10-08
 > 这是只有操作步骤的版本。想知道每一步为什么这么做，以及哪里看得不是很懂的，请看完整版：[[04技术/如何订阅claude|如何订阅claude]]
@@ -47,10 +47,121 @@ updatedDate: 2026-10-08
 
 ### 方案一：自建节点 + 套住宅 IP
 
-1. 按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 搭好自己的节点。
-2. 在 [proxy.qsu.hk](https://proxy.qsu.hk/) 买住宅代理（不是主站 qsu.hk，主站卖的是方案二的服务器），记下协议、IP、端口、账号密码。
+1. 在 [proxy.qsu.hk](https://proxy.qsu.hk/) 买住宅代理（不是主站 qsu.hk，主站卖的是方案二的服务器），记下协议、IP、端口、账号密码。
    **免费套餐**：注册账号后选择 **SOCKS5 协议**的套餐，下单时填优惠码 `qiansu998` 即可免费获得。流量额度以下单页面为准。
-3. 新增出站：3x-ui → Xray 设置 → 出站 → 添加出站，按下表填写：
+2. 买一台 VPS 并用 SSH 连上：按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality#一、购买 VPS|自建梯子]] 的“一、购买 VPS”和“二、远程连接 VPS”做。
+3. 搭节点并套上住宅 IP，二选一：
+   - **命令版**（快）：看下面的「命令版：一个脚本搞定」。
+   - **面板版**：看下面的「面板版：3x-ui」。
+
+#### 命令版：一个脚本搞定
+
+不装 3x-ui 面板，一个脚本装好 Xray、建好节点、套上住宅 IP、开好防火墙。**要用一台全新的 VPS**，装过 3x-ui 的不要用。
+
+1. 在 VPS 上输入下面的命令，回车，会打开一个空白的编辑器：
+
+```bash
+nano setup.sh
+```
+
+2. 复制下面整段脚本，在编辑器里右键（或 `Ctrl + Shift + V`）粘贴：
+
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+read -rp "节点端口（直接回车用 443）: " PORT; PORT=${PORT:-443}
+read -rp "伪装网站（直接回车用 www.microsoft.com）: " SNI; SNI=${SNI:-www.microsoft.com}
+read -rp "住宅代理 IP（不套住宅 IP 就直接回车）: " RES_IP
+if [ -n "$RES_IP" ]; then
+  read -rp "住宅代理端口: " RES_PORT
+  read -rp "住宅代理用户名: " RES_USER
+  read -rp "住宅代理密码: " RES_PASS
+fi
+
+apt update
+apt install -y curl openssl ufw
+bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
+
+UUID=$(xray uuid)
+KEYS=$(xray x25519)
+PRI=$(echo "$KEYS" | grep -i 'private' | awk -F': ' '{print $2}' | tr -d ' ')
+PUB=$(echo "$KEYS" | grep -iE 'public|password' | awk -F': ' '{print $2}' | tr -d ' ')
+SID=$(openssl rand -hex 8)
+IP=$(curl -s4 https://api.ipify.org)
+SSH_PORT=$(ss -tlnpH | awk '/sshd/ {sub(/.*:/, "", $4); print $4; exit}')
+SSH_PORT=${SSH_PORT:-22}
+
+if [ -z "$PRI" ] || [ -z "$PUB" ]; then
+  echo "没取到密钥，xray x25519 的输出是："; echo "$KEYS"; exit 1
+fi
+
+if [ -n "$RES_IP" ]; then
+  RES_OUT=',
+    {"protocol": "socks", "tag": "residential",
+     "settings": {"servers": [{"address": "'"$RES_IP"'", "port": '"$RES_PORT"',
+                               "users": [{"user": "'"$RES_USER"'", "pass": "'"$RES_PASS"'"}]}]}}'
+  RES_RULE='{"type": "field", "domain": ["geosite:anthropic", "domain:ipinfo.io"], "outboundTag": "residential"}'
+else
+  RES_OUT=''
+  RES_RULE=''
+fi
+
+cat > /usr/local/etc/xray/config.json <<EOF
+{
+  "log": {"loglevel": "warning"},
+  "inbounds": [{
+    "port": $PORT, "protocol": "vless",
+    "settings": {"clients": [{"id": "$UUID", "flow": "xtls-rprx-vision"}], "decryption": "none"},
+    "streamSettings": {"network": "tcp", "security": "reality",
+      "realitySettings": {"dest": "$SNI:443", "serverNames": ["$SNI"],
+                          "privateKey": "$PRI", "shortIds": ["$SID"]}},
+    "sniffing": {"enabled": true, "destOverride": ["http", "tls", "quic"], "routeOnly": true}
+  }],
+  "outbounds": [
+    {"protocol": "freedom", "tag": "direct"}$RES_OUT
+  ],
+  "routing": {"rules": [$RES_RULE]}
+}
+EOF
+
+xray run -test -c /usr/local/etc/xray/config.json
+systemctl enable xray
+systemctl restart xray
+
+ufw allow "$SSH_PORT"/tcp
+ufw allow "$PORT"/tcp
+ufw --force enable
+
+echo
+echo "===== 完成，复制下面这行导入代理软件 ====="
+echo "vless://$UUID@$IP:$PORT?type=tcp&security=reality&sni=$SNI&fp=chrome&pbk=$PUB&sid=$SID&flow=xtls-rprx-vision#my-node"
+```
+
+3. 按 `Ctrl + O`，再按回车保存；按 `Ctrl + X` 退出编辑器。
+4. 运行脚本：
+
+```bash
+bash setup.sh
+```
+
+5. 按提示回答问题：
+
+| 问题 | 怎么填 |
+| --- | --- |
+| 节点端口 | 直接回车（用 443） |
+| 伪装网站 | 直接回车（用 www.microsoft.com） |
+| 住宅代理 IP、端口、用户名、密码 | 填第 1 步商家给的 |
+
+6. 等脚本跑完（中途弹出紫色/蓝色对话框就直接回车）。最后一行是 `vless://` 开头的链接，复制下来，**通过剪贴板**导入代理软件。**这个链接不要发给别人。**
+7. 商家后台有防火墙/安全组的话，放行 **TCP 443**。
+
+脚本报错停下了，把报错截图保存好，去完整版或 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 对照排查，或者改用面板版。
+
+#### 面板版：3x-ui
+
+1. 按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 搭好自己的节点。
+2. 新增出站：3x-ui → Xray 设置 → 出站 → 添加出站，按下表填写：
 
 | 设置项     | 填写内容                           |
 | ------- | ------------------------------ |
@@ -60,21 +171,23 @@ updatedDate: 2026-10-08
 | 端口      | 商家给的端口                         |
 | 用户名、密码  | 商家给的账号密码                       |
 
-4. 新增路由规则：Xray 设置 → 路由规则 → 添加规则，出站标签选 `residential`，domain 填：
+3. 新增路由规则：Xray 设置 → 路由规则 → 添加规则，出站标签选 `residential`，domain 填：
 
 ```
 geosite:anthropic
 domain:ipinfo.io
 ```
 
-5. 先点保存，再点“重启 Xray”，不重启不生效。
+4. 先点保存，再点“重启 Xray”，不重启不生效。
 
 详细说明见 [[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
 
 ### 方案二：住宅 IP 服务器 + 自建节点
 
 1. 买一台住宅 IP 服务器：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 或 [QSU](https://qsu.hk/aff/GAZUQBSL)（这两家的住宅服务器我都没用过）。
-2. 按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 在上面搭节点。不用再套住宅 IP。
+2. 搭节点，不用再套住宅 IP。二选一：
+   - 命令版：SSH 连上后，按方案一「命令版：一个脚本搞定」做，问到住宅代理 IP 时**直接回车跳过**。
+   - 面板版：按 [[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子]] 在上面搭节点。
 
 ### 方案三：直接买住宅节点
 
