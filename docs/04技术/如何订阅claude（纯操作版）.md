@@ -1,14 +1,17 @@
 ---
 slug: subscribe-claude-quick
 createdDate: 2026-10-08
-updatedDate: 2026-10-10
+updatedDate: 2026-10-11
 ---
 > 写于 2026-10-08
 > 这是只有操作步骤的版本。想知道每一步为什么这么做，以及哪里看得不是很懂的，请看完整版：[[04技术/如何订阅claude|如何订阅claude]]
+> 配套视频（iOS）：[如何订阅claude（ios）](https://www.bilibili.com/video/BV1FPpL6KEV4/)，建议和本文对照着看
+
+<iframe src="https://player.bilibili.com/player.html?bvid=BV1FPpL6KEV4&autoplay=0" title="如何订阅claude（ios）" style="width: 100%; aspect-ratio: 16 / 9; border: 0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"></iframe>
 
 ## 前言
 ---
-说实话，我有点犹豫要不要现在发这篇。我的 claude 才订阅了四天。时间太短，我没法保证这套方法长期有效，只能说它目前对我管用。而且为了走到这一步，我前前后后折腾了很久，所以流程会有点繁琐。
+说实话，我有点犹豫要不要现在发这篇。我的 claude 才订阅了七天。时间太短，我没法保证这套方法长期有效，只能说它目前对我管用。而且为了走到这一步，我前前后后折腾了很久，所以流程会有点繁琐。
 
 这一版只写怎么做，不讲为什么。哪一步想知道原因，或者某个细节失效了想自己调，去完整版里找对应的小节。
 
