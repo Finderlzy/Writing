@@ -95,7 +95,7 @@ ssh root@你的服务器IP
 1. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/Writing/main/scripts/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/main/setup.sh)
 ```
 
 2. 回答问题：
@@ -112,7 +112,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/Writing/main/scrip
 
 提示“住宅代理连不上”：检查商家后台的端口、账号密码、IP 白名单、套餐状态，再运行一次命令。其他报错截图后看完整版，或看文末「附：打开面板排查」。
 
-脚本内容：[setup.sh](https://github.com/Finderlzy/Writing/blob/main/scripts/setup.sh)
+脚本内容：[reality-setup](https://github.com/Finderlzy/reality-setup)
 
 ### 方案二：住宅 IP 服务器
 
