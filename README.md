@@ -57,6 +57,8 @@ docs/                   # 原始 Obsidian 笔记与附件
 ├── 09附件/             # 图片、PDF 等本地附件
 ├── javascripts/         # 站点脚本：访问统计、MathJax 配置
 └── index.md             # 站点首页
+scripts/
+└── setup.sh             # 文章引用的 VPS 一键搭建脚本（读者通过 raw 链接运行）
 tools/
 ├── build_site.py        # 转换、构建和验收入口
 └── obsidian_compat/     # 索引、解析、转换及 HTML 检查
@@ -71,6 +73,8 @@ requirements.txt         # 固定版本的 Python 依赖
 ```
 
 一级分类由 MkDocs 和转换器动态扫描，可以按需要新增；新增时需在 `tools/build_site.py` 的 `SECTION_SLUGS` 中补充英文网址前缀（见“页面网址”）。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
+
+`scripts/` 存放供文章读者直接运行的脚本，不参与网站构建。《如何订阅claude（纯操作版）》通过 `https://raw.githubusercontent.com/Finderlzy/Writing/main/scripts/setup.sh` 下载并运行 `setup.sh`，因此不要随意改名或移动；修改脚本后推送到 `main` 即对读者生效。
 
 `tools/build_site.py` 中的 `UNPUBLISHED_PATHS` 列出只在本地 Obsidian 保留、不部署到网站的一级目录或根目录文件（目前为 `00收集`、`07自己` 和 `AGENTS.md`）。这些页面仍参与双链检查；公开页面指向它们的双链会渲染为纯文字，只被它们嵌入的附件也不会复制到网站。注意它们仍会随 Git 推送到 GitHub 仓库。
 
