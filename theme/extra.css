@@ -1,3 +1,31 @@
 .md-typeset hr {
   border-bottom: 1px solid var(--md-default-fg-color--lighter);
 }
+
+/* 复制按钮：贴住代码块右上角并用不透明底色遮住横向滚动的长命令，左侧渐隐过渡；代码右侧预留按钮宽度 */
+.md-typeset .md-code__nav {
+  top: 0;
+  right: 0;
+  padding: 0.45em 0.5em;
+  border-radius: 0 0.1rem 0 0;
+}
+
+.md-typeset .md-code__nav,
+.md-typeset :hover > .md-code__nav {
+  background-color: var(--md-code-bg-color);
+}
+
+.md-typeset .md-code__nav::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: 1em;
+  background: linear-gradient(to right, transparent, var(--md-code-bg-color));
+  pointer-events: none;
+}
+
+.md-typeset pre > code {
+  padding-right: 3.5em;
+}
