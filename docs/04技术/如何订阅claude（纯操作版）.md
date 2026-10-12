@@ -83,6 +83,11 @@ ssh root@你的服务器IP
 4. 出现 `password:` 时输入 root 密码（**屏幕不显示，正常**），回车。
 5. 开头变成 `root@...:~#` 就连上了。
 
+![[09附件/订阅claude-脚本-1-ssh.jpg|640]]
+![[09附件/订阅claude-脚本-2-yes.jpg|640]]
+![[09附件/订阅claude-脚本-3-密码.jpg|640]]
+![[09附件/订阅claude-脚本-4-连上.jpg|640]]
+
 **运行脚本**：
 
 1. 粘贴这行命令，回车：
@@ -91,6 +96,8 @@ ssh root@你的服务器IP
 bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/main/setup.sh)
 ```
 
+![[09附件/订阅claude-脚本-5-粘贴命令.jpg|640]]
+
 2. 回答问题：
 
 | 问题 | 怎么填 |
@@ -98,7 +105,13 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/main
 | 服务器 IP 是 xxx 吗？ | 和你的服务器 IP 一样就回车，不一样就输入正确的 |
 | 住宅代理 IP、端口、用户名、密码 | 第 2 步记下的 |
 
+![[09附件/订阅claude-脚本-6-回答问题.jpg|640]]
+
 3. 等几分钟（弹出紫色/蓝色对话框就回车），看到 `节点自测 Reality：成功` 和 `节点自测 Hysteria2：成功`。
+
+![[09附件/订阅claude-脚本-7-安装中.jpg|640]]
+![[09附件/订阅claude-脚本-8-自测成功.jpg|640]]
+
 4. 最后会打印两个节点，**通过剪贴板**或扫二维码导入代理软件，**不要发给别人**：
    - **主节点**：`vless://` 开头的链接，平时用这个。忘了就运行 `cat /root/vless.txt`。
    - **备用节点**：`hysteria2://` 开头的链接，主节点连不上或很慢时换它。忘了就运行 `cat /root/hy2.txt`。
@@ -106,8 +119,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/main
 5. 最后打印的“面板”几行**截图保存**。
 6. 商家后台有防火墙/安全组的话，放行 **TCP 443 和 UDP 443**。
 
->[!note] 视频里是旧版脚本
->视频录制时，脚本只有一个节点，端口是 8555。现在脚本改成了 443 端口，并多了一个备用节点，以本文为准。
+>[!note] 视频和截图里是旧版脚本
+>视频和截图录制时，脚本只有一个节点，端口是 8555。现在脚本改成了 443 端口，并多了一个备用节点，以本文为准。
 
 报错或连不上：看原理版的[[04技术/如何订阅claude#方案一：普通服务器 + 白嫖住宅 IP|方案一]]和[[04技术/如何订阅claude#附：打开面板排查|附：打开面板排查]]。
 
