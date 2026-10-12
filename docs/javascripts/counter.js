@@ -38,24 +38,12 @@
     scriptLoaded = true;
   }
 
-  function injectCounterDOM(isIgnored) {
-    var footerMeta = document.querySelector(".md-footer-meta__inner");
-    if (!footerMeta) {
+  function fillCounterDOM(isIgnored) {
+    // 占位元素由 overrides/partials/footer.html 预渲染，这里只填内容，避免页脚布局跳动
+    var counterDiv = document.getElementById("site-busuanzi-counter");
+    if (!counterDiv || counterDiv.childNodes.length) {
       return;
     }
-    var existing = document.getElementById("site-busuanzi-counter");
-    if (existing) {
-      return;
-    }
-
-    var counterDiv = document.createElement("div");
-    counterDiv.id = "site-busuanzi-counter";
-    counterDiv.className = "md-footer-busuanzi";
-    counterDiv.style.fontSize = "0.64rem";
-    counterDiv.style.color = "var(--md-footer-fg-color--lighter, #888)";
-    counterDiv.style.padding = "0.4rem 0";
-    counterDiv.style.margin = "auto 0.6rem";
-    counterDiv.style.textAlign = "right";
 
     if (isIgnored) {
       counterDiv.innerHTML =
@@ -67,13 +55,11 @@
         '本站总访问量 <span id="busuanzi_value_site_pv">--</span> 次 · ' +
         '总访客数 <span id="busuanzi_value_site_uv">--</span> 人';
     }
-
-    footerMeta.appendChild(counterDiv);
   }
 
   function init() {
     var isIgnored = checkAdminStatus();
-    injectCounterDOM(isIgnored);
+    fillCounterDOM(isIgnored);
     if (!isIgnored) {
       ensureBusuanziScript();
     }

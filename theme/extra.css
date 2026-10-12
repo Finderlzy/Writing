@@ -29,3 +29,21 @@
 .md-typeset pre > code {
   padding-right: 3.5em;
 }
+
+/* 页脚访问统计：占位由 overrides/partials/footer.html 预渲染，固定占住右侧，避免社交图标加载时跳位 */
+.md-footer-busuanzi {
+  min-height: 1em;
+  margin: auto 0.6rem;
+  padding: 0.4rem 0;
+  font-size: 0.64rem;
+  color: var(--md-footer-fg-color--lighter);
+  text-align: right;
+}
+
+/* 宽屏下左右两栏等宽，社交图标始终居中，统计数字加载前后位置不变 */
+@media screen and (min-width: 45em) {
+  .md-footer-meta__inner > .md-copyright,
+  .md-footer-meta__inner > .md-footer-busuanzi {
+    flex: 1 1 0;
+  }
+}
