@@ -9,9 +9,9 @@ updatedDate: 2026-10-12
 > 
 > 这是只有操作步骤的版本，和下面的视频一一对应。想知道每一步为什么这么做，或者想看视频以外的方案，请看原理版：[[04技术/如何订阅claude|如何订阅claude]]。两篇的章节标题一样，可以直接对照。
 > 
-> 配套视频（iOS）：[如何订阅claude（ios）](https://www.bilibili.com/video/BV1FPpL6KEV4/)，建议和本文对照着看
+> 配套视频（iOS）：[如何订阅claude（ios）](https://youtu.be/BcTUtYYheyA)，建议和本文对照着看
 
-<iframe src="https://player.bilibili.com/player.html?bvid=BV1FPpL6KEV4&autoplay=0" title="如何订阅claude（ios）" style="width: 100%; aspect-ratio: 16 / 9; border: 0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"></iframe>
+<iframe src="https://www.youtube-nocookie.com/embed/BcTUtYYheyA" title="如何订阅claude（ios）" style="width: 100%; aspect-ratio: 16 / 9; border: 0;" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
 
 ## 前言
 ---
