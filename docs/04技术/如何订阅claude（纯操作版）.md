@@ -78,14 +78,18 @@ updatedDate: 2026-10-12
 ```bash
 ssh root@你的服务器IP
 ```
+![[09附件/订阅claude-脚本-1-ssh.jpg]]
+
 
 3. 问 `Are you sure...` 时输入 `yes`。
-4. 出现 `password:` 时输入 root 密码（**屏幕不显示，正常**），回车。
-5. 开头变成 `root@...:~#` 就连上了。
+![[09附件/Pasted image 20261012190537.png]]
 
-![[09附件/订阅claude-脚本-1-ssh.jpg|640]]
-![[09附件/订阅claude-脚本-2-yes.jpg|640]]
-![[09附件/订阅claude-脚本-3-密码.jpg|640]]
+
+4. 出现 `password:` 时输入 root 密码（**屏幕不显示，正常**），回车。
+![[09附件/Pasted image 20261012190559.png]]
+
+
+5. 开头变成 `root@...:~#` 就连上了。
 ![[09附件/订阅claude-脚本-4-连上.jpg|640]]
 
 **运行脚本**：
