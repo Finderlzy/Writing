@@ -151,8 +151,16 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2
 直接买一台**自带住宅 IP 的服务器**，服务器本身的出口就是住宅 IP，只要在上面建节点，不用再套一层。就是方案一**去掉第 2 步**。
 
 推荐的购买地址：
-- [VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M)（我用的是它家的云 VPS，住宅服务器**我没有使用过**。网上关于它住宅服务器的主要负面评价是：不是真正的家庭宽带，也不是双 ISP，仅供参考。）
 - [QSU](https://qsu.hk/aff/GAZUQBSL)（我用的是它家子站 proxy.qsu.hk 的住宅代理，主站的住宅服务器**我没有使用过**。）
+
+>[!warning] 不推荐 VoyraCloud 的住宅服务器
+>我买了一台 VoyraCloud 的美国住宅服务器实测：ipinfo.io 显示 ASN 属于 Bunny Communications，类型是 **Hosting（机房）**，Privacy 为 true；Scamalytics 分数 16，属于低风险，但同样识别出在用 VPN/代理。也就是说，**风险分数不高，但它是机房 IP，不是住宅 IP**，起不到方案二的作用。它家的云 VPS 拿来做方案一的第 1 步没问题。
+>
+>实测截图（IP 已遮盖）：
+>
+>![[09附件/VoyraCloud住宅服务器实测-ipinfo.png|600]]
+>
+>![[09附件/VoyraCloud住宅服务器实测-scamalytics.png|600]]
 
 1. 买之前先测服务器 IP，确认是“住宅/ISP”类型、风险分数低。系统选择同方案一。
 2. 做方案一的第 3 步，**问到住宅代理 IP 时直接回车跳过**。
