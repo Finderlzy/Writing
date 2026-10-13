@@ -50,7 +50,7 @@ updatedDate: 2026-10-12
 
 ### 第 1 步：买服务器
 
-在 [VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 买一台云 VPS，按下表选：
+在 [VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 买一台云 VPS，按下表选。注意买的是**云 VPS**，不是它家的住宅服务器（住宅服务器我买过一次，测出来是机房 IP，见原理版[[04技术/如何订阅claude#方案二：住宅 IP 服务器|方案二]]）。
 
 | 选项   | 怎么选                                                |
 | ---- | -------------------------------------------------- |
