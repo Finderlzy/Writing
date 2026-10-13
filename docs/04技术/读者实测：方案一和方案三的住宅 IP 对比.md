@@ -97,8 +97,12 @@ ASN 后面那个 `#6` 是 IPinfo 给这个网络的排名，综合的是它覆�
 
 - AS Type 是 `isp`，Privacy 是 `false`，Hosted domains 是 0，ipinfo 这一关算过了。
 - Scamalytics 风险分是 0，是最好的结果。
-- 但严格说它不是家庭宽带。Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商；实际使用者 NetLab 也不是。这种 IP 一般叫“ISP IP”或“静态住宅”，教程里说的“ISP 类型也算这一类”就是指它。
+- 但严格说它不是家庭宽带。Scamalytics 下面的说明里也写了，它不是普通家庭网络（not a standard domestic connection）。Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商；实际使用者 NetLab 也不是。这种 IP 一般叫“ISP IP”或“静态住宅”，教程里说的“ISP 类型也算这一类”就是指它。
 - 目前我用它订阅和使用 claude 都正常，对我来说够用。
+
+Scamalytics 的结果（IP 已遮盖）：
+
+![[09附件/住宅IP实测-scamalytics-作者的白嫖IP.png|600]]
 
 ### 判断顺序
 
