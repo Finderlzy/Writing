@@ -96,13 +96,14 @@ ASN 后面那个 `#6` 是 IPinfo 给这个网络的排名，综合的是它覆�
 ### 我的这个 IP 怎么样
 
 - AS Type 是 `isp`，Privacy 是 `false`，Hosted domains 是 0，ipinfo 这一关算过了。
+- Scamalytics 风险分是 0，是最好的结果。
 - 但严格说它不是家庭宽带。Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商；实际使用者 NetLab 也不是。这种 IP 一般叫“ISP IP”或“静态住宅”，教程里说的“ISP 类型也算这一类”就是指它。
 - 目前我用它订阅和使用 claude 都正常，对我来说够用。
 
 ### 判断顺序
 
 1. ipinfo 的 AS Type 是 `isp`，Privacy 是 `false`。不满足就别用了，直接换。
-2. 在 [scamalytics.com](https://scamalytics.com/) 查风险分，越低越好，不一定要做到 0。
+2. 在 [scamalytics.com](https://scamalytics.com/) 查风险分，越低越好。我这个是 0 分，但不一定都能做到 0，分数低就可以。
 3. 再找一两个网站交叉测（比如上面的 IPKK、IPOK、ip.net.coffee）。各家结论不一致很正常，大部分说是住宅/ISP、风险低就可以。
 4. 最后看实际使用：claude 能正常打开，不频繁弹人机验证。
 
