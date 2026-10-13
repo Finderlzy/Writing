@@ -121,7 +121,7 @@ ssh root@你的服务器IP
 3. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2.0/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2.1/setup.sh)
 ```
 
 4. 问服务器 IP 对不对时，和你的一样就回车；问住宅代理时，依次填第 2 步记下的 IP、端口、用户名、密码。
@@ -133,7 +133,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2
 7. 最后打印的“面板”几行**截图保存**，排查问题时要用。
 8. 商家后台有防火墙/安全组的话，放行 **TCP 443 和 UDP 443**。
 
-提示“住宅代理连不上”：去商家后台检查端口、账号密码、IP 白名单（把服务器 IP 加进去）、套餐是否生效，再运行一次命令。其他问题看文末「附：打开面板排查」。
+提示“住宅代理连不上”：去商家后台检查端口、账号密码、IP 白名单（把服务器 IP 加进去）、套餐是否生效，再运行一次命令。其他问题看文末「附：打开面板排查」。想重装看文末「装过了，想重装？」。
 
 脚本内容公开在 [reality-setup](https://github.com/Finderlzy/reality-setup)，运行前可以先看一眼。
 
@@ -428,6 +428,12 @@ cat /etc/x-ui/install-result.env
 ### 用 Clash Verge 怎么导入？
 
 Clash Verge 导入不了 `vless://`、`hysteria2://` 这种分享链接。在服务器上运行 `cat /root/clash.yaml`，复制全部内容，在 Clash Verge 里新建一个本地配置粘贴进去保存。两个节点都在里面，默认选中备用节点 Hysteria2，因为 Clash 的内核连 Reality 节点目前有兼容问题，还在排查。
+
+### 装过了，想重装？
+
+在服务器上运行同一行脚本命令就行。脚本发现装过会先问你，回答 `y` 删掉旧的重新装，回答别的什么都不动。重装后节点链接会变，代理软件里要删掉旧节点、重新导入。
+
+**重装前先关掉电脑上的代理软件**（或者关掉 TUN / 全局模式），再 SSH 连服务器。不然 SSH 可能正好走的是这台服务器上的节点，脚本一删旧节点，SSH 就跟着断了，出现 `Connection to ... closed by remote host`，之后还可能连不上服务器。新版脚本遇到这种情况会提示你先关代理，什么都不删。已经遇到的，关掉代理（或者干脆重启电脑）再 SSH 连上，重新运行一次命令就好。
 
 ### “1 人独享”怎么确认真的只有我在用？
 

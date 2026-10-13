@@ -97,7 +97,7 @@ ssh root@你的服务器IP
 1. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2.0/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2.1/setup.sh)
 ```
 
 ![[09附件/订阅claude-脚本-5-粘贴命令.jpg|640]]
@@ -125,6 +125,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2
 
 >[!note] 视频和截图里是旧版脚本
 >视频和截图录制时，脚本只有一个节点，端口是 8555。现在脚本改成了 443 端口，并多了一个备用节点，以本文为准。
+
+**想重装**：先**关掉电脑上的代理软件**，再 SSH 连服务器，运行同一行命令，问到删不删旧的时回答 `y`。重装后要重新导入节点。不关代理的话 SSH 可能会断开、之后连不上，原因见原理版[[04技术/如何订阅claude#装过了，想重装？|装过了，想重装？]]。
 
 报错或连不上：看原理版的[[04技术/如何订阅claude#方案一：普通服务器 + 白嫖住宅 IP|方案一]]和[[04技术/如何订阅claude#附：打开面板排查|附：打开面板排查]]。
 
