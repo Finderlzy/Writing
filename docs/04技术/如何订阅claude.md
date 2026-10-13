@@ -76,6 +76,8 @@ updatedDate: 2026-10-12
 
 不管选哪种，买之前都先找商家要 IP，用 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/) 交叉测一下：IP 类型是“住宅/ISP”，风险分数低。不要用 ping0.cc。
 
+拿不定主意的话，可以先看一位读者的实测：[[04技术/读者实测：方案一和方案三的住宅 IP 对比|方案一和方案三的住宅 IP 对比]]。他用五个检测网站对比了两个方案的延迟和风险评分。
+
 >[!note] 为什么：机场 IP、机房 IP 和住宅 IP
 >机场的 IP 是成百上千人在共用，很可能早就被 anthropic 标记过了。
 >
