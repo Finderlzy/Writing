@@ -72,11 +72,11 @@ ip.net.coffee 和 IPKK 都显示，方案三访问 claude.ai 和 anthropic.com �
 - 方案一（免费住宅 IP）：延迟低，但这个 IP 在部分网站上被认成机房 IP，Scamalytics 风险分很高。
 - 方案三（买的住宅节点）：住宅属性识别得更好，Scamalytics 分数低，但延迟高，IPOK 报了黑名单。
 
-不管选哪个方案，拿到 IP 之后都用 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/) 等几个网站交叉测一下，再决定要不要用。具体怎么看，见下一节。
+不管选哪个方案，搭好之后都先开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 拿到自己的住宅 IP，再把这个 IP 拿到 [scamalytics.com](https://scamalytics.com/) 等几个网站交叉测一下，再决定要不要用。具体怎么看，见下一节。
 
 ## 怎么看 IP 质量
 ---
-下面用我自己白嫖到的住宅 IP 举例。开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)（记得让 ipinfo 也走住宅 IP），往下拉到 Summary，只看下面几行就够了。
+下面用我自己白嫖到的住宅 IP 举例。开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)（记得让 ipinfo 也走住宅 IP），页面最上面显示的就是你的出口 IP，先把它复制下来，后面去别的网站测要用。然后往下拉到 Summary，只看下面几行就够了。
 
 ![[09附件/住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
 
@@ -106,9 +106,9 @@ Scamalytics 的结果（IP 已遮盖）：
 
 ### 判断顺序
 
-1. ipinfo 的 AS Type 是 `isp`，Privacy 是 `false`。不满足就别用了，直接换。
-2. 在 [scamalytics.com](https://scamalytics.com/) 查风险分，越低越好。我这个是 0 分，但不一定都能做到 0，分数低就可以。
-3. 再找一两个网站交叉测（比如上面的 IPKK、IPOK、ip.net.coffee）。各家结论不一致很正常，大部分说是住宅/ISP、风险低就可以。
+1. 开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，复制最上面显示的 IP。AS Type 是 `isp`，Privacy 是 `false`。不满足就别用了，直接换。
+2. 把复制的 IP 粘贴到 [scamalytics.com](https://scamalytics.com/) 查风险分，越低越好。我这个是 0 分，但不一定都能做到 0，分数低就可以。
+3. 再把这个 IP 拿到一两个网站交叉测（比如上面的 IPKK、IPOK、ip.net.coffee）。各家结论不一致很正常，大部分说是住宅/ISP、风险低就可以。
 4. 最后看实际使用：claude 能正常打开，不频繁弹人机验证。
 
 ## 截图

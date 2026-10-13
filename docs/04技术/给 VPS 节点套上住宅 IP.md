@@ -47,8 +47,8 @@ VPS 仍然负责"翻出去"，住宅 IP 只负责"最后一跳"。
 
 IP 纯净度是最重要的。下单前可以找商家要一下 IP 地址，用几个工具交叉检测：
 
-- ipinfo.io
-- scamalytics.com
+- [ipinfo.io](https://ipinfo.io/what-is-my-ip)
+- [scamalytics.com](https://scamalytics.com/)
 
 重点看两项：IP 类型是不是"住宅/ISP"，风险分数高不高。各家工具的数据库不一样，不要只看一家（ping0.cc 的结果我觉得不太靠谱，不建议只用它）。
 
@@ -115,10 +115,12 @@ domain:tiktok.com
 ## 五、检查效果
 ---
 
-开着代理，访问 ipinfo.io：
+开着代理，访问 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，页面最上面显示的就是你现在的出口 IP：
 
 - 如果你把 `domain:ipinfo.io` 也加进了路由规则，显示的应该是**住宅 IP**；
 - 没加的话，显示的是 **VPS 的 IP**，这是正常的。
+
+如果显示的是住宅 IP，把它复制下来，粘贴到 [scamalytics.com](https://scamalytics.com/) 等检测网站里，再交叉测一下质量。
 
 最直接的检查方法，是打开你要用的网站，看还会不会被限制。
 

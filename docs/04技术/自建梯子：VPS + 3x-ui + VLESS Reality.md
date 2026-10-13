@@ -44,7 +44,7 @@ updatedDate: 2026-10-09
 ![[09附件/Snipaste_2026-09-25_16-58-54.png]]
 
 > [!warning] 关于这家的 IP
-> 这家云 VPS 的 IP 质量一般。我用不同工具检测，结果不太一致：有的显示纯净，有的显示不纯净。建议多用几个工具交叉对比（比如 ipinfo.io、scamalytics.com）。 如果你要用 ChatGPT、TikTok 这类对 IP 很敏感的服务，可以看下篇[[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
+> 这家云 VPS 的 IP 质量一般。我用不同工具检测，结果不太一致：有的显示纯净，有的显示不纯净。建议多用几个工具交叉对比（比如 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/)）。 如果你要用 ChatGPT、TikTok 这类对 IP 很敏感的服务，可以看下篇[[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
 
 ### 买完之后要拿到什么
 
@@ -429,7 +429,7 @@ vless://xxxxxxxx@127.0.0.1:8555?type=tcp&security=reality...
 
 ### 检查是否成功
 
-打开 ipinfo.io，如果显示的 IP 是你的 VPS IP，就说明成功了。再试着打开 Google、YouTube，能正常加载就大功告成。
+打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，如果最上面显示的 IP 是你的 VPS IP，就说明成功了。想看 IP 质量的话，把这个 IP 复制下来，粘贴到 [scamalytics.com](https://scamalytics.com/) 等检测网站里查。再试着打开 Google、YouTube，能正常加载就大功告成。
 
 ## 常见问题
 ---

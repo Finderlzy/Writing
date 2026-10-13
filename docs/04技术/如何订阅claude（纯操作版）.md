@@ -66,7 +66,7 @@ updatedDate: 2026-10-12
 1. 在 [proxy.qsu.hk](https://proxy.qsu.hk/) 注册（不是主站 qsu.hk）。
 2. 选 **SOCKS5 协议**的套餐，下单填优惠码 `qiansu998`，免费。
 3. 在线路详情里记下**住宅 IP、端口、用户名、密码**。
-4. 用 [ipinfo.io](https://ipinfo.io/what-is-my-ip) 和 [scamalytics.com](https://scamalytics.com/) 查这个 IP：类型是“住宅/ISP”、风险分数低。不要用 ping0.cc。
+4. 这个 IP 先不用测，等脚本跑完在「确认出口 IP」里统一测。
 
 ### 第 3 步：连上服务器，运行脚本
 
@@ -132,7 +132,8 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2
 
 ### 确认出口 IP
 
-开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，类型是“住宅/ISP”就成功了。**记下 IP 所在地区**，第四节要用。
+1. 开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，最上面显示的就是你的出口 IP。类型是“住宅/ISP”就成功了。**复制这个 IP，记下所在地区**，第四节要用。
+2. 把 IP 粘贴到 [scamalytics.com](https://scamalytics.com/) 查，风险分数低就行。不要用 ping0.cc。
 
 ## 二、配置代理软件
 ---
@@ -155,7 +156,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2
 
 ### 2. WebRTC
 
-- Chrome / Edge：装插件“WebRTC Leak Prevent”；或者在 uBlock Origin 设置里勾选“防止 WebRTC 泄露本地 IP 地址”。
+- Chrome / Edge：装插件“WebRTC Control”；或者在 uBlock Origin 设置里勾选“防止 WebRTC 泄露本地 IP 地址”。
 - Firefox：地址栏输入 `about:config`，把 `media.peerconnection.enabled` 改为 `false`。
 
 **检测**：打开 [browserleaks.com/webrtc](https://browserleaks.com/webrtc)，“Public IP”只能是你的住宅 IP。
