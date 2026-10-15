@@ -44,16 +44,14 @@ GitHub Pages
 
 ```text
 docs/                   # 原始 Obsidian 笔记与附件
-├── 00收集/             # 尚未归类、等待处理的新笔记（不部署到网站）
-├── 01系统/             # 笔记系统说明与规范
-├── 02学习/             # 持续学习和探索的问题
-├── 03学习方法论/       # 对学习方法、课程与实习规划的思考
-├── 04技术/             # 技术实践与操作记录
-├── 05二次元/           # 番剧评价与观后感
-├── 06读书/             # 读书笔记
-├── 07自己/             # 对自我的思考（不部署到网站）
-├── 08作品/             # 已完成或正在整理的创作
-├── 09归档/             # 暂时归档的学习和技术资料
+├── 00收集/             # 尚未归类的新笔记，含 灵感/ 片段（不部署到网站）
+├── 01系统/             # 笔记系统规则与规范，含 分类标准.md
+├── 02笔记/             # 写给自己的学习记录：课程/、概念/、专题/
+├── 03文章/             # 写给读者的观点、心得、番评与书评（平铺，主题用 tags）
+├── 04技术/             # 写给读者、可复现的技术教程
+├── 05作品/             # 文学成稿及改稿
+├── 07自己/             # 关于自己的经历与思考（不部署到网站）
+├── 09归档/             # 不再维护的学习和技术资料
 ├── 09附件/             # 图片、PDF 等本地附件
 ├── javascripts/         # 站点脚本：访问统计、MathJax 配置
 └── index.md             # 站点首页
@@ -72,7 +70,7 @@ mkdocs.yml               # 站点与主题配置
 requirements.txt         # 固定版本的 Python 依赖
 ```
 
-一级分类由 MkDocs 和转换器动态扫描，可以按需要新增；新增时需在 `tools/build_site.py` 的 `SECTION_SLUGS` 中补充英文网址前缀（见“页面网址”）。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
+文章该放哪个文件夹，以 `docs/01系统/分类标准.md` 为准（Inbox Filer 插件也按这篇判断）。一级分类由 MkDocs 和转换器动态扫描，可以按需要新增；新增时需在 `tools/build_site.py` 的 `SECTION_SLUGS` 中补充英文网址前缀（见“页面网址”）。`00收集`、`09附件`、`docs` 和 `site` 是构建与编辑器约定的特殊路径；调整它们时必须同步检查 `mkdocs.yml`、`docs/.obsidian/app.json`、`.gitignore` 和自动验收测试。
 
 `scripts/` 存放供文章读者直接运行的脚本，不参与网站构建。VPS 一键搭建脚本已搬到独立仓库 [reality-setup](https://github.com/Finderlzy/reality-setup)，《如何订阅claude（纯操作版）》直接引用那里的 raw 链接；`scripts/setup.sh` 只保留为转发壳，让已发布视频里的旧命令 `https://raw.githubusercontent.com/Finderlzy/Writing/main/scripts/setup.sh` 继续可用，不要删除或改名。脚本本身的修改都在 reality-setup 仓库里进行。
 
@@ -82,9 +80,9 @@ requirements.txt         # 固定版本的 Python 依赖
 
 页面发布在 `/<栏目英文名>/<slug>/` 下，Obsidian 里的中文文件名和目录不受影响：
 
-- 栏目英文名由一级目录决定，对照表是 `tools/build_site.py` 的 `SECTION_SLUGS`（如 `04技术 → tech`、`08作品 → opus`）。新增一级目录时要在这里补上，否则构建报 `E_URL_SECTION_MISSING`。
+- 栏目英文名由一级目录决定，对照表是 `tools/build_site.py` 的 `SECTION_SLUGS`（如 `04技术 → tech`、`05作品 → opus`）。新增一级目录时要在这里补上，否则构建报 `E_URL_SECTION_MISSING`。
 - 在 front matter 写 `slug: vless-reality`，`04技术` 下的页面网址就是 `https://finderlzy.github.io/Writing/tech/vless-reality/`。slug 只能用小写字母、数字和单个连字符，同一栏目内不能重复。
-- 没写 slug 的页面会根据源文件路径自动生成 8 位短 ID（如 `/learning/c319381c/`）。文件改名或移动后，这个 ID 也会变，所以要分享的文章最好手写 slug。文章换到别的栏目时，网址前缀也会跟着变。
+- 没写 slug 的页面会根据源文件路径自动生成 8 位短 ID（如 `/notes/c319381c/`）。文件改名或移动后，这个 ID 也会变，所以要分享的文章最好手写 slug。文章换到别的栏目时，网址前缀也会跟着变。`04技术/如何订阅claude（纯操作版）.md` 的网址已在视频中公开，不要移动、改名或改 slug。
 - 原来的中文路径会保留为跳转页，自动跳到新网址。
 - slug 不合法或重复时，构建会报 `E_SLUG_INVALID`、`E_SLUG_DUPLICATE` 并停止。
 

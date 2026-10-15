@@ -18,13 +18,11 @@ UNPUBLISHED_PATHS = ("00收集", "07自己", "AGENTS.md")
 SECTION_SLUGS = {
     "00收集": "inbox",
     "01系统": "system",
-    "02学习": "learning",
-    "03学习方法论": "study-methods",
+    "02笔记": "notes",
+    "03文章": "articles",
     "04技术": "tech",
-    "05二次元": "acg",
-    "06读书": "reading",
+    "05作品": "opus",
     "07自己": "self",
-    "08作品": "opus",
     "09归档": "archive",
 }
 sys.dont_write_bytecode = True
