@@ -1,4 +1,5 @@
 ---
+createdDate: 2026-08-19
 tags:
   - AI
 ---

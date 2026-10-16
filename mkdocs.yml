@@ -17,6 +17,7 @@ theme:
     - navigation.instant
     - navigation.instant.prefetch
     - navigation.tabs
+    - navigation.indexes
     - content.code.copy
 
 extra:
@@ -45,6 +46,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/counter.js
+  - javascripts/post-filter.js
   - javascripts/mathjax.js
   - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 

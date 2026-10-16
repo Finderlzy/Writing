@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import posixpath
 import shutil
 import sys
 from pathlib import Path
@@ -25,6 +26,12 @@ SECTION_SLUGS = {
     "07自己": "self",
     "09归档": "archive",
 }
+# 导航顺序：首页 · 文章 · 技术 · 作品 · 笔记。没列出的一级目录（01系统、09归档）不进导航，页面照常发布
+NAV_POSTS = {"文章": "03文章", "技术": "04技术", "作品": "05作品"}
+NAV_NOTES = ("笔记", "02笔记")
+# 构建时生成的文章列表页及其网址
+ARTICLES_INDEX = "03文章/index.md"
+ARTICLES_URL = "articles/"
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -34,8 +41,10 @@ from tools.obsidian_compat.converter import Converter
 from tools.obsidian_compat.diagnostics import emit_diagnostics
 from tools.obsidian_compat.html_check import check_site
 from tools.obsidian_compat.index import VaultIndex
+from tools.obsidian_compat.models import Diagnostic, SourceSpan
 from tools.obsidian_compat.parser import residual_diagnostics
 from tools.obsidian_compat.urls import PageUrlPlugin, plan_page_urls, write_redirects
+from tools.site_nav import articles_page, build_nav, collect_posts, home_with_recent
 
 
 def _safe_child(path: Path, parent: Path) -> Path:
@@ -109,6 +118,31 @@ def _copy_theme_assets() -> None:
     shutil.copy2(EXTRA_CSS_SOURCE, EXTRA_CSS_DESTINATION)
 
 
+def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
+    """Generate the article list page and the home page's recent posts in CACHE; return the nav."""
+    if (DOCS / ARTICLES_INDEX).exists():
+        return [], [
+            Diagnostic(
+                "E_GENERATED_PAGE_CONFLICT",
+                SourceSpan(Path(ARTICLES_INDEX), 1, 1),
+                "文章列表页由构建生成，请给 docs 里的这个同名文件改名。",
+            )
+        ]
+    posts = {title: collect_posts(DOCS, pages, folder) for title, folder in NAV_POSTS.items()}
+    articles = posts["文章"]
+    emit_diagnostics(
+        Diagnostic("W_POST_DATE_MISSING", SourceSpan(post.source_path, 1, 1), "文章没有 createdDate，列表中排在最后。")
+        for post in articles
+        if post.date is None
+    )
+    (CACHE / ARTICLES_INDEX).write_text(articles_page(articles, posixpath.dirname(ARTICLES_INDEX)), encoding="utf-8")
+    home = CACHE / "index.md"
+    home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX), encoding="utf-8")
+    sections = {title: [post.source_path.as_posix() for post in section] for title, section in posts.items()}
+    sections["文章"].insert(0, ARTICLES_INDEX)
+    return build_nav(pages, sections, NAV_NOTES), []
+
+
 def build() -> int:
     before = _manifest(DOCS)
     try:
@@ -123,6 +157,11 @@ def build() -> int:
             emit_diagnostics(diagnostics)
             return 1
         _copy_theme_assets()
+        nav, nav_diagnostics = _write_site_pages([path for path in index.pages if not converter.is_unpublished(path)])
+        if nav_diagnostics:
+            emit_diagnostics(nav_diagnostics)
+            return 1
+        page_urls[ARTICLES_INDEX] = ARTICLES_URL
 
         from mkdocs.commands.build import build as mkdocs_build
         from mkdocs.config import load_config
@@ -131,6 +170,7 @@ def build() -> int:
         config["docs_dir"] = str(CACHE)
         config["site_dir"] = str(SITE)
         config["strict"] = True
+        config["nav"] = nav
         url_plugin = PageUrlPlugin(page_urls)
         config.plugins["page-urls"] = url_plugin
         mkdocs_build(config)

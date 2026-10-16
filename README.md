@@ -4,7 +4,7 @@
 
 这里放我的想法、学习笔记、技术教程、番评书评和文学作品。所有内容在 Obsidian 里写，用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
-当前版本：**2.0.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
+当前版本：**2.1.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
 
 ## 日常写作流程
 
@@ -35,6 +35,22 @@
 | `09附件/` | 图片、PDF 等附件 | — | 随引用的页面 |
 
 不公开的内容由 `tools/build_site.py` 的 `UNPUBLISHED_PATHS` 控制（目前是 `00收集`、`07自己` 和 `docs/AGENTS.md`）。这些页面仍然参与双链检查。公开页面指向它们的双链会显示成纯文字，只被它们引用的附件也不会复制到网站。**注意：它们仍然会随 Git 推送到公开的 GitHub 仓库。**
+
+## 导航与文章列表
+
+导航由构建生成，配置在 `tools/build_site.py` 的 `NAV_POSTS`、`NAV_NOTES`，顺序是：
+
+| 导航 | 内容 | 排序 |
+| --- | --- | --- |
+| 首页 | `docs/index.md`，末尾自动加上“最近的文章”（最新 8 篇）和“全部文章”链接 | — |
+| 文章 | 文章列表页 `/articles/`，加上 `03文章` 的全部文章 | `createdDate` 从新到旧 |
+| 技术 | `04技术` | `createdDate` 从新到旧 |
+| 作品 | `05作品` | `createdDate` 从新到旧 |
+| 笔记 | `02笔记`，保留子文件夹结构 | 按文件名 |
+
+- `01系统` 和 `09归档` 不进导航，但页面照常发布，原网址不变。
+- 文章列表页按时间列出 `03文章` 的所有文章，顶部有按 `tags` 筛选的按钮（`docs/javascripts/post-filter.js`）。它只在构建时生成，`docs/03文章/` 里不能有 `index.md`，否则构建报 `E_GENERATED_PAGE_CONFLICT`。
+- 日期取 front matter 的 `createdDate`（写成 `2026-10-14`）。文章缺日期时会排在最后，构建给出 `W_POST_DATE_MISSING` 提示，但不会失败。
 
 ## 页面网址
 
@@ -123,10 +139,11 @@ site/ 网站
 
 ```text
 docs/                    # Obsidian 仓库：笔记、附件、首页（分类见上文）
-├── javascripts/         # 站点脚本：访问统计、MathJax 配置
+├── javascripts/         # 站点脚本：访问统计、MathJax 配置、文章列表的标签筛选
 └── index.md             # 网站首页
 tools/
-├── build_site.py        # 构建入口：转换、构建、检查；SECTION_SLUGS、UNPUBLISHED_PATHS 在这里
+├── build_site.py        # 构建入口：转换、构建、检查；SECTION_SLUGS、UNPUBLISHED_PATHS、导航配置在这里
+├── site_nav.py          # 生成导航、文章列表页和首页的最近文章
 └── obsidian_compat/     # 索引、解析、转换、网址分配、HTML 检查
 tests/                   # 单元测试与仓库级验收测试
 theme/extra.css          # 站点样式

@@ -47,3 +47,45 @@
     flex: 1 1 0;
   }
 }
+
+/* 文章列表：日期等宽对齐，标签和筛选按钮用小号胶囊样式 */
+.md-typeset .post-date {
+  margin-right: 0.6em;
+  color: var(--md-default-fg-color--light);
+  font-variant-numeric: tabular-nums;
+}
+
+.md-typeset .post-tags span,
+.md-typeset .post-filter__tag {
+  display: inline-block;
+  margin-left: 0.4em;
+  padding: 0 0.6em;
+  border-radius: 1em;
+  background-color: var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  font-size: 0.75em;
+  line-height: 1.8;
+}
+
+.md-typeset .post-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+  margin-bottom: 1em;
+}
+
+.md-typeset .post-filter[hidden] {
+  display: none;
+}
+
+.md-typeset .post-filter__tag {
+  margin-left: 0;
+  border: 0;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.md-typeset .post-filter__tag[aria-pressed="true"] {
+  background-color: var(--md-accent-fg-color);
+  color: var(--md-accent-bg-color);
+}
