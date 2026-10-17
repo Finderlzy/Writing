@@ -270,6 +270,12 @@ class CompatibilityTests(unittest.TestCase):
         self.assertIn('![图.png](%E5%9B%BE.png){ width="300" height="200" }', result.text)
         self.assertEqual(["E_UNSUPPORTED_EMBED_OPTION"], [item.code for item in result.diagnostics])
 
+    def test_video_embed_becomes_video_tag(self):
+        root, index = self.make_index({"当前.md": "# 当前\n", "录屏.webm": ""})
+        result = Converter(index).convert(Path("当前.md"), "![[录屏.webm]]\n")
+        self.assertIn('<video controls preload="metadata" src="../%E5%BD%95%E5%B1%8F.webm"></video>', result.text)
+        self.assertFalse(result.diagnostics)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -8,6 +8,8 @@ from urllib.parse import quote
 from .index import _IMAGE_SUFFIXES, _normalize_candidate, VaultIndex
 from .models import ConversionResult, Diagnostic, Reference, ResolvedTarget, SourceSpan
 
+_VIDEO_SUFFIXES = {".mp4", ".webm", ".mov"}
+
 _CALLOUT_RE = re.compile(
     r"^(?P<prefix>[ \t]*)>[ \t]*\[!(?P<kind>[A-Za-z]+)(?P<collapse>[+-])?\][ \t]*(?P<title>.*)$"
 )
@@ -446,6 +448,10 @@ class Converter:
                 return ref, original, diagnostics
             record = attachment_candidates[0]
             href = _relative_url(current, record.output_path)
+            if suffix in _VIDEO_SUFFIXES:
+                # MkDocs 不改写原始 HTML 里的路径；目录式网址下，非 index 页面要多退一层。
+                video_src = href if current.name == "index.md" else f"../{href}"
+                return ref, f'<video controls preload="metadata" src="{video_src}"></video>', diagnostics
             if size:
                 attrs = f'width="{size.group("width")}"'
                 if size.group("height"):
