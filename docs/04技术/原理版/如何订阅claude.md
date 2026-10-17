@@ -1,5 +1,5 @@
 ---
-slug: subscribe-claude
+slug: subscribe-claude-new
 createdDate: 2026-10-07
 updatedDate: 2026-10-12
 ---
@@ -49,7 +49,8 @@ updatedDate: 2026-10-12
 19. [[致谢]]
 20. [[后记]]
 
-**卡住了再看**
+**附录**
 
-- [[常见问题]]
-- [[IP 质量实测合集]]
+21. [[附录]]
+    - [[常见问题]]
+    - [[IP 质量实测合集]]
