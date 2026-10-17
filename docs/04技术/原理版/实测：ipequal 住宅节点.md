@@ -28,23 +28,23 @@ IPKK 认成了住宅 IP，Scamalytics 也比读者白嫖的那个好。但 IPOK 
 
 ip.net.coffee：
 
-![[住宅IP实测-ip.net.coffee-方案三.png|600]]
+![[09附件/住宅IP实测-ip.net.coffee-方案三.png|600]]
 
 IPinfo（标注里的“ASN 很差”指排名 `#20,676` 靠后。这个排名只反映网络规模，和 IP 质量无关）：
 
-![[住宅IP实测-ipinfo-方案三.png|600]]
+![[09附件/住宅IP实测-ipinfo-方案三.png|600]]
 
 IPKK：
 
-![[住宅IP实测-ipkk-方案三.png|600]]
+![[09附件/住宅IP实测-ipkk-方案三.png|600]]
 
 IPOK：
 
-![[住宅IP实测-ipok-方案三.png|600]]
+![[09附件/住宅IP实测-ipok-方案三.png|600]]
 
 Scamalytics：
 
-![[住宅IP实测-scamalytics-方案三.png|600]]
+![[09附件/住宅IP实测-scamalytics-方案三.png|600]]
 
 ---
 

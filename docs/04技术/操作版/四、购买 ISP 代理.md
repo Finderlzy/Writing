@@ -2,7 +2,7 @@
 
 把第一步白嫖到的 ISP 配到节点上。
 
-白嫖到的 ISP 质量不好的话，推荐买 [Decodo](https://decodo.com/)（见 [[实测：Decodo ISP|它的实测]]），它在 Proxyway 2026 年的 ISP 代理测试里排第一，就是贵一些。买的时候选 **SOCKS5** 协议。
+白嫖到的 ISP 质量不好的话，推荐买 [Decodo](https://decodo.com/)（见 [[../原理版/实测：Decodo ISP|它的实测]]），它在 Proxyway 2026 年的 ISP 代理测试里排第一，就是贵一些。买的时候选 **SOCKS5** 协议。
 
 TODO：把 Decodo 的链接换成我的推广链接。
 

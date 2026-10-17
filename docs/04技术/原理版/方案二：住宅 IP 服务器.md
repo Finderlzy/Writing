@@ -17,9 +17,9 @@ IP 不只是一个地址，它还能看出两件事：
 
 实测截图（IP 已遮盖）：
 
-![[VoyraCloud住宅服务器实测-ipinfo.png|600]]
+![[09附件/VoyraCloud住宅服务器实测-ipinfo.png|600]]
 
-![[VoyraCloud住宅服务器实测-scamalytics.png|600]]
+![[09附件/VoyraCloud住宅服务器实测-scamalytics.png|600]]
 
 **1. 购买住宅服务器**
 

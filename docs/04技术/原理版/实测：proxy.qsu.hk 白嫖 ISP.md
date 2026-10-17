@@ -18,9 +18,9 @@
 
 ipinfo 这一关算过了，Scamalytics 也是最好的 0 分。但严格说它不是家庭宽带：Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商，Scamalytics 的说明里也写了它不是普通家庭网络。这种 IP 一般叫“ISP IP”或“静态住宅”。目前我用它订阅和使用 claude 都正常，对我来说够用。
 
-![[住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
+![[09附件/住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
 
-![[住宅IP实测-scamalytics-作者的白嫖IP.png|600]]
+![[09附件/住宅IP实测-scamalytics-作者的白嫖IP.png|600]]
 
 ## 一位读者的
 
@@ -43,23 +43,23 @@ ipinfo 把它标成 ISP 类型，但 IPKK 认为它是机房 IP，Scamalytics �
 
 ip.net.coffee：
 
-![[住宅IP实测-ip.net.coffee-方案一.png|600]]
+![[09附件/住宅IP实测-ip.net.coffee-方案一.png|600]]
 
 IPinfo：
 
-![[住宅IP实测-ipinfo-方案一.png|600]]
+![[09附件/住宅IP实测-ipinfo-方案一.png|600]]
 
 IPKK：
 
-![[住宅IP实测-ipkk-方案一.png|600]]
+![[09附件/住宅IP实测-ipkk-方案一.png|600]]
 
 IPOK：
 
-![[住宅IP实测-ipok-方案一.png|600]]
+![[09附件/住宅IP实测-ipok-方案一.png|600]]
 
 Scamalytics：
 
-![[住宅IP实测-scamalytics-方案一.png|600]]
+![[09附件/住宅IP实测-scamalytics-方案一.png|600]]
 
 ---
 

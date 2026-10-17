@@ -4,7 +4,7 @@
 
 用方案一的要知道一件事：**我在脚本里设置了只有 claude 和 ipinfo.io 走 ISP**，其他网站都还是从服务器自己的出口出去。所以开着代理打开别的测 IP 网站，看到的是服务器的机房 IP，不是 ISP 的 IP；只有在 ipinfo.io 上，才能看到 ISP 真正的出口 IP。各个网站测出来的 IP 不一样，见 [[测出来好几个不同的 IP？]]。
 
-![[说明图-测 IP 质量.svg]]
+![[09附件/说明图-测 IP 质量.svg]]
 
 所以测的顺序是：先在 ipinfo.io 上拿到出口 IP，顺便看它的类型；再把这个 IP 复制到别的网站去查风险分。
 
@@ -16,7 +16,7 @@
 
 开着代理打开 [ipinfo.io](https://ipinfo.io/what-is-my-ip)，页面最上面显示的就是你的出口 IP，**先把它复制下来**，下一步要用。然后往下拉到 Summary，看下面几行：
 
-![[住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
+![[09附件/住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
 
 | 字段 | 我的结果 | 怎么看 |
 | --- | --- | --- |
@@ -28,13 +28,13 @@ AS Type 是 `isp`、Privacy 是 `false`，ipinfo 这一关就算过了。不满�
 
 ASN 后面那个 `#6` 是 IPinfo 给这个网络的排名，**和 IP 干不干净没有关系**，不用管。
 
-想看更多例子，可以看一位读者的实测：[[04技术/读者实测：方案一和方案三的住宅 IP 对比|方案一和方案三的住宅 IP 对比]]。他用五个检测网站对比了两个方案的延迟和风险评分。
+想看更多例子，可以看一位读者的实测：[方案一和方案三的住宅 IP 对比](https://finderlzy.github.io/Writing/tech/residential-ip-test/)。他用五个检测网站对比了两个方案的延迟和风险评分。
 
 **2. 在 Scamalytics 上查风险分**
 
 把刚才复制的 IP 粘贴到 [scamalytics.com](https://scamalytics.com/) 查风险分，越低越好。我这个是 0 分，但不一定都能做到 0，分数低就可以。不要用 ping0.cc，它会暴露你国内的真实 IP。
 
-![[住宅IP实测-scamalytics-作者的白嫖IP.png|600]]
+![[09附件/住宅IP实测-scamalytics-作者的白嫖IP.png|600]]
 
 **3. 测出来质量不好**
 

@@ -16,9 +16,9 @@
 
 截图（IP 已遮盖）：
 
-![[VoyraCloud住宅服务器实测-ipinfo.png|600]]
+![[09附件/VoyraCloud住宅服务器实测-ipinfo.png|600]]
 
-![[VoyraCloud住宅服务器实测-scamalytics.png|600]]
+![[09附件/VoyraCloud住宅服务器实测-scamalytics.png|600]]
 
 ---
 
