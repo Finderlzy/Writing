@@ -25,22 +25,6 @@ createdDate: 2026-10-17
 
 我这次是去 [VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M) 买了一台住宅服务器，也就是[[04技术/原理版/方案二：住宅 IP 服务器|方案二]]。买好之后照着 [[04技术/原理版/四、把服务器变成节点|四、把服务器变成节点]] 做，再[[04技术/原理版/导入代理软件|导入代理软件]]就行。
 
-为什么又买它家的？因为我之前买过一台，测出来分到的是机房 IP（见 [[04技术/原理版/实测：VoyraCloud 住宅服务器|它的实测]]），我想再确认一下它家服务器的质量到底怎么样。**这一次测出来的结果很好。**
-
-| 项目 | 结果 |
-| --- | --- |
-| ipinfo：ASN | AS174，Cogent Communications |
-| ipinfo：AS Type | **ISP** |
-| ipinfo：Privacy | false |
-| ipinfo：Hosted domains | 0 |
-| Scamalytics | **3 分**，低风险 |
-
-截图（IP 已遮盖）：
-
-![[09附件/换IP-VoyraCloud新服务器-ipinfo.png|600]]
-
-![[09附件/换IP-VoyraCloud新服务器-scamalytics.png|600]]
-
 ### 为什么没去千宿网络的主站
 
 千宿网络就是方案一里白嫖住宅 IP 的那家（proxy.qsu.hk），它的主站 qsu.hk 也卖住宅服务器。这次我没去它的主站买，原因是这次断连让我对它产生了不信任：
