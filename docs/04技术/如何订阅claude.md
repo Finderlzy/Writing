@@ -120,7 +120,7 @@ updatedDate: 2026-10-17
 | 流量   | 每月几百 GB 足够                         |
 | 机房位置 | 美国、日本、新加坡等                         |
 
-已经装成别的系统的，在商家后台把系统重装成 Debian 12；商家最高只有 Debian 11 的，选 Debian 11 也行。
+已经装成别的系统的，在商家后台把系统重装成 Debian 12；商家最高只有 Debian 11 的，选 Debian 11 也行，脚本会自动先升级到 Debian 12。
 
 买完在商家控制台记下**服务器 IP** 和 **root 密码**。
 
@@ -142,17 +142,18 @@ ssh root@你的服务器IP
 3. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.4.0/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.5.1/setup.sh)
 ```
 
 4. 问服务器 IP 对不对时，和你的一样就回车；问住宅代理时，依次填第 2 步记下的 IP、端口、用户名、密码。
-5. 等几分钟（弹出紫色/蓝色对话框就回车），看到 `节点自测 Reality：成功` 和 `节点自测 Hysteria2：成功`。
+5. 等几分钟（弹出紫色/蓝色对话框就回车；Debian 11 的服务器会先自动升级到 Debian 12，要多等 5～15 分钟），看到 `节点自测 Reality：成功` 和 `节点自测 Hysteria2：成功`。
 6. 最后会打印两个节点，**通过剪贴板**或扫二维码导入代理软件，**不要发给别人**：
    - **主节点**：`vless://` 开头，平时用这个。忘了就运行 `cat /root/vless.txt`。
    - **备用节点**：`hysteria2://` 开头，主节点连不上或很慢时换它。忘了就运行 `cat /root/hy2.txt`。
    - 用 Clash Verge 的，见文末「用 Clash Verge 怎么导入？」。
 7. 最后打印的“面板”几行**截图保存**，排查问题时要用。
 8. 商家后台有防火墙/安全组的话，放行 **TCP 443 和 UDP 443**。
+9. 升级过系统的（Debian 11 升到 12），最后会提示重启：找个方便的时候运行 `reboot`，节点会自动起来。
 
 提示“住宅代理连不上”：去商家后台检查端口、账号密码、IP 白名单（把服务器 IP 加进去）、套餐是否生效，再运行一次命令。其他问题看文末「附：打开面板排查」。想重装看文末「装过了，想重装？」。
 

@@ -74,7 +74,7 @@ updatedDate: 2026-10-12
 | 流量   | 每月几百 GB 足够                                         |
 | 机房位置 | 美国、日本、新加坡等                                         |
 
-已经装成别的系统的，在商家后台把系统重装成 Debian 12；商家最高只有 Debian 11 的，选 Debian 11 也行。
+已经装成别的系统的，在商家后台把系统重装成 Debian 12；商家最高只有 Debian 11 的，选 Debian 11 也行，脚本会自动先升级到 Debian 12。
 
 买完在商家控制台记下**服务器 IP** 和 **root 密码**。
 
@@ -113,7 +113,7 @@ ssh root@你的服务器IP
 1. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.4.0/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.5.1/setup.sh)
 ```
 
 ![[09附件/订阅claude-脚本-5-粘贴命令.jpg|640]]
@@ -127,7 +127,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.4
 
 ![[09附件/订阅claude-脚本-6-回答问题.jpg|640]]
 
-3. 等几分钟（弹出紫色/蓝色对话框就回车），看到 `节点自测 Reality：成功` 和 `节点自测 Hysteria2：成功`。
+3. 等几分钟（弹出紫色/蓝色对话框就回车；Debian 11 的服务器会先自动升级到 Debian 12，要多等 5～15 分钟），看到 `节点自测 Reality：成功` 和 `节点自测 Hysteria2：成功`。
 
 ![[09附件/订阅claude-脚本-7-安装中.jpg|640]]
 ![[09附件/订阅claude-脚本-8-自测成功.jpg|640]]
@@ -138,6 +138,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.4
    - v2rayN：配置项 → 从剪贴板导入；手机 Shadowrocket 也是从剪贴板导入。用 Clash Verge 的看原理版[[04技术/如何订阅claude#用 Clash Verge 怎么导入？|用 Clash Verge 怎么导入？]]。
 5. 最后打印的“面板”几行**截图保存**。
 6. 商家后台有防火墙/安全组的话，放行 **TCP 443 和 UDP 443**。
+7. 升级过系统的（Debian 11 升到 12），最后会提示重启：找个方便的时候运行 `reboot`，节点会自动起来。
 
 >[!note] 视频和截图里是旧版脚本
 >视频和截图录制时，脚本只有一个节点，端口是 8555。现在脚本改成了 443 端口，并多了一个备用节点，以本文为准。
