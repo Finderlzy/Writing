@@ -69,10 +69,12 @@ updatedDate: 2026-10-12
 
 | 选项   | 怎么选                                                |
 | ---- | -------------------------------------------------- |
-| 系统   | **Ubuntu 22.04 / 24.04** 或 **Debian 12** |
+| 系统   | **Debian 12**（不要选 Ubuntu）             |
 | 配置   | 1 核 CPU、1 GB 内存就够                                  |
 | 流量   | 每月几百 GB 足够                                         |
 | 机房位置 | 美国、日本、新加坡等                                         |
+
+已经装成别的系统的，在商家后台把系统重装成 Debian 12；商家最高只有 Debian 11 的，选 Debian 11 也行。
 
 买完在商家控制台记下**服务器 IP** 和 **root 密码**。
 
@@ -111,7 +113,7 @@ ssh root@你的服务器IP
 1. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.2.1/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v1.4.0/setup.sh)
 ```
 
 ![[09附件/订阅claude-脚本-5-粘贴命令.jpg|640]]
