@@ -44,7 +44,7 @@ from tools.obsidian_compat.index import VaultIndex
 from tools.obsidian_compat.models import Diagnostic, SourceSpan
 from tools.obsidian_compat.parser import residual_diagnostics
 from tools.obsidian_compat.urls import PageUrlPlugin, plan_page_urls, write_redirects
-from tools.site_nav import articles_page, build_nav, collect_posts, home_with_recent
+from tools.site_nav import articles_page, build_nav, collect_posts, home_with_recent, section_nav
 
 
 def _safe_child(path: Path, parent: Path) -> Path:
@@ -138,7 +138,7 @@ def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
     (CACHE / ARTICLES_INDEX).write_text(articles_page(articles, posixpath.dirname(ARTICLES_INDEX)), encoding="utf-8")
     home = CACHE / "index.md"
     home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX), encoding="utf-8")
-    sections = {title: [post.source_path.as_posix() for post in section] for title, section in posts.items()}
+    sections = {title: section_nav(DOCS, section) for title, section in posts.items()}
     sections["文章"].insert(0, ARTICLES_INDEX)
     return build_nav(pages, sections, NAV_NOTES), []
 

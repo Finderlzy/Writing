@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.site_nav import Post, articles_page, build_nav, collect_posts, home_with_recent, read_meta
+from tools.site_nav import Post, articles_page, build_nav, collect_posts, home_with_recent, read_meta, section_nav
 
 
 def _write(root: Path, files: dict[str, str]) -> list[Path]:
@@ -139,6 +139,32 @@ class BuildNavTests(unittest.TestCase):
         self.assertEqual(["首页", "文章"], [next(iter(item)) for item in nav])
 
 
+class SectionNavTests(unittest.TestCase):
+    def test_subfolder_becomes_one_group_in_link_order(self):
+        root = Path(tempfile.mkdtemp())
+        pages = _write(
+            root,
+            {
+                "04技术/新.md": "---\ncreatedDate: 2026-10-10\n---\n",
+                "04技术/旧.md": "---\ncreatedDate: 2026-01-01\n---\n",
+                "04技术/教程/目录.md": "---\ncreatedDate: 2026-05-01\n---\n1. [[开始]]\n2. [[教程/结束|结束]]\n",
+                "04技术/教程/结束.md": "上一步：[[开始]]\n",
+                "04技术/教程/开始.md": "下一步：[[结束]] 见 [[问答#细节]]\n",
+                "04技术/教程/问答.md": "",
+                "04技术/教程/没人链.md": "",
+            },
+        )
+        nav = section_nav(root, collect_posts(root, pages, "04技术"))
+        self.assertEqual(
+            [
+                "04技术/新.md",
+                {"教程": ["04技术/教程/目录.md", "04技术/教程/开始.md", "04技术/教程/结束.md", "04技术/教程/问答.md", "04技术/教程/没人链.md"]},
+                "04技术/旧.md",
+            ],
+            nav,
+        )
+
+
 class RealSiteTests(unittest.TestCase):
     def test_real_nav_keeps_published_tech_links_and_hides_system_and_archive(self):
         from tools import build_site
@@ -146,7 +172,7 @@ class RealSiteTests(unittest.TestCase):
         pages = [path.relative_to(build_site.DOCS) for path in build_site.DOCS.rglob("*.md")]
         pages = [path for path in pages if path.parts[0] not in build_site.UNPUBLISHED_PATHS and ".obsidian" not in path.parts]
         posts = {title: collect_posts(build_site.DOCS, pages, folder) for title, folder in build_site.NAV_POSTS.items()}
-        nav = build_nav(pages, {title: [p.source_path.as_posix() for p in section] for title, section in posts.items()}, build_site.NAV_NOTES)
+        nav = build_nav(pages, {title: section_nav(build_site.DOCS, section) for title, section in posts.items()}, build_site.NAV_NOTES)
         self.assertEqual(["首页", "文章", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
         self.assertIn("04技术/如何订阅claude（纯操作版）.md", nav[2]["技术"])
         flat = repr(nav)

@@ -20,6 +20,7 @@ from mkdocs.utils import nest_paths
 
 _FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\r?\n(.*?\r?\n)?---[ \t]*(?:\r?\n|\Z)", re.DOTALL)
 _MD_SPECIAL_RE = re.compile(r"([\\`*_\[\]])")
+_WIKI_LINK_RE = re.compile(r"\[\[([^\]|#^]+)")
 
 
 @dataclass(frozen=True)
@@ -135,6 +136,44 @@ def home_with_recent(home: str, posts: Sequence[Post], all_posts_page: str, limi
     lines += [_post_line(post, "", show_tags=False) for post in recent]
     lines += ["", f"[全部文章 →](<{all_posts_page}>)", ""]
     return home.rstrip("\n") + "\n" + "\n".join(lines)
+
+
+def _wiki_targets(text: str) -> list[str]:
+    """File names that `[[...]]` links in `text` point to, in order of first appearance."""
+    names = (target.strip().rsplit("/", 1)[-1] for target in _WIKI_LINK_RE.findall(text))
+    return list(dict.fromkeys(name.removesuffix(".md") for name in names if name.strip()))
+
+
+def _reading_order(docs: Path, group: Sequence[Post]) -> list[Post]:
+    """The group's table-of-contents page first, then pages in the order its links reach them; unlinked pages last."""
+    by_stem = {post.source_path.stem: post for post in group}
+    links = {
+        post.source_path.stem: [name for name in _wiki_targets((docs / post.source_path).read_text(encoding="utf-8")) if name in by_stem]
+        for post in group
+    }
+    # 目录页：链到同组页面最多的那篇
+    start = max(group, key=lambda post: (len(links[post.source_path.stem]), post.date is not None))
+    order = [start.source_path.stem]
+    for stem in order:
+        order += [name for name in links[stem] if name not in order]
+    order += sorted(stem for stem in by_stem if stem not in order)
+    return [by_stem[stem] for stem in order]
+
+
+def section_nav(docs: Path, posts: Sequence[Post]) -> list:
+    """Pages right in the section folder stay flat; each subfolder becomes one group, placed where its newest page would be."""
+    groups: dict[str, list[Post]] = {}
+    for post in posts:
+        if len(post.source_path.parts) > 2:
+            groups.setdefault(post.source_path.parts[1], []).append(post)
+    nav: list = []
+    for post in posts:
+        if len(post.source_path.parts) == 2:
+            nav.append(post.source_path.as_posix())
+        elif post.source_path.parts[1] in groups:
+            name = post.source_path.parts[1]
+            nav.append({name: [p.source_path.as_posix() for p in _reading_order(docs, groups.pop(name))]})
+    return nav
 
 
 def _sort_key(path: Path):
