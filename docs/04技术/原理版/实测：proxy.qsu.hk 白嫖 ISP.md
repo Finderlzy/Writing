@@ -1,7 +1,7 @@
 # 实测：proxy.qsu.hk 白嫖 ISP
 
 - 商家：[proxy.qsu.hk](https://proxy.qsu.hk/)，填优惠码 `qiansu998` 免费拿到的 SOCKS5 住宅 IP 端口
-- 对应：方案一的 [[一、白嫖 ISP]]
+- 对应：方案一的 ISP 代理（[[二、购买 ISP 代理]]）。这个免费 ISP 2026-10-17 断连之后，教程已经不再推荐它，这里只保留实测记录。之前用它的，换 IP 的过程见[[04技术/方案一断连后：给账号更换 IP|方案一断连后：给账号更换 IP]]
 
 这里有两份实测：一份是我自己的，一份是一位读者的。两个人白嫖到的是不同的 IP，结果差得挺多，正好说明**白嫖的质量看运气**。
 
@@ -16,7 +16,7 @@
 | ipinfo：Hosted domains | 0 |
 | Scamalytics | 0 分 |
 
-ipinfo 这一关算过了，Scamalytics 也是最好的 0 分。但严格说它不是家庭宽带：Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商，Scamalytics 的说明里也写了它不是普通家庭网络。这种 IP 一般叫“ISP IP”或“静态住宅”。目前我用它订阅和使用 claude 都正常，对我来说够用。
+ipinfo 这一关算过了，Scamalytics 也是最好的 0 分。但严格说它不是家庭宽带：Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&T、Spectrum 这类家庭宽带运营商，Scamalytics 的说明里也写了它不是普通家庭网络。这种 IP 一般叫“ISP IP”或“静态住宅”。断连之前，我用它订阅和使用 claude 都正常。现在它已经断连，不推荐。
 
 ![[09附件/住宅IP实测-ipinfo-作者的白嫖IP.png|600]]
 
