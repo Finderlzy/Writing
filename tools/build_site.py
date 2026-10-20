@@ -32,6 +32,8 @@ NAV_NOTES = ("笔记", "02笔记")
 # 构建时生成的文章列表页及其网址
 ARTICLES_INDEX = "03思考/index.md"
 ARTICLES_URL = "thoughts/"
+# 首页“最近的思考”的篇数：带上摘要后，常见桌面屏幕不用滚动就能看完首页
+HOME_RECENT_POSTS = 4
 # 改过名的一级目录：旧网址生成跳转页。4.0.0 把 03文章（articles）改名为 03思考（thoughts）
 RENAMED_SECTIONS = {"03思考": ("03文章", "articles")}
 sys.dont_write_bytecode = True
@@ -139,7 +141,7 @@ def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
     )
     (CACHE / ARTICLES_INDEX).write_text(articles_page(articles, posixpath.dirname(ARTICLES_INDEX)), encoding="utf-8")
     home = CACHE / "index.md"
-    home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX), encoding="utf-8")
+    home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX, HOME_RECENT_POSTS), encoding="utf-8")
     sections = {title: section_nav(DOCS, section) for title, section in posts.items()}
     sections["思考"].insert(0, ARTICLES_INDEX)
     return build_nav(pages, sections, NAV_NOTES), []
