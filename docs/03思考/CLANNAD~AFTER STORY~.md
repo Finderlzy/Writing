@@ -1,9 +1,14 @@
 ---
 createdDate: 2026-09-04
+updatedDate: 2026-10-20
 tags:
   - 二次元
+  - CLANNAD
+  - 情感
+description: "逐篇评述 CLANNAD AFTER STORY 的剧情与人物，讲了渚的离开和汐的成长带来的触动，并给出五星评分与对结局的看法。"
 ---
 > 写于 2026-09-04
+> 更新于 2026-10-20
 > ⭐⭐⭐⭐⭐
 > 上一季：[[03思考/CLANNAD]]
 
