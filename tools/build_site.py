@@ -32,7 +32,7 @@ NAV_NOTES = ("笔记", "02笔记")
 # 构建时生成的文章列表页及其网址
 ARTICLES_INDEX = "03思考/index.md"
 ARTICLES_URL = "thoughts/"
-# 改过名的一级目录：旧网址生成跳转页。3.0.0 把 03文章（articles）改名为 03思考（thoughts）
+# 改过名的一级目录：旧网址生成跳转页。4.0.0 把 03文章（articles）改名为 03思考（thoughts）
 RENAMED_SECTIONS = {"03思考": ("03文章", "articles")}
 sys.dont_write_bytecode = True
 

@@ -4,7 +4,7 @@
 
 这里放我的思考、学习笔记、技术教程和文学作品。所有内容在 Obsidian 里写，用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
-当前版本：**3.0.1**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
+当前版本：**4.0.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
 
 ## 日常写作流程
 
