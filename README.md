@@ -50,7 +50,7 @@
 
 - `01系统` 和 `09归档` 不进导航，但页面照常发布，原网址不变。
 - 思考列表页按时间列出 `03思考` 的所有文章（包括初稿），顶部有按 `tags` 筛选的按钮（`docs/javascripts/post-filter.js`）。它只在构建时生成，`docs/03思考/` 里不能有 `index.md`，否则构建报 `E_GENERATED_PAGE_CONFLICT`。
-- 在 front matter 写 `description: 一两句话简介`，列表页会在标题下面用灰色小字显示它；首页的“最近的思考”不显示。
+- 在 front matter 写 `description: 一两句话简介`，列表页和首页的“最近的思考”都会在标题下面用灰色小字显示它。
 - 日期取 front matter 的 `createdDate`（写成 `2026-10-14`）。文章缺日期时会排在最后，构建给出 `W_POST_DATE_MISSING` 提示，但不会失败。
 
 ## 页面网址

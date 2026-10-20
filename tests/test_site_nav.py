@@ -112,9 +112,9 @@ class HomeTests(unittest.TestCase):
         self.assertIn("[全部思考 →](<03思考/index.md>)", home)
         self.assertNotIn("post-filter", home)
 
-    def test_recent_posts_leave_out_description(self):
+    def test_recent_posts_show_description(self):
         post = Post(Path("03思考/a.md"), "a", datetime.date(2026, 1, 1), (), "简介")
-        self.assertNotIn("post-desc", home_with_recent("# 首页\n", [post], "03思考/index.md"))
+        self.assertIn('<span class="post-desc">简介</span>', home_with_recent("# 首页\n", [post], "03思考/index.md"))
 
 
 class BuildNavTests(unittest.TestCase):

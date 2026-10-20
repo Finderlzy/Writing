@@ -109,8 +109,8 @@ def _post_line(post: Post, from_dir: str, show_tags: bool) -> str:
         tags = html.escape(json.dumps(post.tags, ensure_ascii=False), quote=True)
         labels = " ".join(f"<span>{_md_text(tag)}</span>" for tag in post.tags)
         parts.append(f'<span class="post-tags" data-tags="{tags}">{labels}</span>')
-        if post.description:
-            parts.append(f'<span class="post-desc">{_md_text(post.description)}</span>')
+    if post.description:
+        parts.append(f'<span class="post-desc">{_md_text(post.description)}</span>')
     return "- " + " ".join(parts)
 
 

@@ -2,7 +2,7 @@
 
 ## 2026-10-20 — 4.1.0
 
-- 新增：思考列表页 `/thoughts/` 在文章标题下显示 front matter 的 `description`，没写的文章不显示；首页“最近的思考”不显示。实现位于 `tools/site_nav.py`，样式在 `theme/extra.css` 的 `.post-desc`。
+- 新增：思考列表页 `/thoughts/` 和首页“最近的思考”在文章标题下显示 front matter 的 `description`，没写的文章不显示。实现位于 `tools/site_nav.py`，样式在 `theme/extra.css` 的 `.post-desc`。
 - 兼容性：不改网址、不改原始笔记，没写 `description` 的文章显示不变。
 
 ## 2026-10-20 — 4.0.0
