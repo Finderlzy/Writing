@@ -100,6 +100,24 @@ def plan_page_urls(
     return urls, diagnostics
 
 
+def renamed_folder_redirects(urls: dict[str, str], renames: dict[str, tuple[str, str]]) -> list[Redirect]:
+    """Old addresses of pages right in a renamed first-level folder: {new folder: (old folder, old prefix)}."""
+    redirects: list[Redirect] = []
+    for src_uri, url in urls.items():
+        source_path = Path(src_uri)
+        if len(source_path.parts) != 2 or source_path.parts[0] not in renames:
+            continue
+        old_folder, old_prefix = renames[source_path.parts[0]]
+        if source_path.name == "index.md":
+            redirects.append(Redirect(f"{old_prefix}/index.html", url))
+            continue
+        slug = url.rstrip("/").rsplit("/", 1)[-1]
+        if slug == auto_slug(source_path):
+            slug = auto_slug(Path(old_folder, source_path.name))
+        redirects.append(Redirect(f"{old_prefix}/{slug}/index.html", url))
+    return redirects
+
+
 class PageUrlPlugin(BasePlugin):
     """Move pages to their planned URL and remember the old address for redirects."""
 

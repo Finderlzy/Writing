@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.obsidian_compat.urls import auto_slug, front_matter_slug, plan_page_urls, redirect_html
+from tools.obsidian_compat.urls import Redirect, auto_slug, front_matter_slug, plan_page_urls, redirect_html, renamed_folder_redirects
 
 
 SECTIONS = {"02学习": "learning", "04技术": "tech", "07自己": "self", "08作品": "works"}
@@ -64,6 +64,24 @@ class PageUrlTests(unittest.TestCase):
         page = redirect_html("04技术/自建梯子/index.html", "tech/vless-reality/", "https://finderlzy.github.io/Writing/")
         self.assertIn('url=../../tech/vless-reality/"', page)
         self.assertIn('href="https://finderlzy.github.io/Writing/tech/vless-reality/"', page)
+
+    def test_renamed_folder_keeps_old_urls_as_redirects(self):
+        urls = {
+            "03思考/关于读书.md": f"thoughts/{auto_slug(Path('03思考/关于读书.md'))}/",
+            "03思考/有slug.md": "thoughts/my-post/",
+            "03思考/index.md": "thoughts/",
+            "03思考/初稿/黑框眼镜.md": f"thoughts/{auto_slug(Path('03思考/初稿/黑框眼镜.md'))}/",
+            "04技术/教程.md": "tech/guide/",
+        }
+        redirects = renamed_folder_redirects(urls, {"03思考": ("03文章", "articles")})
+        self.assertCountEqual(
+            [
+                Redirect(f"articles/{auto_slug(Path('03文章/关于读书.md'))}/index.html", urls["03思考/关于读书.md"]),
+                Redirect("articles/my-post/index.html", "thoughts/my-post/"),
+                Redirect("articles/index.html", "thoughts/"),
+            ],
+            redirects,
+        )
 
 
 if __name__ == "__main__":

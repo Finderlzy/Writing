@@ -4,7 +4,7 @@
 
 这里放我的思考、学习笔记、技术教程和文学作品。所有内容在 Obsidian 里写，用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
-当前版本：**3.0.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
+当前版本：**3.0.1**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
 
 ## 日常写作流程
 
@@ -60,6 +60,7 @@
 - 在 front matter 写 `slug: vless-reality`，网址就是 `…/tech/vless-reality/`。slug 只能用小写字母、数字和单个连字符，同一栏目内不能重复，否则构建报 `E_SLUG_INVALID` 或 `E_SLUG_DUPLICATE`。
 - 没写 slug 的页面会按源文件路径生成 8 位短 ID，例如 `/notes/c319381c/`。文件移动或改名后 ID 也会变，所以**要分享的文章请手写 slug**。
 - 每个页面的中文路径都会生成一个跳转页，自动跳到新网址。跳转页只按页面现在的位置生成，文件移走后，旧位置的跳转页就没有了。
+- 一级文件夹改名后，`build_site.py` 的 `RENAMED_SECTIONS` 让旧网址继续可用：目前把原 `03文章` 的 `/articles/<id>/` 和 `/articles/` 跳到 `/thoughts/` 下对应的页面。只覆盖文件夹根目录下的页面，不覆盖子文件夹。
 - **不能动的链接**：`04技术/如何订阅claude（纯操作版）.md`（`/tech/subscribe-claude-quick/`）已经在视频里公开。不要移动或改名这篇文章，不要改它的 slug，也不要改 `04技术 → tech` 这个对应关系。`scripts/setup.sh` 同理，它是转发到独立仓库 [reality-setup](https://github.com/Finderlzy/reality-setup) 的壳，用来保证视频里的旧命令继续可用，不要删除或改名。
 
 ## 支持的 Obsidian 语法

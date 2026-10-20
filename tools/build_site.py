@@ -32,6 +32,8 @@ NAV_NOTES = ("笔记", "02笔记")
 # 构建时生成的文章列表页及其网址
 ARTICLES_INDEX = "03思考/index.md"
 ARTICLES_URL = "thoughts/"
+# 改过名的一级目录：旧网址生成跳转页。3.0.0 把 03文章（articles）改名为 03思考（thoughts）
+RENAMED_SECTIONS = {"03思考": ("03文章", "articles")}
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -43,7 +45,7 @@ from tools.obsidian_compat.html_check import check_site
 from tools.obsidian_compat.index import VaultIndex
 from tools.obsidian_compat.models import Diagnostic, SourceSpan
 from tools.obsidian_compat.parser import residual_diagnostics
-from tools.obsidian_compat.urls import PageUrlPlugin, plan_page_urls, write_redirects
+from tools.obsidian_compat.urls import PageUrlPlugin, plan_page_urls, renamed_folder_redirects, write_redirects
 from tools.site_nav import articles_page, build_nav, collect_posts, home_with_recent, section_nav
 
 
@@ -174,7 +176,8 @@ def build() -> int:
         url_plugin = PageUrlPlugin(page_urls)
         config.plugins["page-urls"] = url_plugin
         mkdocs_build(config)
-        html_diagnostics = write_redirects(SITE, url_plugin.redirects, config.get("site_url"))
+        redirects = [*url_plugin.redirects, *renamed_folder_redirects(page_urls, RENAMED_SECTIONS)]
+        html_diagnostics = write_redirects(SITE, redirects, config.get("site_url"))
         html_diagnostics.extend(check_site(SITE, config.get("site_url")))
         if html_diagnostics:
             emit_diagnostics(html_diagnostics)
