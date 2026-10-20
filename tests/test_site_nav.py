@@ -24,8 +24,8 @@ class ReadMetaTests(unittest.TestCase):
 
     def test_tags_are_deduplicated_and_date_strings_may_carry_a_time(self):
         root = Path(tempfile.mkdtemp())
-        pages = _write(root, {"03文章/a.md": "---\ncreatedDate: '2026-10-14 10:00'\ntags: [学习, 学习]\n---\n"})
-        post = collect_posts(root, pages, "03文章")[0]
+        pages = _write(root, {"03思考/a.md": "---\ncreatedDate: '2026-10-14 10:00'\ntags: [学习, 学习]\n---\n"})
+        post = collect_posts(root, pages, "03思考")[0]
         self.assertEqual(datetime.date(2026, 10, 14), post.date)
         self.assertEqual(("学习",), post.tags)
 
@@ -40,13 +40,13 @@ class CollectPostsTests(unittest.TestCase):
         pages = _write(
             root,
             {
-                "03文章/旧.md": "---\ncreatedDate: 2026-03-01\ntags:\n  - 学习\n---\n",
-                "03文章/新.md": "---\ncreatedDate: 2026-10-01\n---\n",
-                "03文章/没日期.md": "---\ntags: [AI]\n---\n",
+                "03思考/旧.md": "---\ncreatedDate: 2026-03-01\ntags:\n  - 学习\n---\n",
+                "03思考/新.md": "---\ncreatedDate: 2026-10-01\n---\n",
+                "03思考/没日期.md": "---\ntags: [AI]\n---\n",
                 "02笔记/别的.md": "---\ncreatedDate: 2026-12-01\n---\n",
             },
         )
-        posts = collect_posts(root, pages, "03文章")
+        posts = collect_posts(root, pages, "03思考")
         self.assertEqual(["新", "旧", "没日期"], [post.title for post in posts])
         self.assertEqual(("学习",), posts[1].tags)
         self.assertEqual(("AI",), posts[2].tags)
@@ -54,21 +54,21 @@ class CollectPostsTests(unittest.TestCase):
 
     def test_front_matter_title_wins_over_file_name(self):
         root = Path(tempfile.mkdtemp())
-        pages = _write(root, {"03文章/a.md": "---\ntitle: 好标题\ncreatedDate: 2026-01-01\n---\n"})
-        self.assertEqual("好标题", collect_posts(root, pages, "03文章")[0].title)
+        pages = _write(root, {"03思考/a.md": "---\ntitle: 好标题\ncreatedDate: 2026-01-01\n---\n"})
+        self.assertEqual("好标题", collect_posts(root, pages, "03思考")[0].title)
 
 
 POSTS = [
-    Post(Path("03文章/关于读书.md"), "关于读书", datetime.date(2026, 10, 14), ("学习",)),
-    Post(Path("03文章/CLANNAD~AFTER STORY~（p9—p11）.md"), "CLANNAD~AFTER STORY~（p9—p11）", datetime.date(2026, 8, 23), ("二次元",)),
-    Post(Path("03文章/[奇怪] *名字*.md"), "[奇怪] *名字*", None, ()),
+    Post(Path("03思考/关于读书.md"), "关于读书", datetime.date(2026, 10, 14), ("学习",)),
+    Post(Path("03思考/CLANNAD~AFTER STORY~（p9—p11）.md"), "CLANNAD~AFTER STORY~（p9—p11）", datetime.date(2026, 8, 23), ("二次元",)),
+    Post(Path("03思考/[奇怪] *名字*.md"), "[奇怪] *名字*", None, ()),
 ]
 
 
 class ArticlesPageTests(unittest.TestCase):
     def test_lists_every_post_with_date_link_and_tags(self):
-        page = articles_page(POSTS, "03文章")
-        self.assertTrue(page.startswith("# 文章\n"))
+        page = articles_page(POSTS, "03思考")
+        self.assertTrue(page.startswith("# 思考\n"))
         self.assertIn('<time class="post-date">2026-10-14</time> [关于读书](<关于读书.md>)', page)
         self.assertIn("(<CLANNAD~AFTER STORY~（p9—p11）.md>)", page)
         self.assertIn('data-tags="[&quot;二次元&quot;]"', page)
@@ -76,14 +76,14 @@ class ArticlesPageTests(unittest.TestCase):
         self.assertLess(page.index("关于读书"), page.index("CLANNAD"))
 
     def test_html_in_titles_and_tags_is_shown_as_text(self):
-        post = Post(Path("03文章/a.md"), "a<b & c", None, ("<i>x</i>",))
-        page = articles_page([post], "03文章")
+        post = Post(Path("03思考/a.md"), "a<b & c", None, ("<i>x</i>",))
+        page = articles_page([post], "03思考")
         self.assertIn("[a&lt;b &amp; c](<a.md>)", page)
         self.assertIn("<span>&lt;i&gt;x&lt;/i&gt;</span>", page)
         self.assertNotIn("<i>", page)
 
     def test_filter_buttons_count_each_tag(self):
-        page = articles_page(POSTS, "03文章")
+        page = articles_page(POSTS, "03思考")
         self.assertIn('data-tag="" aria-pressed="true">全部（3）</button>', page)
         self.assertIn('data-tag="学习" aria-pressed="false">学习（1）</button>', page)
         self.assertIn('data-tag="二次元" aria-pressed="false">二次元（1）</button>', page)
@@ -91,12 +91,12 @@ class ArticlesPageTests(unittest.TestCase):
 
 class HomeTests(unittest.TestCase):
     def test_appends_recent_posts_linked_from_site_root(self):
-        home = home_with_recent("# 首页\n\n欢迎。\n", POSTS, "03文章/index.md", limit=2)
+        home = home_with_recent("# 首页\n\n欢迎。\n", POSTS, "03思考/index.md", limit=2)
         self.assertTrue(home.startswith("# 首页\n\n欢迎。\n"))
-        self.assertIn("## 最近的文章", home)
-        self.assertIn("[关于读书](<03文章/关于读书.md>)", home)
+        self.assertIn("## 最近的思考", home)
+        self.assertIn("[关于读书](<03思考/关于读书.md>)", home)
         self.assertNotIn("奇怪", home)
-        self.assertIn("[全部文章 →](<03文章/index.md>)", home)
+        self.assertIn("[全部思考 →](<03思考/index.md>)", home)
         self.assertNotIn("post-filter", home)
 
 
@@ -115,16 +115,16 @@ class BuildNavTests(unittest.TestCase):
         nav = build_nav(
             pages,
             {
-                "文章": ["03文章/index.md", *(post.source_path.as_posix() for post in POSTS[:2])],
+                "思考": ["03思考/index.md", *(post.source_path.as_posix() for post in POSTS[:2])],
                 "技术": ["04技术/教程.md"],
                 "作品": ["05作品/星期四.md"],
             },
             ("笔记", "02笔记"),
         )
-        self.assertEqual(["首页", "文章", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
+        self.assertEqual(["首页", "思考", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
         self.assertEqual(
-            ["03文章/index.md", "03文章/关于读书.md", "03文章/CLANNAD~AFTER STORY~（p9—p11）.md"],
-            nav[1]["文章"],
+            ["03思考/index.md", "03思考/关于读书.md", "03思考/CLANNAD~AFTER STORY~（p9—p11）.md"],
+            nav[1]["思考"],
         )
         notes = nav[4]["笔记"]
         self.assertEqual("02笔记/一篇.md", notes[0])
@@ -135,8 +135,8 @@ class BuildNavTests(unittest.TestCase):
 
 
     def test_empty_notes_folder_is_left_out(self):
-        nav = build_nav([Path("index.md")], {"文章": []}, ("笔记", "02笔记"))
-        self.assertEqual(["首页", "文章"], [next(iter(item)) for item in nav])
+        nav = build_nav([Path("index.md")], {"思考": []}, ("笔记", "02笔记"))
+        self.assertEqual(["首页", "思考"], [next(iter(item)) for item in nav])
 
 
 class SectionNavTests(unittest.TestCase):
@@ -173,13 +173,14 @@ class RealSiteTests(unittest.TestCase):
         pages = [path for path in pages if path.parts[0] not in build_site.UNPUBLISHED_PATHS and ".obsidian" not in path.parts]
         posts = {title: collect_posts(build_site.DOCS, pages, folder) for title, folder in build_site.NAV_POSTS.items()}
         nav = build_nav(pages, {title: section_nav(build_site.DOCS, section) for title, section in posts.items()}, build_site.NAV_NOTES)
-        self.assertEqual(["首页", "文章", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
+        self.assertEqual(["首页", "思考", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
         self.assertIn("04技术/如何订阅claude（纯操作版）.md", nav[2]["技术"])
         flat = repr(nav)
         self.assertNotIn("01系统", flat)
         self.assertNotIn("09归档", flat)
-        self.assertEqual("articles/", build_site.ARTICLES_URL)
+        self.assertEqual("thoughts/", build_site.ARTICLES_URL)
         self.assertEqual("tech", build_site.SECTION_SLUGS["04技术"])
+        self.assertEqual("thoughts", build_site.SECTION_SLUGS["03思考"])
 
 
 if __name__ == "__main__":

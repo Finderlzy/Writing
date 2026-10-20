@@ -20,18 +20,18 @@ SECTION_SLUGS = {
     "00收集": "inbox",
     "01系统": "system",
     "02笔记": "notes",
-    "03文章": "articles",
+    "03思考": "thoughts",
     "04技术": "tech",
     "05作品": "opus",
     "07自己": "self",
     "09归档": "archive",
 }
-# 导航顺序：首页 · 文章 · 技术 · 作品 · 笔记。没列出的一级目录（01系统、09归档）不进导航，页面照常发布
-NAV_POSTS = {"文章": "03文章", "技术": "04技术", "作品": "05作品"}
+# 导航顺序：首页 · 思考 · 技术 · 作品 · 笔记。没列出的一级目录（01系统、09归档）不进导航，页面照常发布
+NAV_POSTS = {"思考": "03思考", "技术": "04技术", "作品": "05作品"}
 NAV_NOTES = ("笔记", "02笔记")
 # 构建时生成的文章列表页及其网址
-ARTICLES_INDEX = "03文章/index.md"
-ARTICLES_URL = "articles/"
+ARTICLES_INDEX = "03思考/index.md"
+ARTICLES_URL = "thoughts/"
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -129,7 +129,7 @@ def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
             )
         ]
     posts = {title: collect_posts(DOCS, pages, folder) for title, folder in NAV_POSTS.items()}
-    articles = posts["文章"]
+    articles = posts["思考"]
     emit_diagnostics(
         Diagnostic("W_POST_DATE_MISSING", SourceSpan(post.source_path, 1, 1), "文章没有 createdDate，列表中排在最后。")
         for post in articles
@@ -139,7 +139,7 @@ def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
     home = CACHE / "index.md"
     home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX), encoding="utf-8")
     sections = {title: section_nav(DOCS, section) for title, section in posts.items()}
-    sections["文章"].insert(0, ARTICLES_INDEX)
+    sections["思考"].insert(0, ARTICLES_INDEX)
     return build_nav(pages, sections, NAV_NOTES), []
 
 

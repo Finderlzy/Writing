@@ -110,7 +110,7 @@ def _post_line(post: Post, from_dir: str, show_tags: bool) -> str:
     return "- " + " ".join(parts)
 
 
-def articles_page(posts: Sequence[Post], from_dir: str, title: str = "文章") -> str:
+def articles_page(posts: Sequence[Post], from_dir: str, title: str = "思考") -> str:
     """The article list page in `from_dir`: every post newest first, with tag filter buttons."""
     counts = Counter(tag for post in posts for tag in post.tags)
     buttons = [f'<button type="button" class="post-filter__tag" data-tag="" aria-pressed="true">全部（{len(posts)}）</button>']
@@ -132,9 +132,9 @@ def home_with_recent(home: str, posts: Sequence[Post], all_posts_page: str, limi
     recent = [post for post in posts if post.date][:limit]
     if not recent:
         return home
-    lines = ["", "## 最近的文章", ""]
+    lines = ["", "## 最近的思考", ""]
     lines += [_post_line(post, "", show_tags=False) for post in recent]
-    lines += ["", f"[全部文章 →](<{all_posts_page}>)", ""]
+    lines += ["", f"[全部思考 →](<{all_posts_page}>)", ""]
     return home.rstrip("\n") + "\n" + "\n".join(lines)
 
 

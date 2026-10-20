@@ -2,9 +2,9 @@
 
 个人文章网站：<https://finderlzy.github.io/Writing/>
 
-这里放我的想法、学习笔记、技术教程、番评书评和文学作品。所有内容在 Obsidian 里写，用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
+这里放我的思考、学习笔记、技术教程和文学作品。所有内容在 Obsidian 里写，用 [MkDocs](https://www.mkdocs.org/) + [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) 生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
-当前版本：**2.1.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
+当前版本：**3.0.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
 
 ## 日常写作流程
 
@@ -20,36 +20,36 @@
 
 ## 内容分类
 
-分类只看一件事：**这篇是写给谁看的？** 每个文件夹的判断标准和例子都写在 [docs/01系统/分类标准.md](docs/01系统/分类标准.md)，那篇是唯一的权威说明，Inbox Filer 插件也把它作为分类依据。
+写的东西沿两条线往前走：想法 → 思考 → 技术，灵感 → 初稿 → 作品；只有私人生活放进 `07自己`。每个文件夹的判断标准和例子都写在 [docs/01系统/分类标准.md](docs/01系统/分类标准.md)，那篇是唯一的权威说明，Inbox Filer 插件也把它作为分类依据。
 
 | 文件夹 | 放什么 | 网址前缀 | 公开 |
 | --- | --- | --- | --- |
 | `00收集/` | 还没分类的新文章；`灵感/` 放灵感片段 | — | 否 |
 | `01系统/` | 笔记库、写作和发布的规则 | `system` | 是 |
 | `02笔记/` | 写给自己的学习记录：`课程/`、`概念/`、`专题/` | `notes` | 是 |
-| `03文章/` | 写给读者的观点、心得、番评、书评（平铺，主题写在 `tags`） | `articles` | 是 |
-| `04技术/` | 写给读者、可以照着做的技术教程 | `tech` | 是 |
-| `05作品/` | 文学成稿及改稿 | `opus` | 是 |
-| `07自己/` | 关于自己的经历和思考 | — | 否 |
+| `03思考/` | 我自己的观点、心得、番评、书评和计划（平铺，主题写在 `tags`）；`初稿/` 放还没润色的文学初稿 | `thoughts` | 是 |
+| `04技术/` | Agent 帮忙梳理后、面向读者的文章和教程 | `tech` | 是 |
+| `05作品/` | Agent 润色后发布的文学作品 | `opus` | 是 |
+| `07自己/` | 私人生活：出现真实人名，或剖析自己的内心和缺点 | — | 否 |
 | `09归档/` | 不再维护的旧资料 | `archive` | 是 |
 | `09附件/` | 图片、PDF 等附件 | — | 随引用的页面 |
 
 不公开的内容由 `tools/build_site.py` 的 `UNPUBLISHED_PATHS` 控制（目前是 `00收集`、`07自己` 和 `docs/AGENTS.md`）。这些页面仍然参与双链检查。公开页面指向它们的双链会显示成纯文字，只被它们引用的附件也不会复制到网站。**注意：它们仍然会随 Git 推送到公开的 GitHub 仓库。**
 
-## 导航与文章列表
+## 导航与思考列表
 
 导航由构建生成，配置在 `tools/build_site.py` 的 `NAV_POSTS`、`NAV_NOTES`，顺序是：
 
 | 导航 | 内容 | 排序 |
 | --- | --- | --- |
-| 首页 | `docs/index.md`，末尾自动加上“最近的文章”（最新 8 篇）和“全部文章”链接 | — |
-| 文章 | 文章列表页 `/articles/`，加上 `03文章` 的全部文章 | `createdDate` 从新到旧 |
+| 首页 | `docs/index.md`，末尾自动加上“最近的思考”（最新 8 篇）和“全部思考”链接 | — |
+| 思考 | 列表页 `/thoughts/`，加上 `03思考` 的全部文章，`初稿/` 折叠成一组 | `createdDate` 从新到旧 |
 | 技术 | `04技术` | `createdDate` 从新到旧 |
 | 作品 | `05作品` | `createdDate` 从新到旧 |
 | 笔记 | `02笔记`，保留子文件夹结构 | 按文件名 |
 
 - `01系统` 和 `09归档` 不进导航，但页面照常发布，原网址不变。
-- 文章列表页按时间列出 `03文章` 的所有文章，顶部有按 `tags` 筛选的按钮（`docs/javascripts/post-filter.js`）。它只在构建时生成，`docs/03文章/` 里不能有 `index.md`，否则构建报 `E_GENERATED_PAGE_CONFLICT`。
+- 思考列表页按时间列出 `03思考` 的所有文章（包括初稿），顶部有按 `tags` 筛选的按钮（`docs/javascripts/post-filter.js`）。它只在构建时生成，`docs/03思考/` 里不能有 `index.md`，否则构建报 `E_GENERATED_PAGE_CONFLICT`。
 - 日期取 front matter 的 `createdDate`（写成 `2026-10-14`）。文章缺日期时会排在最后，构建给出 `W_POST_DATE_MISSING` 提示，但不会失败。
 
 ## 页面网址
