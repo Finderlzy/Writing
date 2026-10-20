@@ -67,6 +67,14 @@
   line-height: 1.8;
 }
 
+/* 文章列表：front matter 的 description 另起一行显示在标题下 */
+.md-typeset .post-desc {
+  display: block;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
 .md-typeset .post-filter {
   display: flex;
   flex-wrap: wrap;

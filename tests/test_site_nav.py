@@ -57,6 +57,13 @@ class CollectPostsTests(unittest.TestCase):
         pages = _write(root, {"03思考/a.md": "---\ntitle: 好标题\ncreatedDate: 2026-01-01\n---\n"})
         self.assertEqual("好标题", collect_posts(root, pages, "03思考")[0].title)
 
+    def test_reads_description_from_front_matter(self):
+        root = Path(tempfile.mkdtemp())
+        pages = _write(root, {"03思考/a.md": "---\ndescription: 一句话简介\n---\n", "03思考/b.md": "正文\n"})
+        posts = {post.source_path.stem: post for post in collect_posts(root, pages, "03思考")}
+        self.assertEqual("一句话简介", posts["a"].description)
+        self.assertEqual("", posts["b"].description)
+
 
 POSTS = [
     Post(Path("03思考/关于读书.md"), "关于读书", datetime.date(2026, 10, 14), ("学习",)),
@@ -82,6 +89,12 @@ class ArticlesPageTests(unittest.TestCase):
         self.assertIn("<span>&lt;i&gt;x&lt;/i&gt;</span>", page)
         self.assertNotIn("<i>", page)
 
+    def test_description_shown_under_title_only_when_present(self):
+        with_desc = Post(Path("03思考/a.md"), "a", None, (), "简介 <b>*重点*</b>")
+        page = articles_page([with_desc, POSTS[0]], "03思考")
+        self.assertIn(r'<span class="post-desc">简介 &lt;b&gt;\*重点\*&lt;/b&gt;</span>', page)
+        self.assertEqual(1, page.count("post-desc"))
+
     def test_filter_buttons_count_each_tag(self):
         page = articles_page(POSTS, "03思考")
         self.assertIn('data-tag="" aria-pressed="true">全部（3）</button>', page)
@@ -98,6 +111,10 @@ class HomeTests(unittest.TestCase):
         self.assertNotIn("奇怪", home)
         self.assertIn("[全部思考 →](<03思考/index.md>)", home)
         self.assertNotIn("post-filter", home)
+
+    def test_recent_posts_leave_out_description(self):
+        post = Post(Path("03思考/a.md"), "a", datetime.date(2026, 1, 1), (), "简介")
+        self.assertNotIn("post-desc", home_with_recent("# 首页\n", [post], "03思考/index.md"))
 
 
 class BuildNavTests(unittest.TestCase):
