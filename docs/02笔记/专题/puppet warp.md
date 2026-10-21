@@ -1,5 +1,12 @@
 ---
 createdDate: 2026-10-21
+tags:
+  - 壁纸引擎
+  - puppet-warp
+  - 骨骼动画
+  - 动画制作
+description: "记录了在 Wallpaper Engine 中用 puppet warp 做头发轻微摆动动画的学习过程，包括导入图片、创建几何图形、添加骨骼、设置权重、循环动画，以及遇到的刘海动画影响脸部的问题。"
+slug: wallpaper-engine-puppet-warp
 ---
 > 写于 2026-10-21
 > [官方文档](https://docs.wallpaperengine.io/en/scene/puppet-warp/introduction.html)
