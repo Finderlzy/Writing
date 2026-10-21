@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：为什么用美区 Apple ID
 
 我用的是 iPhone，用的办法是：**美区 Apple ID + 礼品卡充值余额 + 在 claude 的 iOS app 里直接订阅**。

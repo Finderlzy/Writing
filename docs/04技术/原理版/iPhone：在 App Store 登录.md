@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：在 App Store 登录
 
 iPhone 上其实有两个地方登录 Apple ID：“设置”里的，和“App Store”里的。“设置”里的是 iCloud 账号，管的是照片、通讯录这些；App Store 里的账号只管买东西、下载 app。两边可以不是同一个账号。所以我们只在 **App Store** 里换成美区 Apple ID，“设置”里的还是你原来的账号，照片、通讯录都不受影响。

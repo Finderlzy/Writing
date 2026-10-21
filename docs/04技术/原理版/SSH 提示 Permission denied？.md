@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # SSH 提示 Permission denied？
 
 输完 root 密码回车，屏幕上出现 `Permission denied, please try again.`，接着又让你输 `password:`。意思是服务器不认这个密码，不让你进。

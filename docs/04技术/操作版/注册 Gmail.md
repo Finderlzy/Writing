@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 注册 Gmail
 
 已经有 Google 账号的，可以跳过这一页。后面注册 claude、注册美区 Apple ID 都要用它。

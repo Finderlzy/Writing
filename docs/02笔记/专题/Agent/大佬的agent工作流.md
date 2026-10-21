@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 UP 说的句句实话，作为国产厂商所有 Coding plan 都订阅过的重度 Agentic Coding 用户非常认可。 我来分享一下我的工作流，这是我用过成本最低且能保证极高代码质量的方案
 
 ==总的来说就是 ChatGPT Plus + Trae Solo 网页端的 ratelimit 约等于没有，而且有个 Github 插件可以让它看得到你的具体代码。 ==

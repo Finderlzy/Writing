@@ -2,6 +2,7 @@
 createdDate: 2026-09-09
 ---
 > 写于 2026-09-09
+
 > 是[[02笔记/课程/Java/面向对象进阶/static/static|static]]的一个补充
 
 这是一段代码

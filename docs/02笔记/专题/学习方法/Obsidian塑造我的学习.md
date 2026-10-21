@@ -1,6 +1,8 @@
 ---
 createdDate: 2026-08-21
 ---
+> 写于 2026-08-21
+
 ## 工具塑造我们“学习”的这个习惯、行为
 
 加拿大传播理论家麦克卢汉说：“We shape our tools, and thereafter our tools shape us."大意是说：我们创造、改进一个工具，在使用这个工具的过程中，这个工具也在改进我们。

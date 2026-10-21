@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 实测：QSU 住宅服务器
 
 - 商家：[QSU](https://qsu.hk/aff/GAZUQBSL) 主站的住宅服务器

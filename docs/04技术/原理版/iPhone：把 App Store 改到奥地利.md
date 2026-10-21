@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：把 App Store 改到奥地利
 
 国区的 App Store 里搜不到代理软件，要下载，就得先把 App Store 换到别的国家或地区。

@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 实测：VoyraCloud 住宅服务器
 
 - 商家：[VoyraCloud](https://www.voyracloud.com/?ref_code=HYEWZ46M)，美国住宅服务器

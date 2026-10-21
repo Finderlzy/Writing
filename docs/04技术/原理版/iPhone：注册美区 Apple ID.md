@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：注册美区 Apple ID
 
 Apple ID 也是分地区的。你在国内注册的 Apple ID 是国区的，App Store 里的价格、能下载的 app、能用的付款方式，都是国区的那一套。要用美区的礼品卡、在美区 App Store 付款，就得有一个**美区 Apple ID**。

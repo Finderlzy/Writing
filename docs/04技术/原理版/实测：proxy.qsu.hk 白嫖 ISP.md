@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 实测：proxy.qsu.hk 白嫖 ISP
 
 - 商家：[proxy.qsu.hk](https://proxy.qsu.hk/)，填优惠码 `qiansu998` 免费拿到的 SOCKS5 住宅 IP 端口

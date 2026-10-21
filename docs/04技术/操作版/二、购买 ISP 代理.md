@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 二、购买 ISP 代理
 
 推荐买 [Decodo](https://decodo.com/)。先说明：**我自己没有用过 Decodo**，推荐它只是因为它在 Proxyway 2026 年的 ISP 代理测试里排第一；它的价格很贵。不管在哪家买，都选 **SOCKS5** 协议，脚本只支持 SOCKS5。

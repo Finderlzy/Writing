@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 实测：Decodo ISP
 
 - 商家：[Decodo](https://decodo.com/)，付费的 ISP 代理，在 Proxyway 2026 年的 ISP 代理测试里排第一

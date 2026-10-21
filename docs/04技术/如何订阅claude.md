@@ -3,6 +3,8 @@ slug: subscribe-claude
 createdDate: 2026-10-07
 updatedDate: 2026-10-17
 ---
+> 更新于 2026-10-17
+
 >[!warning] 关于方案一的住宅 IP 断连
 >方案一的住宅 IP 2026-10-17 断连了。我去问了商家，对方给出的回复是：
 >

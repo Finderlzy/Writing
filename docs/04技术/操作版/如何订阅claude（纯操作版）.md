@@ -3,7 +3,10 @@ slug: subscribe-claude-quick-new
 createdDate: 2026-10-08
 updatedDate: 2026-10-15
 ---
+> 更新于 2026-10-15
+
 > 写于 2026-10-08
+
 > 更新于 2026-10-15
 > 这是只有操作步骤的版本。想知道每一步为什么这么做，看原理版：[如何订阅claude](../subscribe-claude-new/)。两篇的章节标题一样，可以直接对照；原理版独有的“整体思路”“小结：从服务器到代理软件”“iPhone：为什么用美区 Apple ID”只讲原理，这里没有。
 

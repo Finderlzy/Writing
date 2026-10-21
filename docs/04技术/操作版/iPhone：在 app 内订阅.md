@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：在 app 内订阅
 
 **要在 claude 的 iOS app 里订阅，不要在网页上订阅。**

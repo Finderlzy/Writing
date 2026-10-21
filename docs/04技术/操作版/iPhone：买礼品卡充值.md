@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # iPhone：买礼品卡充值
 
 1. 打开手机浏览器，搜索 [pockyt shop](https://shop.pockyt.io)，认准网址是 shop.pockyt.io。

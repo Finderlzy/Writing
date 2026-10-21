@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 实测：ipequal 住宅节点
 
 - 商家：ipequal（[还没有节点](https://www.ipequal.com/?ref=6adabd0307)、[已经有节点](https://www.equaldcdn.com/?ref=6adabd0307)），VLESS Reality 节点，出口是美国静态住宅 IP

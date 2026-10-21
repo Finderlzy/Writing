@@ -1,3 +1,8 @@
+---
+createdDate: 2026-10-21
+---
+> 写于 2026-10-21
+
 # 安卓：下载 Google Play
 
 在安卓手机上，Gmail 这类 Google 的 app 都是从 **Google Play** 下载的，它就是 Google 自己的应用商店。但国内卖的安卓手机，很多都没有预装 Google Play，所以要先把它装上。
