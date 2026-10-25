@@ -18,23 +18,6 @@
 
 `docs/` 就是 Obsidian 仓库本身。构建只读取它，不会改动原始笔记。
 
-## 内容分类
-
-写的东西沿两条线往前走：想法 → 思考 → 技术，灵感 → 初稿 → 作品；只有私人生活放进 `07自己`。每个文件夹的判断标准和例子都写在 [docs/01系统/分类标准.md](docs/01系统/分类标准.md)，那篇是唯一的权威说明，Inbox Filer 插件也把它作为分类依据。
-
-| 文件夹 | 放什么 | 网址前缀 | 公开 |
-| --- | --- | --- | --- |
-| `00收集/` | 还没分类的新文章；`灵感/` 放灵感片段 | — | 否 |
-| `01系统/` | 笔记库、写作和发布的规则 | `system` | 是 |
-| `02笔记/` | 写给自己的学习记录：`课程/`、`概念/`、`专题/` | `notes` | 是 |
-| `03思考/` | 我自己的观点、心得、番评、书评和计划（平铺，主题写在 `tags`）；`初稿/` 放还没润色的文学初稿 | `thoughts` | 是 |
-| `04技术/` | Agent 帮忙梳理后、面向读者的文章和教程 | `tech` | 是 |
-| `05作品/` | Agent 润色后发布的文学作品 | `opus` | 是 |
-| `07自己/` | 私人生活：出现真实人名，或剖析自己的内心和缺点 | — | 否 |
-| `09归档/` | 不再维护的旧资料 | `archive` | 是 |
-| `09附件/` | 图片、PDF 等附件 | — | 随引用的页面 |
-
-不公开的内容由 `tools/build_site.py` 的 `UNPUBLISHED_PATHS` 控制（目前是 `00收集`、`07自己` 和 `docs/AGENTS.md`）。这些页面仍然参与双链检查。公开页面指向它们的双链会显示成纯文字，只被它们引用的附件也不会复制到网站。**注意：它们仍然会随 Git 推送到公开的 GitHub 仓库。**
 
 ## 导航与思考列表
 
@@ -64,23 +47,6 @@
 - 一级文件夹改名后，`build_site.py` 的 `RENAMED_SECTIONS` 让旧网址继续可用：目前把原 `03文章` 的 `/articles/<id>/` 和 `/articles/` 跳到 `/thoughts/` 下对应的页面。只覆盖文件夹根目录下的页面，不覆盖子文件夹。
 - **不能动的链接**：`04技术/如何订阅claude（纯操作版）.md`（`/tech/subscribe-claude-quick/`）已经在视频里公开。不要移动或改名这篇文章，不要改它的 slug，也不要改 `04技术 → tech` 这个对应关系。`scripts/setup.sh` 同理，它是转发到独立仓库 [reality-setup](https://github.com/Finderlzy/reality-setup) 的壳，用来保证视频里的旧命令继续可用，不要删除或改名。
 
-## 支持的 Obsidian 语法
-
-| Obsidian 写法 | 作用 |
-| --- | --- |
-| `[[页面]]`、`[[页面\|别名]]` | 页面双链 |
-| `[[页面#标题]]`、`[[页面#^block-id]]` | 跳到目标页面的标题或块 |
-| `[[#标题]]`、`[[#^block-id\|别名]]` | 跳到当前页面的标题或块 |
-| `![[图片.png]]`、`![[图片.png\|300]]`、`![[图片.png\|300x200]]` | 嵌入本地图片，可指定宽高 |
-| 表格中的 `[[页面\\\|别名]]` | 表格里带别名的双链（Obsidian 会自动转义 `\|`） |
-| `==重点==` | 高亮 |
-| `> [!note]` | Callout，支持 Obsidian 内置类型及别名（`tip`、`important`、`info`、`danger` 等） |
-| `$x$`、`$$...$$` | LaTeX 数学公式（MathJax 3） |
-
-暂不支持：页面嵌入、Callout 折叠标记、自定义 Callout 类型。PDF 等非图片附件请用普通 Markdown 链接。
-
-双链目标为空、锚点为空或路径无效时，构建会给出明确的诊断并停止，方便定位修改。
-
 ## Obsidian 设置
 
 在“文件与链接”中：
@@ -90,47 +56,6 @@
 - 开启“始终更新内部链接”，这样在 Obsidian 里移动文件时，双链会自动跟着更新。
 
 嵌入附件请写 `![[09附件/图片.png]]`，不要写 `![[../../09附件/图片.png]]` 这种依赖目录深度的相对路径；仓库测试会列出违规位置和建议写法。
-
-## 本地构建
-
-需要 Python 3.13 以上版本。
-
-```bash
-python3 -m venv .venv
-```
-
-```bash
-.venv/bin/pip install -r requirements.txt
-```
-
-```bash
-.venv/bin/python -m unittest discover -s tests
-```
-
-```bash
-.venv/bin/python tools/build_site.py
-```
-
-构建成功会输出 `build succeeded: N pages published, M unpublished`，生成的网站在 `site/`。想在本地预览，可以运行：
-
-```bash
-.venv/bin/python -m http.server -d site 8000
-```
-
-然后打开 <http://localhost:8000/>。
-
-构建流程：
-
-```text
-docs/ 原始笔记
-   ↓ 扫描、转换 Obsidian 语法、检查双链
-.cache/converted-docs/ 标准 Markdown（注入 theme/extra.css）
-   ↓ MkDocs 构建、按 SECTION_SLUGS 分配网址、生成中文路径跳转页
-site/ 网站
-   ↓ 检查页面、附件和锚点
-```
-
-构建前后会比对 `docs/` 的摘要，确保转换过程没有改动原始笔记。
 
 ## 评论区与外链
 
