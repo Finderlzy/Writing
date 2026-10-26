@@ -18,8 +18,8 @@ sys.dont_write_bytecode = True
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from tools.content import Layout, Stage  # noqa: E402
-from tools.render import build_pages, load_config  # noqa: E402
+from tools.content import Layout, Stage
+from tools.render import build_pages, load_config
 
 DOCS = ROOT / "docs"
 CONFIG = ROOT / "site.toml"
