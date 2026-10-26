@@ -48,9 +48,16 @@ class Workspace:
         self.site.mkdir(parents=True, exist_ok=True)
         return [
             diagnostic
-            for diagnostic in build_pages(self.docs, self.site, SiteConfig(theme=self.theme), LAYOUT)
+            for diagnostic in self.build_pages()
             if not diagnostic.code.startswith("W_")
         ]
+
+    def build_pages(self, legacy=()):
+        # font_specs=None：这些测试只关心模板、网址和诊断，不装源字体也不联网。
+        # 字体子集化本身由 tests/test_fonts.py 覆盖。
+        return build_pages(
+            self.docs, self.site, SiteConfig(theme=self.theme), LAYOUT, legacy, font_specs=None
+        )
 
     def html(self, url: str) -> str:
         """`url` 是文章自己的网址；首页是空串，文章不带结尾斜杠，例如 "thoughts/关于读书"。"""
@@ -266,7 +273,9 @@ class WarningTests(unittest.TestCase):
             }
         )
         workspace.site.mkdir(parents=True, exist_ok=True)
-        diagnostics = build_pages(workspace.docs, workspace.site, SiteConfig(theme=workspace.theme), LAYOUT)
+        diagnostics = build_pages(
+            workspace.docs, workspace.site, SiteConfig(theme=workspace.theme), LAYOUT, font_specs=None
+        )
         codes = [diagnostic.code for diagnostic in diagnostics]
         self.assertIn("W_POST_DATE_MISSING", codes)
         self.assertFalse([code for code in codes if not code.startswith("W_")])
@@ -310,6 +319,7 @@ class LegacyRedirectTests(unittest.TestCase):
             SiteConfig(theme=workspace.theme),
             LAYOUT,
             [("tech/subscribe-claude-quick", target)],
+            font_specs=None,
         )
         self.assertFalse([d for d in diagnostics if not d.code.startswith("W_")], [d.format() for d in diagnostics])
         page = workspace.site / "tech" / "subscribe-claude-quick" / "index.html"
@@ -331,6 +341,7 @@ class LegacyRedirectTests(unittest.TestCase):
             SiteConfig(theme=workspace.theme),
             LAYOUT,
             [("tech/subscribe-claude-quick", "blog/not-here")],
+            font_specs=None,
         )
         self.assertIn("E_REDIRECT_TARGET_MISSING", [d.code for d in diagnostics])
 

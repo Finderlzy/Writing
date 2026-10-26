@@ -84,7 +84,8 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 - `check_site` 在现有代码里并不存在（正文检查是 `write_site` 内部的逐页 `check_body`），所以子集化放在 `write_site` 返回之后。
 - 源字体缺失时 `build_site.py` 会提示先跑 `python -m tools.fetch_fonts`；只想看页面可以用 `--skip-fonts`，标题退回系统字体，CI 不用这个开关。
 - `.cache/fonts/` 里的源字体要在收尾时删掉，下次构建前重跑一次 `fetch_fonts`。
-- `test_render.py` 一行未改。`site.js` 只删了 `pre` 上行的 `has-copy` 类（新 CSS 不再用它）。
+- `test_render.py` 没有改任何断言，只改了搭测试环境的那几行：`Workspace.build()` 改成调本类新加的 `build_pages()` 并传 `font_specs=None`，三处直接调 `build_pages` 的地方也补了这个参数。原因是 `build_pages` 默认会去 `.cache/fonts/` 找源字体，收尾删掉 `.cache/` 后这 17 个渲染测试会全部因 `E_FONT_SOURCE_MISSING` 失败。这些测试考的是模板、网址和诊断，不该依赖要联网下载的字体文件；字体子集化本身由 `test_fonts.py` 覆盖，它在源字体不在时整类跳过并说明怎么装（本机 97 个测试全过；删掉 `.cache/` 后 88 个通过、1 个跳过）。
+- `site.js` 只删了 `pre` 上行的 `has-copy` 类（新 CSS 不再用它）。
 - 模板只加了 `data-font` 和 `data-stage`/`data-stage-chip` 属性和类名，结构没动；深色只改 `:root` 变量。
 
 ### V2 文章页标题区和文末（待细化）
