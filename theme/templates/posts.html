@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="posts">
-  <h1 class="page-title">全部文章</h1>
+  <h1 class="page-title" data-font="head">全部文章</h1>
   <div class="filters" data-filters hidden>
     <div class="filter-group" role="group" aria-label="按阶段筛选">
       <button type="button" class="filter-button" data-stage="" aria-pressed="true">全部</button>
       {% for stage in ["思考", "初稿", "博客", "作品"] %}
-      <button type="button" class="filter-button" data-stage="{{ stage }}" aria-pressed="false">{{ stage }}</button>
+      <button type="button" class="filter-button" data-stage="{{ stage }}" data-stage-chip="{{ stage }}" aria-pressed="false">{{ stage }}</button>
       {% endfor %}
     </div>
     <div class="filter-group" role="group" aria-label="按主题筛选">
@@ -25,8 +25,8 @@
         {% if article.series %}<span class="article-series">系列：{{ article.series }}</span>{% endif %}
       </p>
       <p class="article-meta">
-        <span class="article-stage">{{ article.stage.name }}</span>
-        {% if article.date %}<time datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
+        <span class="article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
+        {% if article.date %}<time data-font="slab" datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
         {% for tag in article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
       </p>
       {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}

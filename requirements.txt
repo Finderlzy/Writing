@@ -2,3 +2,6 @@ Markdown==3.10.3
 pymdown-extensions==11.0.1
 Jinja2==3.1.6
 PyYAML==6.0.3
+# 字体子集化（R-VIS-5）：源字体下载 + 子集化成 woff2，见 theme/fonts/README.md
+fonttools==4.67.0
+brotli==1.2.1

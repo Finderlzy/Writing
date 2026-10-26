@@ -2,10 +2,10 @@
 {% block content %}
 <article class="article">
   <header class="article-header">
-    <h1 class="article-title">{{ page.title }}</h1>
+    <h1 class="article-title" data-font="head">{{ page.title }}</h1>
     <p class="article-meta">
-      <span class="article-stage">{{ page.article.stage.name }}</span>
-      {% if page.article.date %}<time datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>{% endif %}
+      <span class="article-stage" data-stage="{{ page.article.stage.name }}">{{ page.article.stage.name }}</span>
+      {% if page.article.date %}<time data-font="slab" datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>{% endif %}
       {% for tag in page.article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
     </p>
     {% if page.series %}
@@ -17,7 +17,7 @@
   </header>
   {% if toc %}
   <nav class="article-toc" aria-label="目录">
-    <p class="article-toc-title">目录</p>
+    <p class="article-toc-title" data-font="cute">目录</p>
     <ul>
       {% for item in toc recursive %}
       <li><a href="#{{ item.id }}">{{ item.name }}</a>{% if item.children %}
@@ -42,16 +42,17 @@
   {% if page.previous or page.following %}
   <nav class="article-neighbours" aria-label="上一篇和下一篇">
     {% if page.previous %}
-    <a class="neighbour previous" href="{{ root }}{{ page.previous.url }}" rel="prev"><span class="neighbour-label">上一篇</span>{{ page.previous.title }}</a>
+    <a class="neighbour previous" href="{{ root }}{{ page.previous.url }}" rel="prev"><span class="neighbour-label">上一篇</span><span class="neighbour-title">{{ page.previous.title }}</span></a>
     {% endif %}
     {% if page.following %}
-    <a class="neighbour next" href="{{ root }}{{ page.following.url }}" rel="next"><span class="neighbour-label">下一篇</span>{{ page.following.title }}</a>
+    <a class="neighbour next" href="{{ root }}{{ page.following.url }}" rel="next"><span class="neighbour-label">下一篇</span><span class="neighbour-title">{{ page.following.title }}</span></a>
     {% endif %}
   </nav>
   {% endif %}
   {% if page.comments %}
   <section class="comments" id="comments">
-    <h2 class="comments-title">留言</h2>
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
     <script
       src="https://giscus.app/client.js"
       data-repo="{{ site.giscus.repo }}"
@@ -69,6 +70,7 @@
       crossorigin="anonymous"
       async>
     </script>
+    </div>
   </section>
   {% endif %}
 </article>

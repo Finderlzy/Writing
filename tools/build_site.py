@@ -25,6 +25,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from tools.content import LAYOUT, Layout, is_published
+from tools.fonts import default_specs
 from tools.obsidian_compat.diagnostics import emit_diagnostics
 from tools.render import build_pages, load_config
 
@@ -72,12 +73,21 @@ def _count_published(docs: Path, layout: Layout) -> tuple[int, int]:
     return published, unpublished
 
 
-def build(layout: Layout = LAYOUT) -> int:
+def build(layout: Layout = LAYOUT, *, skip_fonts: bool = False) -> int:
     before = _manifest(DOCS)
     try:
         _clean_output(CACHE, ROOT / ".cache")
         _clean_output(SITE, ROOT)
-        diagnostics = build_pages(DOCS, SITE, _site_config(), layout, list(REDIRECTS.items()))
+        # --skip-fonts 只在本地没网、也没跑过 tools/fetch_fonts.py 时用：标题退回系统字体
+        font_specs = None if skip_fonts else default_specs()
+        diagnostics = build_pages(DOCS, SITE, _site_config(), layout, list(REDIRECTS.items()), font_specs)
+        missing_fonts = "E_FONT_SOURCE_MISSING" in {diagnostic.code for diagnostic in diagnostics}
+        if missing_fonts:
+            print(
+                "提示：源字体不在 .cache/fonts/，先运行 .venv/bin/python -m tools.fetch_fonts 下载"
+                "（约 19 MB）；只想先看页面可以加 --skip-fonts，标题会退回系统字体。",
+                file=sys.stderr,
+            )
         emit_diagnostics(diagnostics)
         after = _manifest(DOCS)
         if before != after:
@@ -98,5 +108,14 @@ def build(layout: Layout = LAYOUT) -> int:
         return 2
 
 
+def main(argv: list[str]) -> int:
+    skip_fonts = "--skip-fonts" in argv
+    unknown = [item for item in argv if item != "--skip-fonts"]
+    if unknown:
+        print(f"不认识的参数：{' '.join(unknown)}；只支持 --skip-fonts", file=sys.stderr)
+        return 2
+    return build(skip_fonts=skip_fonts)
+
+
 if __name__ == "__main__":
-    raise SystemExit(build())
+    raise SystemExit(main(sys.argv[1:]))

@@ -156,7 +156,6 @@
         }
       });
       pre.parentNode.insertBefore(button, pre.nextSibling);
-      pre.classList.add("has-copy");
     });
   }
 

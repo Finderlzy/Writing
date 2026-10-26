@@ -31,6 +31,9 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Download and verify source fonts
+        run: python -m tools.fetch_fonts
+
       - name: Run tests
         run: python -m unittest discover -s tests -v
 

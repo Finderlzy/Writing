@@ -20,6 +20,7 @@ import markdown
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .content import HOME_PAGE, LAYOUT, Article, Catalog, Layout, is_published, series_diagnostics
+from .fonts import FontSpec, default_specs, subset_fonts
 from .obsidian_compat.converter import Converter
 from .obsidian_compat.index import VaultIndex
 from .obsidian_compat.html_check import check_body
@@ -47,6 +48,9 @@ _TOC_DEPTH = 3
 _TOC_MIN_HEADINGS = 3
 _MATH_RE = re.compile(r"\$[^$\n]+\$|\$\$")
 _FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\Z)", re.DOTALL)
+# build_pages 的 font_specs 哨兵：没传时按 site/fonts.py 的四个角色子集化，
+# 明确传 None 则跳过字体步骤（页面的标题退回系统字体，仍然可读）
+_UNSET_FONT_SPECS: object = object()
 
 
 @dataclass(frozen=True)
@@ -471,11 +475,15 @@ def build_pages(
     config: SiteConfig,
     layout: Layout = LAYOUT,
     legacy: Iterable[tuple[str, str]] = (),
+    font_specs: tuple[FontSpec, ...] | None | object = _UNSET_FONT_SPECS,
 ) -> list[Diagnostic]:
     """Scan `docs`, convert every page and write the whole site into `destination`.
 
     `legacy` lists `(old address, new address)` redirects that still need to work, like
-    `/tech/subscribe-claude-quick/` for the subscription tutorial.
+    `/tech/subscribe-claude-quick/` for the subscription tutorial. `font_specs` are the
+    font roles subset out of `<destination>/assets/fonts/` after the pages are written;
+    leave it out to use `fonts.default_specs()`, pass `None` to skip the font step
+    (the pages then fall back to system fonts).
     """
     index = VaultIndex.scan(docs)
     diagnostics: list[Diagnostic] = list(index.diagnostics)
@@ -514,7 +522,7 @@ def build_pages(
                 if attachment.source_path not in attachments:
                     attachments.append(attachment.source_path)
 
-    return write_site(
+    written = write_site(
         destination,
         catalog,
         converted,
@@ -527,3 +535,9 @@ def build_pages(
         diagnostics,
         legacy,
     )
+    if font_specs is _UNSET_FONT_SPECS:
+        font_specs = default_specs()
+    if font_specs is not None:
+        # 站点文件都写完之后再收字子集化：这一步要扫刚写出的 HTML
+        written.extend(subset_fonts(destination, font_specs))
+    return written

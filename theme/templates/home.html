@@ -5,7 +5,10 @@
 {{ page.body | safe }}
   </div>
   <section class="article-list-section">
-    <h2 class="section-title">博客与作品</h2>
+    <div class="section-head">
+      <h2 class="section-title" data-font="cute">博客与作品</h2>
+      <span class="hand-note" aria-hidden="true" data-font="hand">yep!</span>
+    </div>
     <ul class="article-list">
       {% for article in page.articles %}
       <li class="article-item">
@@ -13,8 +16,8 @@
           <a class="article-item-title" href="{{ root }}{{ article.url }}">{{ article.title }}</a>
         </p>
         <p class="article-meta">
-          <span class="article-stage">{{ article.stage.name }}</span>
-          {% if article.date %}<time datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
+          <span class="article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
+          {% if article.date %}<time data-font="slab" datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
         </p>
         {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}
       </li>
