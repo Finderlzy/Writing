@@ -18,7 +18,7 @@
 | V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 已完成（ab9fdfb） |
 | V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 已完成（72d0ac7） |
 | V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 已完成（873aa2d） |
-| V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 待细化 |
+| V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 已完成（COMMITHASH） |
 | V5 | 整体验收与交付记录 | §9 验收表全部 | V2、V3、V4 | 标准 | 待细化 |
 
 V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 → V4 串行；要并行就各用一个 worktree，按这个顺序合并。
@@ -217,17 +217,71 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 - 页脚的分隔线仍横贯整页，375px 下压到窗口边缘。这是 V1 就在的样式，V3 没有改。
 
 
-### V4 全部文章和 404（待细化）
+### V4 全部文章和 404（已完成）
 
 **目标**：全部文章页按月分组、筛选按钮按阶段着色；404 页有大号淡色“404”和两个入口。对应 R-VIS-4，筛选行为不变。
 
-**涉及范围**：`theme/templates/posts.html`、`theme/templates/404.html`、`theme/assets/site.css`，按月分组如需数据则改 `tools/render.py`；`tests/test_render.py`。
+**涉及范围**：`theme/templates/posts.html`、`theme/templates/404.html`、`theme/assets/site.js`（筛空以后隐藏月份标题）、`theme/assets/site.css`、`tools/render.py`（全部文章页的按月分组数据）、`theme/fonts.py` 不用改；`tests/test_render.py`。
 
 **依赖**：依赖 V1（建议在 V3 之后，复用首页的按月分组）
 
 **建议档位**：标准 — 复用 V3 的分组和 V1 的组件样式。
 
-**验收**：需求 §9 验收表里 R-VIS-4 那一行；`test_render.py` 里筛选相关断言继续通过。
+**参照**（2026-10-26 开工前补全；行号按 V3 完成后的 `fd41808` 记）：
+
+- **样稿**：`设计样稿/5.1.0-首页与文章页.html` 没有全部文章页和 404 的稿子，直接复用首页和文章页的组件（本任务第 3 步说的“同一套视觉”）：
+  - 大字：第 67～71 行 `.giant`、`.home-hero .g1/.g2`（`position: absolute`、裁在容器里、`pointer-events: none`）和第 198～199 行的 HTML。全部文章页照 `.home-hero` 的做法：一个 `.hero` 容器 `overflow: hidden`，标题 `全部文章` 用 head 字体压在淡色大字“全”前面；“全”用 `--pink`，和首页“想法”的 `g1` 同位（右边、顶部 -0.5rem）。
+  - 阶段按钮：第 101 行的 `.c-think`/`.c-draft`/`.c-blog`/`.c-opus` 用 `--chip-*` 四色，第 222、225 行的 HTML 就是 `<span class="chip c-think">思考</span>` 这种写法。换成按钮时**圆形药丸加四色底**，选中态按站上已有的 `.filter-button[aria-pressed="true"]`（`site.css` 第 817 行：`background: var(--ink); color: var(--paper)`）——也就是需求说的“选中时黑底白字”。
+  - 主题按钮用中性色：样稿的标签是第 279 行 `.tags` 的灰色小字，站上 `.article-tag` 是 `--ink-soft` 加 `#`。所以主题按钮不染四色，用纸色底加墨色描边，选中仍然黑底白字（V1 已有的规则，不改）。
+  - 按月分组：第 108～123 行 `.month`、`.month-label`、`.items`、`.items .t`、`.items .d`、`.items .date` 和第 231～257 行的 HTML。V3 已经把这一组照搬进 `site.css`（第 559～651 行）并改成 `.items` 里放 `.chip`，V4 的列表直接用 `home.html` 第 58～79 行同一套结构，不再新写样式。
+  - 404：样稿里没有，用文章页的黑圈和 `.neigh` 粗描边卡片（第 151～153 行）做两个入口按钮。
+- **筛选的现有实现**（`theme/assets/site.js` 第 21～113 行 `initFilters`）：`[data-article-list]` 里的 `.article-item` 逐个读 `data-stage` 和 `data-tags`（多个标签用 U+0001 拼），`hidden` 切换；按钮默认 `hidden`，脚本跑起来才显示；查询参数对不上任何按钮时清空；`writeParams` 用 `history.replaceState` 写回。本月要加的一条：按月分组以后，某个月底下的条目全被筛掉时，那个 `.month` 也要 `hidden`，下一条上边距才不会空出一整块。
+- **数据接口**（architecture.md §7.1，已定，本次不改签名）：
+
+  ```python
+  # tools/render.py
+  group_by_month(articles)  # V3 已有，返回 ((年, 月, 文章…), …)，无日期的最后一组年月都是 None
+  class Page:
+      months: tuple[...]    # 已有字段，全部文章页也填它（首页只装 catalog.home()，这里装 catalog.articles）
+  ```
+
+- **要改的文件和位置**：
+  - `tools/render.py`：`write_site` 里全部文章页的 `Page(...)`（第 560～569 行）加 `months=group_by_month(catalog.articles)`。`tags`、`rows` 保留——`tags` 给主题按钮用，`rows` 现在没有模板读，先留着。
+  - `theme/templates/posts.html`：整份重写。`.hero`（`.giant`“全” + `h1`“全部文章”）→ `.filters[data-filters][hidden]`（阶段组、主题组）→ `.filter-summary` → `.filter-groups`（`data-article-list` 放在这里，因为分组以后 `<li>` 不在同一个 `<ul>` 里）→ `.empty-result`。
+  - `theme/templates/404.html`：`.not-found` 里加 `.giant`“404”、标题、一句说明、两个 `.back-link` 粗描边按钮（`{{ root }}` 和 `{{ root }}posts/`）。
+  - `theme/assets/site.js`：`initFilters` 里 `items` 改成从 `[data-article-list]` 找 `.article-item`（沿用），`apply` 末尾遍历 `.month`，把没有可见条目的月份 `hidden = true`；样式要配合，绝对定位或 `display: none` 都行，用 `[hidden]`。
+  - `theme/assets/site.css`：`.page-title` 换掉（只有这两页在用）；新增 `.archives` 的 `.hero`/`.giant`/`.posts-title`、`.filter-button` 的四色底、`.not-found` 改写；列表沿用 `.month`/`.items`。
+  - `tests/test_render.py`：`PostsPageTests` 加按月分组的用例（第 392～423 行旁边）。
+- **顺手修的一处**：`site.css` 第 1356 行 V2 改 `.fin` 时删掉了 `.series-next {` 这一行，留下一段没有选择器的声明，把后面的 `.article-neighbours`、`.neighbour`、`.comments` 全部吃掉（浏览器直接丢弃），文章页的上下篇卡片和评论窗口一直没上样式。V4 把选择器补回去。
+
+**边界用例**：
+
+- 分组后每项照旧带 `data-stage` 和 `data-tags`，两个属性写在条目所在的 `<li>` 上（不是月份容器）。
+- 月份标题上有 `data-month`，脚本靠它找到月份分组。
+- 没有 `createdDate` 的文章排最后一组，组头仍是“日期不详”。
+- 一条文章都没有时只有空结果提示，没有月份。
+- 没有 JS 时按钮不显示、列表全部可见（按钮默认 `hidden`）。
+
+**验收**：需求 §9 验收表里 R-VIS-4 那一行；`test_render.py` 里筛选相关断言继续通过；“思考 + 学习”13 篇、“作品 + 学习”空结果；桌面、375px、深色下都没有横向滚动。
+
+**完成情况（2026-10-26）**：提交 `________`。
+
+- 全部文章页：标题 `全部文章` 用 head 字体压在淡色大字“全”前面（“全”和首页“想法”同位，用 `--pink`）；阶段按钮各自用 `--chip-*` 底色，按下去黑底白字，主题按钮保持中性纸色，按下同样黑底白字；列表换成 V3 的 `.month`/`.items` 按月分组，标题下面一行写 `108 pieces · 按时间倒序，按月分组`。
+- `tools/render.py`：全部文章页 `Page.months` 填 `group_by_month(catalog.articles)`，`Page.total` 填公开文章总数。`group_by_month`、`_context` 的 `month_names`/`unit_separator` 都已有，没有改接口。
+- `site.js`：从 `[data-article-list]` 里找 `[data-month]`，每次 `apply` 后把没有可见条目的月份 `hidden`；没有 JS 时按钮不显示、108 条和 8 个月份全部可见；查询参数对不上任何按钮时按未筛选处理；`replaceState` 照旧写回 `?stage=…&tag=…`。
+- 404 页：淡色大字“404”（`--pink`，桌面 416px、375px 192px，裁在容器里），一句说明，`回到首页`/`全部文章` 两个 2.5px 描边加实心投影的按钮；链接仍是 `../` 和 `../posts/`。
+- `tests/test_render.py`：新增 7 个用例（标题区大字、阶段按钮取色、按月分组且保留 `data-stage`/`data-tags`、无日期归最后一组、系列名、脚本隐藏被筛空的月份、404 视觉）。`Workspace` 多了一个 `layout` 属性，系列相关的用例靠它换 `Layout`。
+- 顺手修：V2 改 `.fin` 时删掉了 `.series-next {` 选择器那一行，后面 `.article-neighbours`、`.neighbour`、`.comments` 的样式一直没生效；V4 补回选择器，浏览器里核对了文章页的系列提示行、上下篇卡片和评论窗口。
+
+**验收结果**：
+
+- 测试 `.venv/bin/python -m unittest discover -s tests`：138 个通过（原来 131 个）。
+- 构建 `.venv/bin/python tools/build_site.py`：`build succeeded: 109 pages published, 20 unpublished`，只剩 `W_MATHJAX_UNUSED` 一条提示。
+- “思考 + 学习”：13 篇，和 `delivery.md` 5.0.0 记录的 13 篇一致，地址是 `/posts/?stage=思考&tag=学习`；被筛空的 2026-09、2026-07、2026-06 三个月标题隐藏，可见的 5 个月份每个都有文章。
+- “作品 + 学习”：0 篇，显示空结果提示，8 个月份全部隐藏。
+- 从首页卡片点“初稿”：进到 `/posts/?stage=初稿`，只显示初稿 2 篇，只剩 2026-08 一个月。
+- 访问不存在的地址：本地 `http.server` 不读 `404.html`，改用 Playwright 按 GitHub Pages 的方式返回 `site/404.html` 验收，标题、大字和两个按钮都对。
+- 桌面 1440、375px、深色：`scrollWidth` 都等于视口宽；深色下纸色 `#18171c`、淡色大字换成深紫 `#33263a`、按钮四色同步变深；375px 下按钮和月份上下排，404 的两个按钮各占一行。
 
 ### V5 整体验收与交付记录（待细化）
 

@@ -113,7 +113,7 @@ class Page:
     headline: str = ""  # 首页气泡标题：docs/index.md 正文第一段
     stage_counts: dict[str, int] = field(default_factory=dict)  # 首页黑圈和两张卡片：阶段名 → 篇数
     total: int = 0  # 首页黑圈：公开文章总数，不是首页列表的条数
-    months: tuple[tuple[int, int | None, tuple[Article, ...]], ...] = ()  # 首页列表的按月分组
+    months: tuple[tuple[int, int | None, tuple[Article, ...]], ...] = ()  # 列表的按月分组：首页是博客和作品，全部文章页是全部文章
 
 
 def _toml_value(value: str) -> str:
@@ -565,6 +565,9 @@ def write_site(
             highlight_nav="posts",
             tags=_tag_counts(catalog.articles),
             rows=_rows(catalog.articles),
+            # 全部文章页和首页共用按月分组；首页只装博客和作品，这里装全部公开文章
+            months=group_by_month(catalog.articles),
+            total=len(catalog.articles),  # 标题下面那行写的是全部文章篇数
         )
     )
 

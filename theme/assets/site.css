@@ -313,14 +313,16 @@ hr {
   font-family: var(--font-slab);
 }
 
-/* ---- 页面标题（全部文章、404；V2～V4 再换成大字标题区） ---- */
+/* ---- 页面标题（全部文章、404）：很粗的标题，后面垫一个淡色大字，和文章页标题区同一套 ---- */
 .page-title {
-  margin: 0 0 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: var(--stroke) solid var(--ink);
-  font-size: clamp(1.9rem, 6vw, 2.6rem);
-  line-height: 1.25;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-head);
+  font-size: clamp(2.2rem, 9vw, 4rem);
+  font-weight: 900;
+  line-height: 1.02;
   letter-spacing: 0.02em;
+  overflow-wrap: break-word;
 }
 
 /* ---- 首页（R-VIS-2）：气泡标题、淡色大字、黑圈、两条线、按月分组，照样稿 .home-hero ---- */
@@ -659,89 +661,75 @@ hr {
   border-bottom: 2px solid var(--accent);
 }
 
-/* ---- 文章列表（首页和全部文章页共用） ---- */
-.article-list {
+/* ---- 全部文章页（R-VIS-4）：淡色大字“全”垫在标题后面，下面是按月的列表 ---- */
+.archives {
+  max-width: var(--page-width);
+  margin: 0 auto;
+}
+
+/* 标题区：照样稿首页 .home-hero 的做法，大字留在右上角，裁在容器里 */
+.archives .hero {
+  position: relative;
+  padding-block: 1.5rem 2rem;
+  overflow: hidden;
+}
+
+.archives .giant.g1 {
+  top: -2.2rem;
+  right: -1%;
+  color: var(--pink);
+  font-size: clamp(10rem, 32vw, 22rem);
+}
+
+.archives .hero-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.5rem;
+  max-width: 34rem;
+}
+
+.hero-lead {
   margin: 0;
-  padding: 0;
-  list-style: none;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* slab 里没有汉字，中文说明放在不带 data-font 的 span 里，交给正文字体 */
+.hero-lead-count {
+  margin-right: 0.4em;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.hero-lead-unit {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.archive-list {
+  display: block;
+}
+
+/* 分组里的月份容器：和首页共用 .month / .month-label / .items，这里只补筛选用的隐藏 */
+.month[hidden],
+.article-item[hidden] {
+  display: none;
 }
 
 .article-item {
   min-width: 0;
-  padding: 0.9rem 0;
-  border-bottom: 1px solid var(--rule);
 }
 
-.article-item-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.2rem 0.6rem;
-  margin: 0;
-  line-height: 1.5;
-}
-
-.article-item-title {
-  font-size: 1.08rem;
-  font-weight: 700;
-  color: var(--ink);
-  overflow-wrap: anywhere;
-}
-
-.article-item-title:hover,
-.article-item-title:focus-visible {
-  color: var(--accent);
-}
-
-.article-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem 0.6rem;
-  align-items: center;
-  margin: 0.35rem 0 0;
+/* 系列名：和标题同一行，灰色小字，窄屏允许折行 */
+.article-series {
   color: var(--ink-soft);
   font-size: 0.8125rem;
-  line-height: 1.6;
-}
-
-.article-meta time {
-  font-family: var(--font-slab);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-/* 阶段小标签：按阶段着色（--chip-*），深色下只换变量 */
-.article-stage {
-  padding: 1px 0.6em;
-  border-radius: 999px;
-  background: var(--chip-think);
-  color: var(--ink);
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.7;
   white-space: nowrap;
 }
 
-.article-stage[data-stage="思考"],
-.filter-button[data-stage-chip="思考"] {
-  background: var(--chip-think);
-}
-
-.article-stage[data-stage="初稿"],
-.filter-button[data-stage-chip="初稿"] {
-  background: var(--chip-draft);
-}
-
-.article-stage[data-stage="博客"],
-.filter-button[data-stage-chip="博客"] {
-  background: var(--chip-blog);
-}
-
-.article-stage[data-stage="作品"],
-.filter-button[data-stage-chip="作品"] {
-  background: var(--chip-opus);
-}
-
+/* 主题标签的旧写法（灰色 # 前缀）还在文章页标题区用 */
 .article-tag {
   color: var(--ink-soft);
 }
@@ -750,32 +738,6 @@ hr {
   content: "#";
   margin-right: 0.1em;
   color: var(--ink-soft);
-}
-
-.article-series {
-  color: var(--ink-soft);
-  font-size: 0.8125rem;
-  white-space: nowrap;
-}
-
-.article-desc {
-  margin: 0.4rem 0 0;
-  color: var(--ink-soft);
-  font-size: 0.9375rem;
-  line-height: 1.75;
-}
-
-.article-item[hidden] {
-  display: none;
-}
-
-.more-link {
-  margin: 1.5rem 0 0;
-  font-weight: 500;
-}
-
-.more-link a {
-  border-bottom: 2px solid var(--accent);
 }
 
 /* ---- 全部文章页的筛选 ---- */
@@ -820,9 +782,26 @@ hr {
   color: var(--paper);
 }
 
-.filter-group [data-tag][aria-pressed="true"] {
-  border-color: var(--accent);
-  background: var(--accent);
+/* 阶段按钮用各自的 --chip-* 颜色（样稿 .c-think 等），按下去是黑底白字，和主题按钮一样。
+   窄屏会折行，上边距留一点缝。 */
+.filter-button[data-stage-chip] {
+  background: var(--chip-think);
+}
+
+.filter-button[data-stage-chip="初稿"] {
+  background: var(--chip-draft);
+}
+
+.filter-button[data-stage-chip="博客"] {
+  background: var(--chip-blog);
+}
+
+.filter-button[data-stage-chip="作品"] {
+  background: var(--chip-opus);
+}
+
+.filter-button[data-stage-chip][aria-pressed="true"] {
+  background: var(--ink);
   color: var(--paper);
 }
 
@@ -1354,6 +1333,7 @@ hr {
 }
 
 /* 系列提示行、上一页下一页、评论窗口 */
+.series-next {
   max-width: var(--reading-width);
   margin: 2.4rem 0 0;
   padding: 0.8rem 1.1rem;
@@ -1453,18 +1433,82 @@ hr {
   padding: 1rem 1.1rem;
 }
 
-/* ---- 404 ---- */
+/* ---- 404（R-VIS-4）：大号淡色“404”垫在后面，说明和两个粗描边按钮压在前面 ---- */
 .not-found {
-  padding: 2rem 0 3rem;
-  max-width: var(--reading-width);
+  position: relative;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding-block: 2.5rem 4rem;
+  overflow: hidden;
 }
 
-.not-found p {
-  margin: 0 0 1rem;
+/* 比文章页的“黑”还大一号，裁在容器里；深色下 --pink 会跟着变 */
+.not-found .giant {
+  top: -1.5rem;
+  right: -2%;
+  color: var(--pink);
+  font-size: clamp(9rem, 34vw, 26rem);
+  letter-spacing: 0;
 }
 
-.not-found a {
-  border-bottom: 2px solid var(--accent);
+.not-found-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1rem;
+  max-width: 30rem;
+}
+
+.not-found-say {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+/* 两个粗描边按钮：和文章页上一页下一页同一套（2.5px 描边 + 实心投影），点下去压平 */
+.back-ways {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 0.4rem;
+}
+
+.back-link {
+  display: grid;
+  gap: 2px;
+  min-width: 9rem;
+  padding: 0.6rem 1rem;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--pop);
+  color: var(--ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.back-link:hover,
+.back-link:focus-visible {
+  color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: var(--pop-lift);
+}
+
+.back-link:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
+.back-label {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.back-link strong {
+  font-weight: 700;
+  line-height: 1.5;
 }
 
 /* ---- 手机：窄屏留白小一点，标题略小；装饰只许被裁、不许撑宽页面 ---- */
@@ -1488,6 +1532,31 @@ hr {
 
   .article-series {
     white-space: normal;
+  }
+
+  /* 窄屏：全部文章的大字小一档；标题区留白收一点；404 的按钮各占一行 */
+  .archives .giant.g1 {
+    top: -1rem;
+    right: -6%;
+    font-size: 9.5rem;
+  }
+
+  .archives .hero {
+    padding-block: 1rem 1.4rem;
+  }
+
+  .not-found .giant {
+    top: -1rem;
+    right: -4%;
+    font-size: 12rem;
+  }
+
+  .not-found {
+    padding-block: 1.5rem 2.5rem;
+  }
+
+  .back-link {
+    flex: 1 1 100%;
   }
 
   .neighbour.next {
@@ -1616,13 +1685,16 @@ hr {
 /* ---- 减少动态效果：关掉卡片的悬停位移（非功能要求） ---- */
 @media (prefers-reduced-motion: reduce) {
   .neighbour,
+  .back-link,
   .site-title-star,
   .code-copy {
     transition: none;
   }
 
   .neighbour:hover,
-  .neighbour:focus-visible {
+  .neighbour:focus-visible,
+  .back-link:hover,
+  .back-link:focus-visible {
     transform: none;
   }
 

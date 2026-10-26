@@ -19,6 +19,8 @@
   }
 
   // ---- 全部文章页：按阶段和主题筛选，状态写在查询参数里 ----
+  // 列表按月分组：条目自己的 data-stage、data-tags 决定显不显示，某个月的条目全被筛掉时，
+  // 那个月份（[data-month] 的 .month）也一起隐藏，免得标题下空出一块。
   function initFilters() {
     var list = document.querySelector("[data-article-list]");
     var panel = document.querySelector("[data-filters]");
@@ -26,6 +28,7 @@
       return;
     }
     var items = Array.prototype.slice.call(list.querySelectorAll(".article-item"));
+    var months = Array.prototype.slice.call(list.querySelectorAll("[data-month]"));
     var stageButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-stage]"));
     var tagButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-tag]"));
     var summary = document.querySelector("[data-filter-summary]");
@@ -64,6 +67,11 @@
         if (show) {
           visible += 1;
         }
+      });
+      // 分组以后要回头看一眼每个月：它下面的条目全被筛掉时，连月份标题一起隐藏
+      months.forEach(function (month) {
+        var shown = month.querySelectorAll(".article-item:not([hidden])");
+        month.hidden = shown.length === 0;
       });
       stageButtons.forEach(function (button) {
         button.setAttribute("aria-pressed", String(button.getAttribute("data-stage") === state.stage));

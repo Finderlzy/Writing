@@ -39,6 +39,7 @@ class Workspace:
         self.root = Path(tempfile.mkdtemp())
         self.docs = self.root / "docs"
         self.site = self.root / "site"
+        self.layout = LAYOUT  # 要测系列时在 build 之前换成带 series 的那份
         # 首页的作者的话来自 docs/index.md，每个测试的 docs/ 都得有一份
         files = {"index.md": "# 首页\n\n欢迎。\n", **files}
         for name, text in files.items():
@@ -63,7 +64,7 @@ class Workspace:
         # font_specs=None：这些测试只关心模板、网址和诊断，不装源字体也不联网。
         # 字体子集化本身由 tests/test_fonts.py 覆盖。
         return build_pages(
-            self.docs, self.site, SiteConfig(theme=self.theme), LAYOUT, legacy, font_specs=None
+            self.docs, self.site, SiteConfig(theme=self.theme), self.layout, legacy, font_specs=None
         )
 
     def html(self, url: str) -> str:
@@ -390,13 +391,16 @@ class HomeCoverTests(unittest.TestCase):
 
 
 class PostsPageTests(unittest.TestCase):
-    def build(self) -> Workspace:
+    def build(self, files: dict[str, str] | None = None, series: dict[str, str] | None = None) -> Workspace:
         workspace = Workspace(
-            {
+            files
+            or {
                 "03思考/学术一点的思考.md": "---\ncreatedDate: 2026-10-05\ntags: [学习, AI]\ndescription: 思考简介\n---\n# 学术一点的思考\n",
                 "04技术/博客.md": "---\ncreatedDate: 2026-10-02\ntags: [AI]\n---\n# 博客\n",
             }
         )
+        if series:
+            workspace.layout = Layout(stages=LAYOUT.stages, series=series)  # 系列配置由调用方换成要测的那份
         self.assertFalse(workspace.build())
         return workspace
 
@@ -421,6 +425,60 @@ class PostsPageTests(unittest.TestCase):
         self.assertIn('"tag"', script)
         self.assertIn("URLSearchParams", script)
         self.assertIn("replaceState", script)
+
+    def test_title_area_puts_a_faded_giant_behind_the_heading(self):
+        html = self.build().html("posts/")
+        self.assertIn('<div class="giant g1" aria-hidden="true" data-font="head">全</div>', html)
+        self.assertIn('<h1 class="page-title" data-font="head">全部文章</h1>', html)
+        # 大字在标题之前，标题下面写着总篇数
+        main = html[html.index("<main"):]
+        self.assertLess(main.index(">全</div>"), main.index('class="page-title"'))
+        self.assertIn('<span class="hero-lead-count" data-font="slab">2 pieces</span>', html)
+
+    def test_stage_buttons_take_their_chip_colour_and_tags_stay_neutral(self):
+        html = self.build().html("posts/")
+        for stage in ("思考", "初稿", "博客", "作品"):
+            self.assertIn(f'data-stage-chip="{stage}"', html)
+        # 主题按钮不带阶段色
+        self.assertNotIn('data-tag="学习" data-stage-chip', html)
+        css = _article("site.css")
+        self.assertIn('.filter-button[data-stage-chip="初稿"]', css)
+        self.assertIn(".filter-button[data-stage-chip][aria-pressed=\"true\"]", css)
+
+    def test_list_is_grouped_by_month_and_keeps_filter_data_on_each_item(self):
+        html = self.build().html("posts/")
+        self.assertIn('<section class="month" data-month="2026-10">', html)
+        self.assertIn('<span data-font="slab">10</span><small><span data-font="slab">2026</span> · 十月</small>', html)
+        self.assertIn('class="article-item" data-stage="思考" data-tags="学习\x01AI"', html)
+        self.assertIn('class="article-item" data-stage="博客" data-tags="AI"', html)
+        # 每条文章都在它那一个月里
+        month_html = html[html.index('data-month="2026-10"'):]
+        self.assertLess(month_html.index("学术一点的思考"), month_html.index("博客"))
+
+    def test_articles_without_a_date_form_the_last_month_group(self):
+        files = {
+            "04技术/旧博客.md": "---\ncreatedDate: 2025-09-01\n---\n# 旧博客\n",
+            "04技术/没日期.md": "---\ndescription: 还没写日期\n---\n# 没日期\n",
+        }
+        html = self.build(files).html("posts/")
+        self.assertIn('<section class="month" data-month="2025-09">', html)
+        self.assertIn('<section class="month" data-month="no-date">', html)
+        self.assertIn("日期<small>不详</small>", html)
+        self.assertLess(html.index('data-month="2025-09"'), html.index('data-month="no-date"'))
+
+    def test_series_name_is_still_shown_in_the_list(self):
+        files = {
+            "04技术/订阅教程.md": "---\ncreatedDate: 2026-10-01\n---\n# 订阅教程\n",
+            "04技术/原理版/一.md": "---\ncreatedDate: 2026-09-30\n---\n# 一\n",
+        }
+        html = self.build(files, series={"04技术/原理版": "04技术/订阅教程.md"}).html("posts/")
+        self.assertIn('<span class="article-series">系列：订阅教程</span>', html)
+
+    def test_script_hides_the_months_that_the_filter_emptied(self):
+        script = _article("site.js")
+        self.assertIn('list.querySelectorAll("[data-month]")', script)
+        self.assertIn('month.querySelectorAll(".article-item:not([hidden])")', script)
+        self.assertIn("month.hidden = shown.length === 0", script)
 
 
 class WarningTests(unittest.TestCase):
@@ -581,6 +639,16 @@ class NotFoundTests(unittest.TestCase):
         self.assertIn("页面不存在", html)
         self.assertIn('href="../"', html)
         self.assertIn('href="../posts/"', html)
+
+    def test_404_page_matches_the_site_visual(self):
+        workspace = Workspace({"03思考/一.md": "---\ncreatedDate: 2026-10-01\n---\n# 一\n"})
+        self.assertFalse(workspace.build())
+        html = (workspace.site / "404.html").read_text(encoding="utf-8")
+        self.assertIn('<div class="giant g1" aria-hidden="true" data-font="head">404</div>', html)
+        self.assertIn("这个地址没有对应的文章", html)
+        self.assertEqual(2, html.count('class="back-link"'))
+        self.assertIn('<a class="back-link" href="../">', html)
+        self.assertIn('<a class="back-link" href="../posts/">', html)
 
 
 class LegacyRedirectTests(unittest.TestCase):

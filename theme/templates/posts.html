@@ -1,7 +1,16 @@
 {% extends "base.html" %}
+{# 全部文章（R-UI-4、R-VIS-4）：淡色大字“全”垫在标题后面，阶段按钮用各自的 --chip-* 颜色，
+   主题按钮用中性色，列表复用首页的按月分组。筛选由 site.js 按 data-stage、data-tags 隐藏条目，
+   没有 JS 时按钮不出现、列表全部可见；分组以后某个月被筛空，整个 .month 一起隐藏。 #}
 {% block content %}
-<section class="posts">
-  <h1 class="page-title" data-font="head">全部文章</h1>
+<section class="archives">
+  <header class="hero">
+    <div class="giant g1" aria-hidden="true" data-font="head">全</div>
+    <div class="hero-body">
+      <h1 class="page-title" data-font="head">全部文章</h1>
+      <p class="hero-lead"><span class="hero-lead-count" data-font="slab">{{ page.total }} pieces</span><span class="hero-lead-unit">· 按时间倒序，按月分组</span></p>
+    </div>
+  </header>
   <div class="filters" data-filters hidden>
     <div class="filter-group" role="group" aria-label="按阶段筛选">
       <button type="button" class="filter-button" data-stage="" aria-pressed="true">全部</button>
@@ -17,22 +26,31 @@
     </div>
   </div>
   <p class="filter-summary" data-filter-summary hidden></p>
-  <ul class="article-list" data-article-list>
-    {% for article in page.articles %}
-    <li class="article-item" data-stage="{{ article.stage.name }}" data-tags="{{ article.tags | join('') }}">
-      <p class="article-item-head">
-        <a class="article-item-title" href="{{ root }}{{ article.url }}">{{ article.title }}</a>
-        {% if article.series %}<span class="article-series">系列：{{ article.series }}</span>{% endif %}
-      </p>
-      <p class="article-meta">
-        <span class="article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
-        {% if article.date %}<time data-font="slab" datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
-        {% for tag in article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
-      </p>
-      {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}
-    </li>
+  <div class="archive-list" data-article-list>
+    {% for year, month, articles in page.months %}
+    <section class="month" data-month="{% if year %}{{ year }}-{{ '%02d' % month }}{% else %}no-date{% endif %}">
+      <h2 class="month-label{% if not year %} no-date{% endif %}">
+        {%- if year -%}<span data-font="slab">{{ "%02d" % month }}</span><small><span data-font="slab">{{ year }}</span> · {{ month_names[month - 1] }}</small>
+        {%- else -%}日期<small>不详</small>{%- endif -%}
+      </h2>
+      <ul class="items">
+        {% for article in articles %}
+        <li class="article-item" data-stage="{{ article.stage.name }}" data-tags="{{ article.tags | join(unit_separator) }}">
+          <a href="{{ root }}{{ article.url }}">
+            <span class="t">
+              <strong>{{ article.title }}</strong>
+              <span class="chip article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
+              {% if article.series %}<span class="article-series">系列：{{ article.series }}</span>{% endif %}
+              {% if article.date %}<span class="date" data-font="slab">{{ "%02d.%02d" % (article.date.month, article.date.day) }}</span>{% endif %}
+            </span>
+            {% if article.description %}<span class="d">{{ article.description }}</span>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
     {% endfor %}
-  </ul>
+  </div>
   <p class="empty-result" data-empty-result hidden>没有同时满足这两个条件的文章，换一个阶段或主题试试。</p>
 </section>
 {% endblock %}
