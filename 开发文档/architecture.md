@@ -51,11 +51,21 @@ flowchart LR
 一个深模块，回答“哪些是文章、它们是什么、怎么排”。其他模块不再自己判断是否公开，也不再自己读 front matter。4.1.0 里“是否公开”在转换器、发布计数、附件规则和测试里各写了一遍，slug 用正则读、其他元数据用 YAML 读，两者对同一份 front matter 会给出不同结果，这一版都收进这个模块。
 
 ```python
-STAGES: tuple[Stage, ...]          # 02思考/思考/thoughts、03初稿/初稿/drafts、04博客/博客/blog、05作品/作品/opus
-SERIES: dict[str, str]             # 系列子文件夹 → 入口篇，见 §6
+@dataclass(frozen=True)
+class Stage:
+    folder: str             # 文件夹路径前缀，如 "02思考"；按最长前缀匹配，所以也可以是 "03思考/初稿"
+    name: str               # 思考 / 初稿 / 博客 / 作品
+    prefix: str             # 网址前缀 thoughts / drafts / blog / opus
+
+@dataclass(frozen=True)
+class Layout:               # 文件夹与阶段的对应，加上系列配置
+    stages: tuple[Stage, ...]
+    series: dict[str, str]  # 系列子文件夹 → 入口篇，见 §6
+
+LAYOUT: Layout              # 5.0.0 的正式对应：02思考、03初稿、04博客、05作品
 HOME_PAGE = Path("index.md")
 
-def is_published(path: Path) -> bool      # 唯一的“是否公开”判断：在 STAGES 文件夹内的 .md，或首页
+def is_published(path: Path, layout: Layout = LAYOUT) -> bool   # 唯一的“是否公开”判断：属于某个阶段的 .md，或首页
 def read_meta(text: str) -> dict          # 唯一的 front matter 解析（YAML）；坏 front matter 返回 {}
 
 @dataclass(frozen=True)
@@ -70,9 +80,9 @@ class Article:
 
 class Catalog:
     @classmethod
-    def load(cls, docs: Path, pages: Iterable[Path]) -> tuple["Catalog", list[Diagnostic]]
+    def load(cls, docs: Path, pages: Iterable[Path], layout: Layout = LAYOUT) -> tuple["Catalog", list[Diagnostic]]
     articles: tuple[Article, ...]           # 全部文章，createdDate 从新到旧，无日期的排最后（W_POST_DATE_MISSING）
-    def home(self) -> tuple[Article, ...]   # 04博客根目录 + 05作品，同样排序（R-UI-3、R-UI-6）
+    def home(self) -> tuple[Article, ...]   # 不在系列子文件夹里的博客 + 全部作品，同样排序（R-UI-3、R-UI-6）
     def neighbours(self, a: Article) -> tuple[Article | None, Article | None]   # 上一篇、下一篇
     def series(self, a: Article) -> tuple[Article, ...]                        # a 所在系列的阅读顺序，不在系列里时为空
 ```
@@ -123,7 +133,7 @@ def write_site(
 
 顺序：`VaultIndex.scan` → `Catalog.load` → 逐页 `Converter.convert`（全部页面都转换以检查双链，只保留公开页面的结果）→ `plan_page_urls` → 有诊断就停止 → `write_site` → 写跳转页 → `check_site`。
 
-配置常量留在这个文件里：`SECTION_PREFIXES`（由 `content.STAGES` 生成，供 `plan_page_urls` 使用）和 `REDIRECTS`（§5）。`UNPUBLISHED_PATHS`、`NAV_POSTS`、`NAV_NOTES`、`ARTICLES_INDEX`、`HOME_RECENT_POSTS`、`RENAMED_SECTIONS` 删除。
+配置常量留在这个文件里：`REDIRECTS`（§5）；网址前缀由 `content.LAYOUT` 的各阶段给出，`plan_page_urls` 改为按阶段取前缀，不再用 `SECTION_SLUGS`。`UNPUBLISHED_PATHS`、`NAV_POSTS`、`NAV_NOTES`、`ARTICLES_INDEX`、`HOME_RECENT_POSTS`、`RENAMED_SECTIONS` 删除。
 
 ## 5. 网址与跳转
 
@@ -232,3 +242,21 @@ tests/                        # 已有：单元测试 + 仓库级检查，按新
 - **README 过时内容**（README 由作者维护，Ask first）：5.0.0 落地后，以下段落不再准确，需要作者决定怎么改：开头的“MkDocs + Material”和“学习笔记”；“日常写作流程”的“移到对应文件夹”；“导航与思考列表”整节；“页面网址”里的中文路径跳转、`RENAMED_SECTIONS`、“不能动的链接”；“评论区与外链”里的 `mkdocs.yml`、`repo_url`、Material 图标；“仓库结构”整节。
 - **系列的阅读顺序**沿用 4.1.0 规则，如果实施时发现某个系列的顺序不对，再考虑在 `SERIES` 里改为显式列出顺序。
 - **深色模式**按需求默认跟随系统，不做手动切换。
+
+## 13. 实施前评审（2026-10-26）
+
+范围：沿 S1～S3 三个场景，对照需求第 3～7 节检查本文 §1～§12。只做了文档评审，没有运行任何新代码。结论：**通过，有三处修正已写回本文**，没有阻塞项。
+
+| 发现 | 影响 | 处理 |
+| --- | --- | --- |
+| 推送 `main` 即部署，而 Obsidian Git 每 10 分钟自动提交、开机自动拉取。如果先迁移内容、后换前端，线上会有一段时间是旧前端配新文件夹，`SECTION_SLUGS` 缺项会让构建直接失败；在长期分支上迁移又会和作者在 `main` 上的写作冲突 | 阻塞迁移的顺序，不阻塞开工 | 改为 expand–contract（见下方“过渡方案”），已据此把 §4.1 的阶段配置改成可传入的 `Layout` |
+| §4.1 的 `STAGES` 写成固定常量，新流水线在迁移前无法用真实内容试跑，前端只能在切换当天第一次见到真实文章 | 验收风险集中到最后一步 | 同上：`Layout` 按文件夹前缀匹配阶段，预览构建可以用旧文件夹布局 |
+| `plan_page_urls` 现在按一级文件夹查前缀，旧布局下 `03思考/初稿` 要映射到 `drafts`，一级文件夹不够 | 预览构建的网址会错 | §4.4 改为按阶段取前缀 |
+
+核对过、无需修改的点：发布范围改成白名单符合 Never 边界；`docs/` 只读由构建前后的哈希比对保证；R-PUB-4 的跳转在切换的同一次部署里生效；Inbox Filer 没有写死文件夹名（`docs/.obsidian/plugins/inbox-filer` 没有 `data.json`），它读分类标准，迁移时不需要改插件配置。
+
+### 过渡方案
+
+1. **并存**：新模块 `content.py`、`render.py`、`theme/templates/`、`theme/assets/` 先加进仓库，只被单元测试和一个临时预览入口 `tools/preview_v5.py`（计划）使用。预览入口用旧文件夹布局的 `Layout`（`03思考`→思考、`03思考/初稿`→初稿、`04技术`→博客、`05作品`→作品）把真实内容构建到指定的临时目录。线上仍由 4.1.0 的 `build_site.py` 构建，每一步推送都不改变线上网站。
+2. **切换**：一次提交里完成文件夹迁移、清理、分类标准改写和 `build_site.py` 改用新流水线。开始前请作者关掉 Obsidian 或暂停 Obsidian Git，推送后再在 Obsidian 里拉取。
+3. **收缩**：删除预览入口、MkDocs 相关的代码、配置、模板和依赖。
