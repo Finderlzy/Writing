@@ -18,3 +18,5 @@ venv/
 .DS_Store
 Thumbs.db
 .zcode/
+# 本地预览和验收产物
+.preview-*/
