@@ -40,14 +40,14 @@
 
 ### 目录与发布
 
-- `docs/` 是 Obsidian 仓库本身，构建只读不写，转换和生成都在 `.cache/`。
-- 写的东西沿两条线走：想法 → 思考 → 技术，灵感 → 初稿 → 作品；私人生活进 `07自己`。分类的唯一依据是 `docs/01系统/分类标准.md`。
-- 不发布的路径由 `tools/build_site.py` 的 `UNPUBLISHED_PATHS` 控制，目前是 `00收集`、`07自己`、`docs/AGENTS.md`。这些页面不参与构建，但仍参与双链检查，公开页面指向它们的双链渲染成纯文字，只被它们引用的附件不复制；它们仍随 Git 推送到公开仓库。
-- 网址前缀见 `SECTION_SLUGS`，新增一级文件夹必须补上，否则报 `E_URL_SECTION_MISSING`。slug 只能用小写字母、数字和单个连字符，同一栏目内唯一；不写 slug 的页面按源文件路径生成 8 位短 ID，文件移动或改名后会变。
-- 子文件夹在导航里折叠成一组：组内第一项是链接最多的页面（通常是目录页），其余按它链接过去的顺序，没被链到的排最后。
-- **订阅教程旧链接**：`04技术/如何订阅claude（纯操作版）.md`（`/tech/subscribe-claude-quick/`）在视频里公开过。在 5.0.0 改版落地之前不要动它；改版时它随 `04技术` 迁到 `04博客`，这个旧网址必须跳转到新地址。
-- **5.0.0 改版**：术语见根目录 `CONTEXT.md`，范围、规则和验收见 `开发文档/requirements.md`，技术方案和计划的目录结构见 `开发文档/architecture.md`（候选对比在 `reuse-research.md`，决策记录在 `开发文档/adr/`），任务顺序见 `开发文档/implementation-plan.md`。改版落地前，本节描述的仍是 4.1.0 的现状；架构文档里标“计划”的文件和命令还不存在。
-- 设计文档、ADR 和开发日志放 `开发文档/`，不要放进 `docs/`（那是 Obsidian 仓库）；模板和站点脚本放 `theme/`，构建代码放 `tools/`，测试按模块命名为 `tests/test_<模块>.py`。
+- `docs/` 是 Obsidian 仓库本身，构建只读不写，转换副本在 `.cache/converted-docs/`，网站在 `site/`。
+- 一级文件夹只有 `00收集`、`01系统`、`02思考`、`03初稿`、`04博客`、`05作品`、`07自己`、`09附件`，除 `04博客` 的系列子文件夹外不再分子文件夹。写的东西沿两条线走：想法 → 思考 → 博客，灵感 → 初稿 → 作品；私人生活进 `07自己`。分类的唯一依据是 `docs/01系统/分类标准.md`。
+- 发布范围只由 `tools/content.py` 的 `LAYOUT` 决定：`02思考`、`03初稿`、`04博客`、`05作品` 和 `docs/index.md`。`00收集`、`01系统`、`07自己` 和 `docs/AGENTS.md` 不发布，但仍参与双链检查；公开页面指向它们的双链渲染成纯文字，只被它们引用的附件不复制；它们仍随 Git 推送到公开仓库。判断发布与否只用 `content.is_published`，不要在别处另写一套。
+- 网址前缀写在 `LAYOUT` 的 `Stage` 里（`thoughts`、`drafts`、`blog`、`opus`），新增阶段或一级文件夹必须在那里登记，否则报 `E_URL_SECTION_MISSING`。slug 只能用小写字母、数字和单个连字符，同一栏目内唯一；不写 slug 的页面按源文件路径生成 8 位短 ID，文件移动或改名后会变。
+- `04博客` 的子文件夹各是一个系列，在 `content.SERIES` 里登记入口篇；出现没登记的子文件夹报 `E_SERIES_UNCONFIGURED`，入口篇不存在报 `E_SERIES_ENTRY_MISSING`。系列内顺序沿用 4.1.0 规则：入口篇在前，其余按组内链接最多的页面排序。
+- **订阅教程旧链接**：`04博客/如何订阅claude（纯操作版）.md` 原来在 `/tech/subscribe-claude-quick/`，这个地址在视频里公开过。旧网址由 `tools/build_site.py` 的 `REDIRECTS` 跳转到 `/blog/subscribe-claude-quick/`，改文件名或 slug 时同步改 `REDIRECTS`，构建会检查跳转目标是否存在。
+- 前端是自写的 Jinja2 模板（`theme/templates/`）加 `theme/assets/site.css`、`site.js`，站点配置在 `site.toml`。4.1.0 的 MkDocs + Material、`mkdocs.yml`、`overrides/`、`theme/extra.css`、`docs/javascripts/`、`tools/site_nav.py` 都已删除，不要再引入。
+- 需求、技术方案和任务顺序见 `开发文档/`（术语在根目录 `CONTEXT.md`，决策记录在 `开发文档/adr/`）。设计文档、ADR 和开发日志放 `开发文档/`，不要放进 `docs/`（那是 Obsidian 仓库）；模板和站点脚本放 `theme/`，构建代码放 `tools/`，测试按模块命名为 `tests/test_<模块>.py`。
 
 ### 提交与合并
 
@@ -65,8 +65,8 @@
 
 ### 构建与验证
 
-- 需要 Python 3.13 以上，依赖见 `requirements.txt`（仓库内 `.venv` 已就绪）。
-- 验证命令：`.venv/bin/python -m unittest discover -s tests`，然后 `.venv/bin/python tools/build_site.py`；构建成功输出 `build succeeded: N pages published, M unpublished`，网站在 `site/`。
+- 需要 Python 3.13 以上，依赖见 `requirements.txt`（Jinja2、PyYAML 和 Markdown 转换用的库；仓库内 `.venv` 已就绪）。
+- 验证命令：`.venv/bin/python -m unittest discover -s tests`，然后 `.venv/bin/python tools/build_site.py`；构建成功输出 `build succeeded: N pages published, M unpublished`，网站在 `site/`。诊断码以 `W_` 开头的只是提示，不影响退出码；`E_` 开头的会让构建失败。
 - 本地预览用 `.venv/bin/python -m http.server -d site 8000`。工作区里的 `site/` 可能是旧构建，判断线上内容以 CI 产物为准，必要时重新构建。
 - 不要在仓库里留下构建产物或临时副本：`site/`、`.cache/` 虽被忽略，但旧的 `site/` 会误导检查；需要试跑构建时复制到临时目录，跑完删除。
 - `python` 指向哪个解释器不确定，直接调用 `.venv/bin/python`。

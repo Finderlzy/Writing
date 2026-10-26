@@ -4,7 +4,7 @@ createdDate: 2026-09-26
 updatedDate: 2026-10-07
 ---
 > claude整理于 2026-10-07 
-> 上篇：[[04技术/自建梯子：VPS + 3x-ui + VLESS Reality]]（需要先完成上篇，有一个能用的节点）
+> 上篇：[[04博客/自建梯子：VPS + 3x-ui + VLESS Reality]]（需要先完成上篇，有一个能用的节点）
 
 这篇教程会在上篇搭好的节点基础上，再加一个住宅 IP。做完之后，访问指定网站时，对方看到的是住宅 IP，而不是 VPS 的机房 IP。
 
@@ -137,7 +137,7 @@ domain:tiktok.com
 
 
 > 写于 2026-09-26
-> 接上篇：[[04技术/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子：VPS + 3x-ui + VLESS Reality]]
+> 接上篇：[[04博客/自建梯子：VPS + 3x-ui + VLESS Reality|自建梯子：VPS + 3x-ui + VLESS Reality]]
 
 ## 购买住宅ip
 ---

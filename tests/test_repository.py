@@ -7,10 +7,15 @@ import re
 import unittest
 from pathlib import Path
 
-from mkdocs.config import load_config
-
+from tools.content import LAYOUT, is_published
 from tools.obsidian_compat.converter import Converter
 from tools.obsidian_compat.index import VaultIndex
+from tools.render import load_config
+
+# R-STR-1 的文件夹表：一级文件夹只有这些，00收集 不分子文件夹
+TOP_LEVEL_FOLDERS = {"00收集", "01系统", "02思考", "03初稿", "04博客", "05作品", "07自己", "09附件"}
+# 只允许 04博客 为系列建子文件夹（R-STR-1）
+FLAT_STAGE_FOLDERS = ("00收集", "01系统", "02思考", "03初稿", "05作品", "07自己")
 
 
 class RepositoryAcceptanceTests(unittest.TestCase):
@@ -18,31 +23,70 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self.root = Path(__file__).resolve().parents[1]
         self.docs = self.root / "docs"
 
-    def test_structure_configuration_matches_repository_layout(self):
+    def _top_level_folders(self) -> set[str]:
+        return {path.name for path in self.docs.iterdir() if path.is_dir() and not path.name.startswith(".")}
+
+    def test_docs_top_level_folders_follow_r_str_1(self):
+        self.assertEqual(TOP_LEVEL_FOLDERS, self._top_level_folders())
+        self.assertEqual((), tuple((self.docs / "00收集").rglob("*/*.md")), "00收集 不能再有子文件夹")
+
+    def test_stage_folders_have_no_subfolders_except_blog_series(self):
+        for folder in FLAT_STAGE_FOLDERS:
+            nested = [path.as_posix() for path in (self.docs / folder).rglob("*") if path.is_dir()]
+            self.assertEqual([], nested, f"“{folder}”不能有子文件夹")
+        self.assertEqual(
+            {"原理版", "操作版"},
+            {path.name for path in (self.docs / "04博客").iterdir() if path.is_dir()},
+            "04博客 下只为订阅教程系列建了 原理版、操作版 两个子文件夹",
+        )
+        self.assertEqual({"04博客/原理版", "04博客/操作版"}, set(LAYOUT.series))
+
+    def test_published_folders_are_exactly_the_four_stages(self):
+        published = {
+            path.relative_to(self.docs).parts[0]
+            for path in self.docs.rglob("*.md")
+            if ".obsidian" not in path.parts and is_published(path.relative_to(self.docs))
+        }
+        self.assertEqual({"02思考", "03初稿", "04博客", "05作品", "index.md"}, published)
+
+    def test_docs_has_no_site_scripts(self):
+        scripts = [
+            path.relative_to(self.docs).as_posix()
+            for path in self.docs.rglob("*")
+            if path.suffix in {".js", ".css"} and ".obsidian" not in path.parts
+        ]
+        self.assertEqual([], scripts, "站点脚本和样式放在 theme/，不进 Obsidian 仓库")
+
+    def test_no_attachment_is_left_unreferenced(self):
+        index = VaultIndex.scan(self.docs)
+        referenced: set[Path] = set()
+        for record in index.pages.values():
+            result = Converter(index).convert(
+                record.source_path,
+                (self.docs / record.source_path).read_text(encoding="utf-8"),
+            )
+            for reference in result.references:
+                if reference.kind != "embed" or not reference.target:
+                    continue
+                for attachment in index.resolve_attachment_candidates(record.source_path, reference.target):
+                    referenced.add(attachment.source_path)
+        unreferenced = sorted(path.as_posix() for path in index.attachments if path not in referenced)
+        self.assertEqual([], unreferenced, "09附件 里有不被任何内容引用的文件")
+        self.assertEqual({"09附件"}, {path.parts[0] for path in index.attachments})
+
+    def test_site_configuration_matches_repository_layout(self):
         self.assertTrue((self.docs / "index.md").is_file())
 
-        config = load_config(str(self.root / "mkdocs.yml"))
-        self.assertEqual("https://finderlzy.github.io/Writing/", config["site_url"])
-        self.assertIn("material/search", config["plugins"])
-        self.assertFalse(any(name.endswith("/redirects") for name in config["plugins"]))
-
-        theme = config["theme"]
-        self.assertIsNone(theme.get("logo"), "theme logo must use the Material default")
-        favicon = theme.get("favicon")
-        self.assertIsInstance(favicon, str)
-        target = self._safe_docs_path(favicon)
-        self.assertTrue(target.is_file(), f"theme favicon does not resolve: {favicon}")
-
-        extra_css = config.get("extra_css", [])
-        self.assertIn("stylesheets/extra.css", extra_css)
-        self.assertFalse(
-            (self.docs / "stylesheets" / "extra.css").exists(),
-            "site CSS must not be stored in the Obsidian docs tree",
-        )
-        self.assertTrue(
-            (self.root / "theme" / "extra.css").is_file(),
-            "extra CSS source must live under theme/",
-        )
+        config = load_config(self.root / "site.toml")
+        self.assertEqual("https://finderlzy.github.io/Writing/", config.site_url)
+        # site.toml 里写的是相对仓库根目录的路径，build_site 会补成绝对路径
+        self.assertEqual("theme", config.theme.as_posix())
+        self.assertTrue((config.theme / "templates" / "base.html").is_file())
+        self.assertTrue((config.theme / "assets" / "site.css").is_file())
+        self.assertEqual("Finderlzy/Writing", config.giscus.repo)
+        self.assertRegex(config.giscus.repo_id, r"^R_\w+$")
+        if config.giscus.category_id:
+            self.assertRegex(config.giscus.category_id, r"^DIC_\w+$")
 
         app_path = self.docs / ".obsidian" / "app.json"
         app = json.loads(app_path.read_text(encoding="utf-8"))
@@ -63,7 +107,7 @@ class RepositoryAcceptanceTests(unittest.TestCase):
             path.read_text(encoding="utf-8")
             for path in (
                 self.root / "README.md",
-                self.root / "mkdocs.yml",
+                self.root / "site.toml",
                 app_path,
             )
         )
@@ -123,21 +167,10 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         if violations:
             self.fail("禁止使用依赖目录深度的中央附件嵌入：\n" + "\n".join(violations))
 
-    def test_giscus_comments_are_wired_through_theme_override(self):
-        config = load_config(str(self.root / "mkdocs.yml"))
-        self.assertEqual(
-            str(self.root / "overrides"), config["theme"].custom_dir,
-            "theme custom_dir must point to overrides/",
-        )
-        partial = self.root / "overrides" / "partials" / "comments.html"
-        self.assertTrue(partial.is_file())
-        self.assertIn("giscus.app/client.js", partial.read_text(encoding="utf-8"))
-
-        giscus = config["extra"]["giscus"]
-        self.assertEqual("Finderlzy/Writing", giscus["repo"])
-        self.assertRegex(giscus["repo_id"], r"^R_\w+$")
-        if giscus["category_id"]:
-            self.assertRegex(giscus["category_id"], r"^DIC_\w+$")
+    def test_giscus_comments_are_wired_in_the_article_template(self):
+        template = self.root / "theme" / "templates" / "article.html"
+        self.assertTrue(template.is_file())
+        self.assertIn("giscus.app/client.js", template.read_text(encoding="utf-8"))
 
     def test_central_attachment_violations_are_reported_together(self):
         index = VaultIndex.scan(self.docs)

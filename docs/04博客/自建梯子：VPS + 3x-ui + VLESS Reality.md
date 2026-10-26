@@ -4,7 +4,7 @@ createdDate: 2026-09-25
 updatedDate: 2026-10-09
 ---
 > claude整理于 2026-10-07
-> 下篇：[[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]
+> 下篇：[[04博客/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]
 
  这篇教程会带你从零搭一个只给自己用的节点。做完之后，你的电脑和手机都能通过自己的服务器上网。
 
@@ -44,7 +44,7 @@ VPS 就是一台放在国外机房、24 小时开机的云服务器。我们要�
 ![[09附件/Snipaste_2026-09-25_16-58-54.png]]
 
 > [!warning] 关于这家的 IP
-> 这家云 VPS 的 IP 质量一般。我用不同工具检测，结果不太一致：有的显示纯净，有的显示不纯净。建议多用几个工具交叉对比（比如 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/)）。 如果你要用 ChatGPT、TikTok 这类对 IP 很敏感的服务，可以看下篇[[04技术/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
+> 这家云 VPS 的 IP 质量一般。我用不同工具检测，结果不太一致：有的显示纯净，有的显示不纯净。建议多用几个工具交叉对比（比如 [ipinfo.io](https://ipinfo.io/what-is-my-ip)、[scamalytics.com](https://scamalytics.com/)）。 如果你要用 ChatGPT、TikTok 这类对 IP 很敏感的服务，可以看下篇[[04博客/给 VPS 节点套上住宅 IP|给 VPS 节点套上住宅 IP]]。
 
 ### 买完之后要拿到什么
 

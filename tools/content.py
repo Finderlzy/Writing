@@ -30,7 +30,7 @@ def _within(path: Path, folder: str) -> bool:
 
 @dataclass(frozen=True)
 class Stage:
-    folder: str  # 文件夹路径前缀，如 "02思考"；按最长前缀匹配，所以也可以是 "03思考/初稿"
+    folder: str  # 文件夹路径前缀，如 "02思考"；按最长前缀匹配
     name: str  # 思考 / 初稿 / 博客 / 作品
     prefix: str  # 网址前缀 thoughts / drafts / blog / opus
 
@@ -194,7 +194,7 @@ def series_diagnostics(
                 key=lambda item: len(item.folder),
             )
             if closest != stage:
-                continue  # 页面属于更具体的阶段，例如 03思考/初稿 下的页面是“初稿”
+                continue  # 页面属于更具体的阶段，例如 04博客/原理版 下的页面归“博客”
             if any(_within(path, series) for series in layout.series):
                 continue
             diagnostics.append(

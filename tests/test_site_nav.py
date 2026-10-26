@@ -179,20 +179,19 @@ class SectionNavTests(unittest.TestCase):
 
 
 class RealSiteTests(unittest.TestCase):
-    def test_real_nav_keeps_published_tech_links_and_hides_system_and_archive(self):
+    def test_real_sections_become_nav_groups(self):
+        """5.0.0 的导航由 tools/render.py 负责，这里只核对按文件夹分组这一层。"""
         from tools import build_site
 
+        self.assertEqual({"00收集", "01系统", "07自己"}, set(build_site.UNPUBLISHED_PATHS))
+
         pages = [path.relative_to(build_site.DOCS) for path in build_site.DOCS.rglob("*.md")]
-        pages = [path for path in pages if path.parts[0] not in build_site.UNPUBLISHED_PATHS and ".obsidian" not in path.parts]
-        posts = {title: collect_posts(build_site.DOCS, pages, folder) for title, folder in build_site.NAV_POSTS.items()}
+        pages = [path for path in pages if ".obsidian" not in path.parts]
+        posts = {title: collect_posts(build_site.DOCS, pages, folder) for title, folder in {"博客": "04博客", "作品": "05作品"}.items()}
         nav = build_nav(pages, {title: section_nav(build_site.DOCS, section) for title, section in posts.items()})
-        self.assertEqual(["首页", "思考", "技术", "作品"], [next(iter(item)) for item in nav])
-        self.assertIn("04技术/如何订阅claude（纯操作版）.md", nav[2]["技术"])
-        flat = repr(nav)
-        self.assertNotIn("01系统", flat)
-        self.assertEqual("thoughts/", build_site.ARTICLES_URL)
-        self.assertEqual("tech", build_site.SECTION_SLUGS["04技术"])
-        self.assertEqual("thoughts", build_site.SECTION_SLUGS["03思考"])
+        self.assertEqual(["首页", "博客", "作品"], [next(iter(item)) for item in nav])
+        self.assertIn("04博客/如何订阅claude（纯操作版）.md", nav[1]["博客"])
+        self.assertNotIn("01系统", repr(nav))
 
 
 if __name__ == "__main__":

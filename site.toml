@@ -1,4 +1,4 @@
-# 新流水线的站点配置，取代 mkdocs.yml。旧的 tools/build_site.py 仍按 4.1.0 的方式构建。
+# 站点配置，由 tools/render.py 的 load_config 读取，取代 4.1.0 的 mkdocs.yml。
 site_name = "Writing"
 site_url = "https://finderlzy.github.io/Writing/"
 theme = "theme"
