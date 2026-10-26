@@ -1,6 +1,10 @@
-# writing
+<p align="center">
+  <a href="https://finderlzy.github.io/writing/"><img src="theme/assets/favicon.svg" width="96" height="96" alt="Writing 的星星标志"></a>
+</p>
 
-个人文章网站：<https://finderlzy.github.io/writing/>
+<h1 align="center">writing</h1>
+
+<p align="center">个人文章网站：<a href="https://finderlzy.github.io/writing/">finderlzy.github.io/writing</a></p>
 
 这里放我的思考、初稿、博客和文学作品。所有内容在 Obsidian 里写，用仓库里自带的 Python 脚本生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
