@@ -68,7 +68,7 @@
 - 需要 Python 3.13 以上，依赖见 `requirements.txt`（Jinja2、PyYAML 和 Markdown 转换用的库；仓库内 `.venv` 已就绪）。
 - 验证命令：`.venv/bin/python -m unittest discover -s tests`，然后 `.venv/bin/python tools/build_site.py`；构建成功输出 `build succeeded: N pages published, M unpublished`，网站在 `site/`。诊断码以 `W_` 开头的只是提示，不影响退出码；`E_` 开头的会让构建失败。
 - 本地预览用 `.venv/bin/python -m http.server -d site 8000`。工作区里的 `site/` 可能是旧构建，判断线上内容以 CI 产物为准，必要时重新构建。
-- 不要在仓库里留下构建产物或临时副本：`site/`、`.cache/` 虽被忽略，但旧的 `site/` 会误导检查；需要试跑构建时复制到临时目录，跑完删除。
+- 不要在仓库里留下构建产物或临时副本：`site/`、`.cache/converted-docs/` 虽被忽略，但旧的 `site/` 会误导检查；需要试跑构建时复制到临时目录，跑完删除。`.cache/fonts/` 是下载好的源字体（约 19 MB），构建要用，不要删；缺了就运行 `.venv/bin/python -m tools.fetch_fonts` 重新下载。
 - `python` 指向哪个解释器不确定，直接调用 `.venv/bin/python`。
 
 ### 编辑 README

@@ -426,13 +426,13 @@ class PostsPageTests(unittest.TestCase):
         self.assertIn("URLSearchParams", script)
         self.assertIn("replaceState", script)
 
-    def test_title_area_puts_a_faded_giant_behind_the_heading(self):
+    def test_title_area_puts_the_faded_article_count_behind_the_heading(self):
         html = self.build().html("posts/")
-        self.assertIn('<div class="giant g1" aria-hidden="true" data-font="head">全</div>', html)
+        self.assertIn('<div class="giant g1 giant-count" aria-hidden="true" data-font="slab">2</div>', html)
         self.assertIn('<h1 class="page-title" data-font="head">全部文章</h1>', html)
-        # 大字在标题之前，标题下面写着总篇数
+        # 大号总数在标题之前，标题下面也写着总篇数
         main = html[html.index("<main"):]
-        self.assertLess(main.index(">全</div>"), main.index('class="page-title"'))
+        self.assertLess(main.index('class="giant g1 giant-count"'), main.index('class="page-title"'))
         self.assertIn('<span class="hero-lead-count" data-font="slab">2 pieces</span>', html)
 
     def test_stage_buttons_take_their_chip_colour_and_tags_stay_neutral(self):

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{# 全部文章（R-UI-4、R-VIS-4）：淡色大字“全”垫在标题后面，阶段按钮用各自的 --chip-* 颜色，
+{# 全部文章（R-UI-4、R-VIS-4）：淡色的大号文章总数垫在标题后面，阶段按钮用各自的 --chip-* 颜色，
    主题按钮用中性色，列表复用首页的按月分组。筛选由 site.js 按 data-stage、data-tags 隐藏条目，
    没有 JS 时按钮不出现、列表全部可见；分组以后某个月被筛空，整个 .month 一起隐藏。 #}
 {% block content %}
 <section class="archives">
   <header class="hero">
-    <div class="giant g1" aria-hidden="true" data-font="head">全</div>
+    <div class="giant g1 giant-count" aria-hidden="true" data-font="slab">{{ page.total }}</div>
     <div class="hero-body">
       <h1 class="page-title" data-font="head">全部文章</h1>
       <p class="hero-lead"><span class="hero-lead-count" data-font="slab">{{ page.total }} pieces</span><span class="hero-lead-unit">· 按时间倒序，按月分组</span></p>

@@ -216,7 +216,10 @@ hr {
 }
 
 /* ---- 站点头：站名、首页、全部文章（R-UI-2 仍然只有两项） ---- */
+/* 顶栏在淡色大字上层：全部文章页的大号总数会往上伸到顶栏后面 */
 .site-header {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -664,28 +667,30 @@ hr {
   border-bottom: 2px solid var(--accent);
 }
 
-/* ---- 全部文章页（R-VIS-4）：淡色大字“全”垫在标题后面，下面是按月的列表 ---- */
+/* ---- 全部文章页（R-VIS-4）：淡色的大号文章总数垫在标题后面，下面是按月的列表 ---- */
 .archives {
   max-width: var(--page-width);
   margin: 0 auto;
 }
 
-/* 标题区：标题和说明在左，淡色大字放右侧空当，底部留出缝隙，不和下面的筛选按钮挨着 */
+/* 标题区：标题和说明在左，大号总数垫在右侧。只裁横向，不撑宽页面；
+   竖向不裁，数字往上一直伸到顶栏后面，像封面上被画框裁掉的大字 */
 .archives .hero {
   position: relative;
-  padding-block: 1.5rem 2rem;
-  /* 大字只裁横向（竖排/大字不撑宽页面）；竖向不裁，整个字才露得出来 */
+  padding-block: 1.5rem 2.5rem;
   overflow-x: clip;
 }
 
-/* 大字：整个字面落在标题右侧的空白里，大小以“放得下、不挡东西”为准，不追求铺满右上角。
-   行高 0.85 让字面往上冒出一截，字号乘约 0.87 是字面高度：这里全程 7.5rem，
-   配 top 3.5rem，整字落在标题说明下沿到底部空当之间，底边离筛选按钮还有缝 */
+/* 大号总数：粗衬线数字，对应封面黑圈里的“2”。字号 20rem、行高 0.85，
+   top -8rem 时数字底边约在标题区顶下 9rem，落在标题说明一带，离筛选按钮还有一段空当 */
 .archives .giant.g1 {
-  top: 3.5rem;
-  right: 0;
+  top: -8rem;
+  right: -2rem;
   color: var(--pink);
-  font-size: 7.5rem;
+  font-family: var(--font-slab);
+  font-weight: 700;
+  font-size: 20rem;
+  letter-spacing: -0.06em;
 }
 
 .archives .hero-body {
@@ -1541,11 +1546,11 @@ hr {
     white-space: normal;
   }
 
-  /* 窄屏：标题占满一整行，大字放不到标题旁边；塞在标题和第一排筛选按钮之间的细缝里，收小 */
+  /* 窄屏：数字收到 7rem，放在标题那一行的右边，不垫在标题文字底下，也不压住顶栏导航 */
   .archives .giant.g1 {
-    top: 3.3rem;
-    right: 0.5rem;
-    font-size: 3.6rem;
+    top: -1.6rem;
+    right: -0.8rem;
+    font-size: 7rem;
   }
 
   .archives .hero {
