@@ -72,7 +72,7 @@
 5. **跳转页与 404**（R-PUB-4，架构 §5）：`REDIRECTS` 解析目标网址；`E_REDIRECT_TARGET_MISSING`、`E_REDIRECT_CONFLICT`；`404.html`。
 6. **版式**（R-UI-1、第 6 节手机优先）：参考刘未鹏博客的单栏版式；375px 下三种页面无横向滚动，表格、公式、代码块在容器内滚动；`prefers-color-scheme` 深色。
 
-**验收**（2026-10-26 全部通过）：
+**验收**（2026-10-26 全部通过，提交 `167d55a`）：
 - [x] 测试：`.venv/bin/python -m unittest discover -s tests`，92 个测试通过
 - [x] 构建：`.venv/bin/python tools/preview_v5.py <临时目录>` 退出码 0，111 个页面（108 篇文章 + 首页 + 全部文章 + 跳转页）；`.venv/bin/python tools/build_site.py` 仍是 `269 pages published, 14 unpublished`
 - [x] 手工验证：浏览器逐行走过需求第 7 节 R-UI-1～R-UI-6 共 14 条，全部符合；筛选“思考”+“二次元”剩 15 篇且都是思考，换成没有结果的组合显示提示；长文有 34 项目录、代码块复制把内容真的写进剪贴板、Giscus 以 `pathname` 加载；从入口篇顺着“下一篇”走完 19 篇系列，最后一篇给出回目录的链接
