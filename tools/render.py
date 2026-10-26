@@ -76,7 +76,7 @@ class SiteConfig:
     """What a build needs besides `docs/`: names, URLs, the theme folder and the widgets."""
 
     site_name: str = "Writing"
-    site_url: str = "https://finderlzy.github.io/Writing/"
+    site_url: str = "https://finderlzy.github.io/writing/"
     theme: Path = Path("theme")
     social: tuple[SocialLink, ...] = ()
     giscus: GiscusConfig = GiscusConfig()

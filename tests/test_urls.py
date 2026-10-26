@@ -71,9 +71,9 @@ class PageUrlTests(unittest.TestCase):
         self.assertEqual({}, urls)
 
     def test_redirect_points_from_old_path_to_new_url(self):
-        page = redirect_html("04技术/自建梯子/index.html", "tech/vless-reality/", "https://finderlzy.github.io/Writing/")
+        page = redirect_html("04技术/自建梯子/index.html", "tech/vless-reality/", "https://finderlzy.github.io/writing/")
         self.assertIn('url=../../tech/vless-reality/"', page)
-        self.assertIn('href="https://finderlzy.github.io/Writing/tech/vless-reality/"', page)
+        self.assertIn('href="https://finderlzy.github.io/writing/tech/vless-reality/"', page)
 
     def test_legacy_redirect_refuses_a_target_that_was_not_written(self):
         """R-PUB-4：跳转目标必须是真写出来的页面，写错就让构建失败而不是留个死链。"""
@@ -82,13 +82,13 @@ class PageUrlTests(unittest.TestCase):
             (site / "blog" / "subscribe-claude-quick").mkdir(parents=True)
             (site / "blog" / "subscribe-claude-quick" / "index.html").write_text("<!doctype html>", encoding="utf-8")
             diagnostics = legacy_redirects(
-                site, [("tech/subscribe-claude-quick", "blog/subscribe-claude-quick")], "https://finderlzy.github.io/Writing/"
+                site, [("tech/subscribe-claude-quick", "blog/subscribe-claude-quick")], "https://finderlzy.github.io/writing/"
             )
             self.assertEqual([], diagnostics)
             self.assertTrue((site / "tech" / "subscribe-claude-quick" / "index.html").is_file())
 
             diagnostics = legacy_redirects(
-                site, [("tech/subscribe-claude", "blog/subscribe-claude")], "https://finderlzy.github.io/Writing/"
+                site, [("tech/subscribe-claude", "blog/subscribe-claude")], "https://finderlzy.github.io/writing/"
             )
             self.assertEqual(["E_REDIRECT_TARGET_MISSING"], [item.code for item in diagnostics])
 

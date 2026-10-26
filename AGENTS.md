@@ -36,7 +36,7 @@
 
 ## 项目说明
 
-这是个人文章网站 `https://finderlzy.github.io/Writing/` 的仓库。README 只保留作者本人维护的对外说明，不往里加下面的运维细节；这些内容以本节为准。
+这是个人文章网站 `https://finderlzy.github.io/writing/` 的仓库。README 只保留作者本人维护的对外说明，不往里加下面的运维细节；这些内容以本节为准。
 
 ### 目录与发布
 

@@ -3,7 +3,7 @@
 ## 5.0.0 — 2026-10-26：按阶段管理内容，网站只为读者重做
 
 - **基线**：`ed23cf3`（`main`，包含 T1～T3 全部提交和本次验收修复）。需求见 [requirements.md](requirements.md)，计划见 [implementation-plan.md](implementation-plan.md)。
-- **环境**：本地 Linux，`.venv` 的 Python 3.14.4；CI 是 GitHub Actions 的 Python 3.13.15。浏览器检查用 Claude 桌面版的内置浏览器，站点用 `http.server` 挂在 `/Writing/` 子路径下，与线上路径一致。
+- **环境**：本地 Linux，`.venv` 的 Python 3.14.4；CI 是 GitHub Actions 的 Python 3.13.15。浏览器检查用 Claude 桌面版的内置浏览器，站点用 `http.server` 挂在 `/Writing/` 子路径下（2026-10-26 仓库改名后线上是 `/writing/`），与线上路径一致。
 - **上线方式**：推送 `main` 后由 `.github/workflows/deploy.yml` 自动部署。T3 的提交推送后线上已经切到 5.0.0；本次验收发现一处缺陷，修复后随 `ed23cf3` 再次部署。
 
 ### 验收结果

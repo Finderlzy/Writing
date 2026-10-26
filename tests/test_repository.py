@@ -66,12 +66,12 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self.assertTrue((self.docs / "index.md").is_file())
 
         config = load_config(self.root / "site.toml")
-        self.assertEqual("https://finderlzy.github.io/Writing/", config.site_url)
+        self.assertEqual("https://finderlzy.github.io/writing/", config.site_url)
         # site.toml 里写的是相对仓库根目录的路径，build_site 会补成绝对路径
         self.assertEqual("theme", config.theme.as_posix())
         self.assertTrue((config.theme / "templates" / "base.html").is_file())
         self.assertTrue((config.theme / "assets" / "site.css").is_file())
-        self.assertEqual("Finderlzy/Writing", config.giscus.repo)
+        self.assertEqual("Finderlzy/writing", config.giscus.repo)
         self.assertRegex(config.giscus.repo_id, r"^R_\w+$")
         if config.giscus.category_id:
             self.assertRegex(config.giscus.category_id, r"^DIC_\w+$")
