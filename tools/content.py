@@ -305,12 +305,18 @@ class Catalog:
         return self.article(Path(entry)) if entry else None
 
     def home(self) -> tuple[Article, ...]:
-        """Blog articles outside a series folder plus every 作品 article, newest first."""
+        """Blog articles outside a series folder plus every 作品 article, newest first.
+
+        A series is represented by its entry page, which sits outside the folder and so stays on the list.
+        """
         return tuple(
             article
             for article in self.articles
             if article.stage.name == "作品"
-            or (article.stage.name == "博客" and self.layout.series_folder(article.source_path) is None)
+            or (
+                article.stage.name == "博客"
+                and not any(_within(article.source_path, folder) for folder in self.layout.series)
+            )
         )
 
     def article(self, source_path: Path) -> Article | None:

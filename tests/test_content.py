@@ -126,6 +126,18 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(["博客", "作品"], [article.title for article in catalog.home()])
 
+    def test_home_keeps_series_entry_and_drops_series_members(self):
+        layout = Layout(stages=PREVIEW_LAYOUT.stages, series={"04技术/操作版": "04技术/入口.md"})
+        catalog, _ = self.load(
+            {
+                "04技术/入口.md": "---\ncreatedDate: 2026-10-03\n---\n",
+                "04技术/操作版/第一篇.md": "---\ncreatedDate: 2026-10-04\n---\n",
+                "04技术/单篇.md": "---\ncreatedDate: 2026-10-02\n---\n",
+            },
+            layout,
+        )
+        self.assertEqual(["入口", "单篇"], [article.title for article in catalog.home()])
+
     def test_neighbours_follow_created_date_within_a_stage(self):
         catalog, _ = self.load(
             {
