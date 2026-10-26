@@ -81,8 +81,10 @@
   --pop: 4px 4px 0 var(--shadow);
   --pop-lift: 6px 6px 0 var(--shadow);
 
-  --page-width: 64rem;
-  --reading-width: 38rem;
+  --page-width: 64rem; /* 站头、页脚、页面容器 */
+  --reading-width: 48rem; /* 标题区、目录、文末卡片、留言框 */
+  /* 正文：铺满页面容器，左右只留 --gutter；和 --page-width 取同一个值，改的时候一起改 */
+  --body-width: 64rem;
   --gutter: 1rem;
 }
 
@@ -1024,9 +1026,9 @@ hr {
   color: var(--accent);
 }
 
-/* ---- 正文：装饰少、行距宽，长文好读 ---- */
+/* ---- 正文：装饰少、行距宽，长文好读；铺满页面容器，比标题区宽一档 ---- */
 .article-body {
-  max-width: var(--reading-width);
+  max-width: var(--body-width);
   margin-top: 1.5rem;
   font-size: 1.0625rem;
   line-height: 2;
