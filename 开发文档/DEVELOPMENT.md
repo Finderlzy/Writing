@@ -1,5 +1,18 @@
 # 开发日志
 
+## 2026-10-26 — 5.0.0
+
+按 `开发文档/requirements.md` 重做分类、发布范围和前端，删掉 MkDocs 换成自写的 Jinja2 静态生成。构建入口仍是 `tools/build_site.py`，推送 `main` 后由 GitHub Actions 发布到 GitHub Pages。
+
+- 调整（分类）：一级文件夹只留 `00收集`、`01系统`、`02思考`、`03初稿`、`04博客`、`05作品`、`07自己`、`09附件`，除 `04博客` 的系列子文件夹外不再分子文件夹。`03思考` 改为 `02思考`，`03思考/初稿` 改为 `03初稿`，`04技术` 改为 `04博客`，`00收集/灵感` 平铺回 `00收集`。共移动 107 个文件，改写 58 处双链，给 5 处有歧义的裸链接补上文件夹前缀。正文其他内容不变。重写 `docs/01系统/分类标准.md`。
+- 调整（发布）：发布范围只由 `tools/content.py` 的 `LAYOUT` 决定，即 `02思考`、`03初稿`、`04博客`、`05作品` 和 `docs/index.md`；`00收集`、`01系统`、`07自己` 和 `docs/AGENTS.md` 不发布但不删除，仍参与双链检查。新增 `content.is_published` 作为唯一判据。
+- 新增（系列）：`04博客` 的子文件夹是一套系列，入口篇登记在 `content.SERIES`；没登记的子文件夹报 `E_SERIES_UNCONFIGURED`，入口篇不存在报 `E_SERIES_ENTRY_MISSING`。
+- 调整（前端）：4.1.0 的 MkDocs + Material 换成自写的 Jinja2 模板（`theme/templates/`）加 `theme/assets/site.css`、`site.js`，站点配置从 `mkdocs.yml` 移到 `site.toml`。单栏、无侧边导航树；顶部栏只有首页和全部文章；首页是先作者的话、再博客和作品按时间倒序；`/posts/` 单独列出全部公开文章，可按阶段和主题标签筛选；文章页有目录、上下篇、代码块复制和 Giscus 评论区。`mkdocs.yml`、`overrides/`、`theme/extra.css`、`docs/javascripts/`、`tools/site_nav.py`、`tools/preview_v5.py` 一并删除，`requirements.txt` 去掉 mkdocs 和 mkdocs-material。
+- 调整（旧链接）：`/tech/subscribe-claude-quick/` 仍跳转到《如何订阅claude（纯操作版）》的新地址 `/blog/subscribe-claude-quick/`，配置在 `build_site.py` 的 `REDIRECTS`，构建时检查跳转目标是否存在。
+- 新增（检查）：结构检查加进 `tests/test_repository.py`：一级文件夹清单、阶段文件夹不分子文件夹、发布文件夹就是那四个、`docs/` 里不放站点脚本、没有无人引用的附件、`site.toml` 与仓库布局一致。
+- 文档：重写 `docs/01系统/分类标准.md`，更新 `AGENTS.md` 的“项目说明”。README 未改，待作者按 `architecture.md` §12 的清单自行修订。
+- 兼容性（不兼容）：一份稿件可能换了文件夹，`03思考`、`03思考/初稿`、`04技术` 下的所有公开页面网址都变了（前缀变成 `thoughts`、`drafts`、`blog`，`04博客` 沿用原来的 `blog`）；系列子文件夹里的文章原来在 `/blog/<文件名>/…` 下，现在按源文件路径生成短 ID。除 `/tech/subscribe-claude-quick/` 外，4.1.0 的中文路径跳转页和 `/articles/`、`/notes/` 等栏目页都失效，Giscus 旧留言不会跟到新网址。前端从 Material 换成自写模板，导航、列表页和文章页的版面都与 4.1.0 不同。需要的 Obsidian 插件配置不受影响。
+
 ## 2026-10-20 — 4.1.0
 
 - 新增：思考列表页 `/thoughts/` 和首页“最近的思考”在文章标题下显示 front matter 的 `description`，没写的文章不显示。实现位于 `tools/site_nav.py`，样式在 `theme/extra.css` 的 `.post-desc`。

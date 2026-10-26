@@ -14,7 +14,7 @@
 | --- | --- | --- | --- | --- | --- | --- |
 | T1 | 新流水线骨架：预览构建生成文章页 | R-PUB-1～3、R-PUB-5 | 可立即开工 | 强 | 不变 | 已完成（`e044f47`） |
 | T2 | 读者页面：首页、全部文章、完整文章页、系列、跳转、版式 | R-UI-1～6、R-PUB-4 | T1 | 标准 | 不变 | 已完成 |
-| T3 | 切换上线：清理、迁移、换流水线、删旧代码、验收 | R-STR-1～5、R-CLN-1～3、第 7 节全部 | T2 | 强 | 切换 | 待开始 |
+| T3 | 切换上线：清理、迁移、换流水线、删旧代码、验收 | R-STR-1～5、R-CLN-1～3、第 7 节全部 | T2 | 强 | 切换 | 已完成（`b2b8c63`、`6657f31`、`a57b8db`、`6ecae6e`） |
 
 三个任务严格串行。T1、T2 只往仓库里加新模块，线上仍由 4.1.0 的 `build_site.py` 构建；T3 才动内容和线上网站。
 
@@ -112,8 +112,8 @@
 4. **记录**：`开发文档/DEVELOPMENT.md` 写 5.0.0 条目（不兼容：文件夹、网址、前端）；把 README 过时段落的清单（架构 §12）交给作者。
 
 **验收**：
-- [ ] 测试：`.venv/bin/python -m unittest discover -s tests`
-- [ ] 构建：`.venv/bin/python tools/build_site.py` 输出 `build succeeded: …`，没有双链目标缺失
-- [ ] 内容不丢：对比迁移前后除 `02笔记`、`09归档` 以外的 `.md` 文件，数量相同，内容只在链接处有变化
-- [ ] 线上验收：推送后等 GitHub Actions 部署完成，在线上逐行走需求第 7 节全部验收，包括访问 `/tech/subscribe-claude-quick/`
-- [ ] 删除本次的临时目录和 `site/`
+- [x] 测试：`.venv/bin/python -m unittest discover -s tests` —— 82 个测试通过
+- [x] 构建：`.venv/bin/python tools/build_site.py` 输出 `build succeeded: …`，没有双链目标缺失 —— `build succeeded: 109 pages published, 20 unpublished`，只有 `W_MATHJAX_UNUSED` 一条提示（公开发布的页面里没有公式）
+- [x] 内容不丢：对比迁移前后除 `02笔记`、`09归档` 以外的 `.md` 文件，数量相同，内容只在链接处有变化 —— 122 个文件对 95 个完全一致、24 个只改链接，3 个另有改动且都是第 1 步把指向已删页面的双链改成纯文字造成的
+- [x] 线上验收：推送后等 GitHub Actions 部署完成，在线上逐行走需求第 7 节全部验收，包括访问 `/tech/subscribe-claude-quick/` —— 部署 run `40286735629` 成功，第 7 节逐条通过
+- [x] 删除本次的临时目录和 `site/`
