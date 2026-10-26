@@ -1,4 +1,29 @@
-# 新流水线的站点信息。旧的 tools/build_site.py + mkdocs.yml 仍按 4.1.0 的方式构建。
+# 新流水线的站点配置，取代 mkdocs.yml。旧的 tools/build_site.py 仍按 4.1.0 的方式构建。
 site_name = "Writing"
 site_url = "https://finderlzy.github.io/Writing/"
 theme = "theme"
+
+# 页脚的社交链接
+[[social]]
+name = "GitHub"
+link = "https://github.com/Finderlzy"
+
+[[social]]
+name = "X"
+link = "https://x.com/finderlzy"
+
+[[social]]
+name = "哔哩哔哩"
+link = "https://space.bilibili.com/1276546447"
+
+[[social]]
+name = "抖音"
+link = "https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10"
+
+# Giscus 评论：数据存在仓库的 GitHub Discussions。data-mapping 固定用 pathname。
+# category_id 留空则不显示评论区；分类 ID 在 https://giscus.app/zh-CN 查询。
+[giscus]
+repo = "Finderlzy/Writing"
+repo_id = "R_kgDOT9EtHA"
+category = "Comments"
+category_id = "DIC_kwDOT9EtHM4DHOm0"

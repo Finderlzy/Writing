@@ -176,6 +176,31 @@ def redirect_html(old_dest: str, new_url: str, site_url: str | None) -> str:
     )
 
 
+def legacy_redirects(site: Path, pairs: Iterable[tuple[str, str]], site_url: str | None) -> list[Diagnostic]:
+    """Hand written old address → current page redirects, declared as `(old address, new address)` prefixes.
+
+    Used for addresses that were published before 5.0.0 and have no source page any more,
+    like the subscription tutorial that moved from `/tech/subscribe-claude-quick/` to `/blog/`.
+    A target that was not written means the new address is wrong, so it stops the build.
+    """
+    diagnostics: list[Diagnostic] = []
+    targets = {path.relative_to(site).as_posix() for path in site.rglob("index.html")}
+    for old_url, new_url in pairs:
+        old_url = "/" + old_url.strip("/") + "/"
+        new_url = "/" + new_url.strip("/") + "/"
+        if not new_url.strip("/") or new_url.lstrip("/") + "index.html" not in targets:
+            diagnostics.append(
+                Diagnostic(
+                    "E_REDIRECT_TARGET_MISSING",
+                    SourceSpan(Path(old_url.lstrip("/")), 1, 1),
+                    f"跳转的旧地址“{old_url}”指向“{new_url}”，但那里没有页面。",
+                )
+            )
+            continue
+        diagnostics += write_redirects(site, [Redirect(old_url.lstrip("/") + "index.html", new_url.lstrip("/"))], site_url)
+    return diagnostics
+
+
 def write_redirects(site: Path, redirects: Iterable[Redirect], site_url: str | None) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
     for redirect in redirects:

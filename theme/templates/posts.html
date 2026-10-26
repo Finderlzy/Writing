@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="posts">
+  <h1 class="page-title">全部文章</h1>
+  <div class="filters" data-filters hidden>
+    <div class="filter-group" role="group" aria-label="按阶段筛选">
+      <button type="button" class="filter-button" data-stage="" aria-pressed="true">全部</button>
+      {% for stage in ["思考", "初稿", "博客", "作品"] %}
+      <button type="button" class="filter-button" data-stage="{{ stage }}" aria-pressed="false">{{ stage }}</button>
+      {% endfor %}
+    </div>
+    <div class="filter-group" role="group" aria-label="按主题筛选">
+      <button type="button" class="filter-button" data-tag="" aria-pressed="true">全部主题</button>
+      {% for tag in page.tags %}
+      <button type="button" class="filter-button" data-tag="{{ tag }}" aria-pressed="false">{{ tag }}</button>
+      {% endfor %}
+    </div>
+  </div>
+  <p class="filter-summary" data-filter-summary hidden></p>
+  <ul class="article-list" data-article-list>
+    {% for article in page.articles %}
+    <li class="article-item" data-stage="{{ article.stage.name }}" data-tags="{{ article.tags | join('') }}">
+      <p class="article-item-head">
+        <a class="article-item-title" href="{{ root }}{{ article.url }}">{{ article.title }}</a>
+        {% if article.series %}<span class="article-series">系列：{{ article.series }}</span>{% endif %}
+      </p>
+      <p class="article-meta">
+        <span class="article-stage">{{ article.stage.name }}</span>
+        {% if article.date %}<time datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
+        {% for tag in article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
+      </p>
+      {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+  <p class="empty-result" data-empty-result hidden>没有同时满足这两个条件的文章，换一个阶段或主题试试。</p>
+</section>
+{% endblock %}

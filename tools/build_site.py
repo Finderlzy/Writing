@@ -36,6 +36,12 @@ ARTICLES_URL = "thoughts/"
 HOME_RECENT_POSTS = 4
 # 改过名的一级目录：旧网址生成跳转页。4.0.0 把 03文章（articles）改名为 03思考（thoughts）
 RENAMED_SECTIONS = {"03思考": ("03文章", "articles")}
+# 5.0.0 之前发出去、改版后还要能打开的旧网址 → 现在的位置。
+# 订阅教程的旧地址在视频里公开过，见 AGENTS.md“订阅教程旧链接”。
+# 4.1.0 的构建不使用它（线上网址一字不变），由 T3 交给新流水线。
+REDIRECTS = {
+    "tech/subscribe-claude-quick": "blog/subscribe-claude-quick",
+}
 
 
 def _is_published_4_1_0(path: Path) -> bool:

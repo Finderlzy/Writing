@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="home">
+  <div class="home-intro">
+{{ page.body | safe }}
+  </div>
+  <section class="article-list-section">
+    <h2 class="section-title">博客与作品</h2>
+    <ul class="article-list">
+      {% for article in page.articles %}
+      <li class="article-item">
+        <p class="article-item-head">
+          <a class="article-item-title" href="{{ root }}{{ article.url }}">{{ article.title }}</a>
+        </p>
+        <p class="article-meta">
+          <span class="article-stage">{{ article.stage.name }}</span>
+          {% if article.date %}<time datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
+        </p>
+        {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    <p class="more-link"><a href="{{ root }}posts/">全部文章 →</a></p>
+  </section>
+</article>
+{% endblock %}

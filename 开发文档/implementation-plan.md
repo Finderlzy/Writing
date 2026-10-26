@@ -13,7 +13,7 @@
 | ID | 任务 | 需求 | 依赖 | 档位 | 线上网站 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
 | T1 | 新流水线骨架：预览构建生成文章页 | R-PUB-1～3、R-PUB-5 | 可立即开工 | 强 | 不变 | 已完成（`e044f47`） |
-| T2 | 读者页面：首页、全部文章、完整文章页、系列、跳转、版式 | R-UI-1～6、R-PUB-4 | T1 | 标准 | 不变 | 待开始 |
+| T2 | 读者页面：首页、全部文章、完整文章页、系列、跳转、版式 | R-UI-1～6、R-PUB-4 | T1 | 标准 | 不变 | 已完成 |
 | T3 | 切换上线：清理、迁移、换流水线、删旧代码、验收 | R-STR-1～5、R-CLN-1～3、第 7 节全部 | T2 | 强 | 切换 | 待开始 |
 
 三个任务严格串行。T1、T2 只往仓库里加新模块，线上仍由 4.1.0 的 `build_site.py` 构建；T3 才动内容和线上网站。
@@ -72,10 +72,12 @@
 5. **跳转页与 404**（R-PUB-4，架构 §5）：`REDIRECTS` 解析目标网址；`E_REDIRECT_TARGET_MISSING`、`E_REDIRECT_CONFLICT`；`404.html`。
 6. **版式**（R-UI-1、第 6 节手机优先）：参考刘未鹏博客的单栏版式；375px 下三种页面无横向滚动，表格、公式、代码块在容器内滚动；`prefers-color-scheme` 深色。
 
-**验收**：
-- [ ] 测试：`.venv/bin/python -m unittest discover -s tests`
-- [ ] 构建：`.venv/bin/python tools/preview_v5.py <临时目录>` 退出码 0；`.venv/bin/python tools/build_site.py` 仍然成功
-- [ ] 手工验证：在预览站点上逐行走需求第 7 节 R-UI-1～R-UI-6 的验收；访问 `/tech/subscribe-claude-quick/` → 跳到 `/blog/subscribe-claude-quick/`；浏览器在 375px 和桌面宽度下检查首页、全部文章页、文章页
+**验收**（2026-10-26 全部通过）：
+- [x] 测试：`.venv/bin/python -m unittest discover -s tests`，92 个测试通过
+- [x] 构建：`.venv/bin/python tools/preview_v5.py <临时目录>` 退出码 0，111 个页面（108 篇文章 + 首页 + 全部文章 + 跳转页）；`.venv/bin/python tools/build_site.py` 仍是 `269 pages published, 14 unpublished`
+- [x] 手工验证：浏览器逐行走过需求第 7 节 R-UI-1～R-UI-6 共 14 条，全部符合；筛选“思考”+“二次元”剩 15 篇且都是思考，换成没有结果的组合显示提示；长文有 34 项目录、代码块复制把内容真的写进剪贴板、Giscus 以 `pathname` 加载；从入口篇顺着“下一篇”走完 19 篇系列，最后一篇给出回目录的链接
+- [x] 跳转：`/tech/subscribe-claude-quick/` 跳到 `/blog/subscribe-claude-quick/`，查询参数和锚点保留
+- [x] 版式：375px 和 1280px 下首页、全部文章页、文章页都是单栏、无左侧导航树、`scrollWidth == clientWidth`；抽查 40 篇文章（含 11 张宽表格）在 375px 下无横向滚动；深色跟随系统
 - [ ] 作者检查点：作者在手机和桌面上看过预览站点并同意进入 T3
 - [ ] 验收后删除临时目录和 `site/`
 

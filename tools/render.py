@@ -12,20 +12,20 @@ import posixpath
 import re
 import shutil
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from urllib.parse import quote, unquote
 
 import markdown
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from .content import LAYOUT, Article, Catalog, Layout, is_published
+from .content import HOME_PAGE, LAYOUT, Article, Catalog, Layout, is_published, series_diagnostics
 from .obsidian_compat.converter import Converter
 from .obsidian_compat.index import VaultIndex
 from .obsidian_compat.html_check import check_body
-from .obsidian_compat.models import Diagnostic
+from .obsidian_compat.models import Diagnostic, SourceSpan
 from .obsidian_compat.parser import residual_diagnostics
-from .obsidian_compat.urls import plan_page_urls
+from .obsidian_compat.urls import legacy_redirects, plan_page_urls
 
 MARKDOWN_EXTENSIONS = (
     "toc",
@@ -50,12 +50,36 @@ _FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\Z)", 
 
 
 @dataclass(frozen=True)
+class SocialLink:
+    """One entry of the footer: a name and where it goes."""
+
+    name: str
+    url: str
+
+
+@dataclass(frozen=True)
+class GiscusConfig:
+    """The Giscus comment widget; `category_id` empty means no comments."""
+
+    repo: str = ""
+    repo_id: str = ""
+    category: str = ""
+    category_id: str = ""
+
+    @property
+    def enabled(self) -> bool:
+        return bool(self.repo and self.repo_id and self.category_id)
+
+
+@dataclass(frozen=True)
 class SiteConfig:
-    """What a build needs besides `docs/`: the site name and where templates and assets live."""
+    """What a build needs besides `docs/`: names, URLs, the theme folder and the widgets."""
 
     site_name: str = "Writing"
     site_url: str = "https://finderlzy.github.io/Writing/"
     theme: Path = Path("theme")
+    social: tuple[SocialLink, ...] = ()
+    giscus: GiscusConfig = GiscusConfig()
 
 
 @dataclass(frozen=True)
@@ -64,29 +88,81 @@ class Page:
 
     url: str  # 输出目录内的相对网址目录，如 "blog/vless-reality/"
     title: str
-    body: str
+    body: str = ""
     article: Article | None = None
     toc: tuple[dict, ...] = ()
     has_math: bool = False
-    home: bool = True
+    articles: tuple[Article, ...] = ()  # 首页和全部文章页的列表
+    previous: Article | None = None
+    following: Article | None = None
+    series: tuple[Article, ...] = ()
+    headings: bool = False  # 正文是否已经有标题
+    highlight_nav: str = ""  # 顶部栏当前项："home" 或 "posts"
+    comments: bool = False
+    tags: tuple[str, ...] = ()  # 全部文章页的筛选按钮：全站出现过的主题标签，按篇数从多到少
+    rows: tuple[dict, ...] = ()  # 全部文章页的列表项：每条文章和它的筛选数据
+
+
+def _toml_value(value: str) -> str:
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+        return value[1:-1]
+    return value
+
+
+def _parse_config(text: str) -> tuple[dict, list[SocialLink], GiscusConfig]:
+    """A tiny TOML reader: `key = "value"` lines, `[[social]]` tables and a `[giscus]` table."""
+    top: dict[str, str] = {}
+    social: list[SocialLink] = []
+    giscus: dict[str, str] = {}
+    section = ""
+    current: dict[str, str] = {}
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("[[") and line.endswith("]]"):
+            if current.get("name") and current.get("link"):
+                social.append(SocialLink(current["name"], current["link"]))
+            current = {}
+            section = line[2:-2].strip()
+            continue
+        if line.startswith("[") and line.endswith("]"):
+            if section == "social" and current.get("name") and current.get("link"):
+                social.append(SocialLink(current["name"], current["link"]))
+                current = {}
+            section = line[1:-1].strip()
+            continue
+        if "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key, value = key.strip(), _toml_value(value)
+        if section == "social":
+            current[key] = value
+        elif section == "giscus":
+            giscus[key] = value
+        elif not section:
+            top[key] = value
+    if section == "social" and current.get("name") and current.get("link"):
+        social.append(SocialLink(current["name"], current["link"]))
+    widget = GiscusConfig(
+        repo=giscus.get("repo", ""),
+        repo_id=giscus.get("repo_id", ""),
+        category=giscus.get("category", ""),
+        category_id=giscus.get("category_id", ""),
+    )
+    return top, social, widget
 
 
 def load_config(path: Path) -> SiteConfig:
-    """Read `site.toml`: top-level `key = "value"` pairs, with comments and blank lines."""
-    values: dict[str, str] = {}
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        line = raw.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, value = line.split("=", 1)
-        value = value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-            value = value[1:-1]
-        values[key.strip()] = value
+    """Read `site.toml`: top-level `key = "value"` pairs, `[[social]]` tables and `[giscus]`."""
+    top, social, giscus = _parse_config(path.read_text(encoding="utf-8"))
     return SiteConfig(
-        site_name=values.get("site_name", SiteConfig.site_name),
-        site_url=values.get("site_url", SiteConfig.site_url),
-        theme=Path(values.get("theme", SiteConfig.theme)),
+        site_name=top.get("site_name", SiteConfig.site_name),
+        site_url=top.get("site_url", SiteConfig.site_url),
+        theme=Path(top.get("theme", str(SiteConfig.theme))),
+        social=tuple(social),
+        giscus=giscus,
     )
 
 
@@ -222,37 +298,59 @@ def _environment(theme: Path) -> Environment:
     )
 
 
+def _root(url: str) -> str:
+    """The relative prefix that leads from page `url` back to the site root."""
+    return "../" * (url.rstrip("/").count("/") + 1)
+
+
+def _href(from_url: str, to_url: str) -> str:
+    """A link from one page of the site to another, always relative."""
+    return quote(posixpath.relpath(to_url, posixpath.dirname(from_url.rstrip("/")) or "."), safe="/-._~") or "."
+
+
+# 首页和全部文章页在站点根目录下的相对位置
+HOME_URL = ""
+POSTS_URL = "posts/"
+
+
+
+def _tag_counts(articles: Iterable[Article]) -> tuple[str, ...]:
+    """Every topic tag used by an article, most used first, ties by name."""
+    counts: dict[str, int] = {}
+    for article in articles:
+        for tag in article.tags:
+            counts[tag] = counts.get(tag, 0) + 1
+    return tuple(sorted(counts, key=lambda tag: (-counts[tag], tag)))
+
+
+def _rows(articles: Iterable[Article]) -> tuple[dict, ...]:
+    """One list row per article, with the values the filter reads back from `data-` attributes."""
+    return tuple(
+        {"article": article, "stage": article.stage.name, "tags": list(article.tags)}
+        for article in articles
+    )
+
+
 def _context(config: SiteConfig, page: Page, url: str) -> dict:
     return {
         "site": config,
         "page": page,
         "url": url,
-        "root": "../" * (url.rstrip("/").count("/") + 1),
+        "root": _root(url),
         "toc": page.toc if _heading_count(page.toc) >= _TOC_MIN_HEADINGS else (),
-        "mathjax": config.site_url.rstrip("/") + "/assets/theme/mathjax.js" if page.has_math else None,
+        "mathjax": page.has_math,
+        "unit_separator": "\u0001",  # 列表项的 data-tags 用它拼多个主题标签
     }
 
 
 def _render_template(environment: Environment, template: str, context: dict) -> str:
-    return environment.get_template(template).render(**context)
-
-
-def _embed_links(source_path: Path, target: Path) -> set[str]:
-    """The link texts the converter writes for an embed of `target` inside `source_path`.
-
-    转换器把 `![[09附件/图.png]]` 写成 `../09%E9%99%84%E4%BB%B6/图.png`（相对源文件目录），
-    这里把两种转义形式都算出来，后面整段替换成 assets 里的地址。
-    """
-    relative = posixpath.relpath(target.as_posix(), posixpath.dirname(source_path.as_posix()) or ".")
-    return {
-        relative,
-        quote(relative, safe="/-._~()!$&!$&*,;=:@"),
-        quote(relative, safe="/"),
-    }
+    html = environment.get_template(template).render(**context)
+    return html if html.endswith("\n") else html + "\n"
 
 
 def _asset_url(attachment: Path) -> str:
     return posixpath.join(ASSETS_DIR, attachment.as_posix())
+
 
 def write_site(
     site: Path,
@@ -265,19 +363,26 @@ def write_site(
     index: VaultIndex,
     references: dict[str, list],
     diagnostics: list[Diagnostic] | None = None,
+    legacy: Iterable[tuple[str, str]] = (),
 ) -> list[Diagnostic]:
-    """Write every article page into `site`; return the diagnostics found on the way.
+    """Write every page into `site`; return the diagnostics found on the way.
 
-    `converted` holds the converted Markdown of every public page (already containing
-    the links the converter rewrote), `urls` maps source paths to article URLs, and
-    `attachments` lists the files that public articles embed. Front matter is dropped
-    here because MkDocs' `meta` extension did that in 4.1.0.
+    Pages: the home page (the author's words from `docs/index.md` plus the blog and work
+    list), the article list at `posts/`, one page per article and a `404.html`. `urls`
+    maps source paths to article URLs, `attachments` lists the files public articles embed,
+    `legacy` holds `(old address, new address)` redirects kept from earlier releases.
     """
     found: list[Diagnostic] = list(diagnostics or [])
     for attachment in attachments:
         target = site / _asset_url(attachment)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(docs / attachment, target)
+
+    # 给每篇文章填上相对网址，列表页和上下篇链接才有地方可指
+    catalog = replace(
+        catalog,
+        articles=tuple(replace(item, url=urls[item.source_path.as_posix()]) for item in catalog.articles if item.source_path.as_posix() in urls),
+    )
 
     pages: list[Page] = []
     for article in catalog.articles:
@@ -287,6 +392,9 @@ def write_site(
         text = _rewrite_embeds(text, article.source_path, url, attachments)
         text = _rewrite_page_links(text, url, urls, index, references.get(key, ()))
         body, toc = render_markdown(strip_front_matter(text))
+        previous, following = catalog.neighbours(article)
+        # 公式在转换后的 Markdown 里保持原样（$...$ / $...$），渲染成 HTML 后也能看
+        has_math = bool(_MATH_RE.search(strip_front_matter(text)))
         pages.append(
             Page(
                 url=url,
@@ -294,16 +402,51 @@ def write_site(
                 body=body,
                 article=article,
                 toc=toc,
-                has_math=_MATH_RE.search(body) is not None,
+                has_math=has_math,
+                previous=previous,
+                following=following,
+                series=catalog.series(article),
+                headings=bool(toc),
+                comments=config.giscus.enabled,
             )
         )
 
+    home_body, _ = render_markdown(strip_front_matter(converted.get(HOME_PAGE.as_posix(), "")))
+    pages.append(
+        Page(url=HOME_URL, title=config.site_name, body=home_body, articles=catalog.home(), highlight_nav="home")
+    )
+    pages.append(
+        Page(
+            url=POSTS_URL,
+            title="全部文章",
+            articles=catalog.articles,
+            highlight_nav="posts",
+            tags=_tag_counts(catalog.articles),
+            rows=_rows(catalog.articles),
+        )
+    )
+
     environment = _environment(config.theme)
+    names = {HOME_URL: "home.html", POSTS_URL: "posts.html"}
     for page in pages:
-        html = _render_template(environment, "article.html", _context(config, page, page.url))
+        template = names.get(page.url, "article.html")
+        html = _render_template(environment, template, _context(config, page, page.url))
         target = site / page.url / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text(html, encoding="utf-8", newline="")
+    if not any(page.has_math for page in pages if page.article):  # 内容检查，不阻止构建
+        found.append(
+            Diagnostic(
+                "W_MATHJAX_UNUSED",
+                SourceSpan(Path("."), 1, 1),
+                "公开发布的文章里没有公式，MathJax 没有被任何页加载。",
+            )
+        )
+    not_found = _render_template(environment, "404.html", _context(config, Page(url="404.html", title="页面不存在"), "404.html"))
+    (site / "404.html").write_text(not_found, encoding="utf-8", newline="")
+
+    for old_url, new_url in legacy:  # 5.0.0 之前的旧地址，交给 write_redirects 生成跳转页
+        found += legacy_redirects(site, [(old_url, new_url)], config.site_url)
 
     _copy_theme_assets(config.theme, site)
     for page in pages:
@@ -311,13 +454,23 @@ def write_site(
     return found
 
 
+def _is_warning(diagnostic: Diagnostic) -> bool:
+    """Codes starting with `W_` only warn: the page is still written, the report keeps the note."""
+    return diagnostic.code.startswith("W_")
+
+
 def build_pages(
     docs: Path,
     destination: Path,
     config: SiteConfig,
     layout: Layout = LAYOUT,
+    legacy: Iterable[tuple[str, str]] = (),
 ) -> list[Diagnostic]:
-    """Scan `docs`, convert every page and write the article pages into `destination`."""
+    """Scan `docs`, convert every page and write the whole site into `destination`.
+
+    `legacy` lists `(old address, new address)` redirects that still need to work, like
+    `/tech/subscribe-claude-quick/` for the subscription tutorial.
+    """
     index = VaultIndex.scan(docs)
     diagnostics: list[Diagnostic] = list(index.diagnostics)
 
@@ -328,10 +481,15 @@ def build_pages(
     converter = Converter(index, lambda path: is_published(path, layout))
     urls, url_diagnostics = plan_page_urls(docs, index.pages, converter.is_published, prefix_of)
     diagnostics.extend(url_diagnostics)
+    diagnostics.extend(series_diagnostics(docs, index.pages, layout))
+    if HOME_PAGE not in index.pages:
+        diagnostics.append(
+            Diagnostic("E_HOME_PAGE_MISSING", SourceSpan(HOME_PAGE, 1, 1), "首页需要 docs/index.md 里的作者的话，但这个文件不存在。")
+        )
     catalog, catalog_diagnostics = Catalog.load(docs, index.pages, layout)
     diagnostics.extend(catalog_diagnostics)
-    if diagnostics:
-        return diagnostics
+    if [item for item in diagnostics if not _is_warning(item)]:
+        return diagnostics  # 有错误就不写站点；只有提示时接着写
 
     converted: dict[str, str] = {}
     references: dict[str, list] = {}
@@ -361,10 +519,5 @@ def build_pages(
         index,
         references,
         diagnostics,
+        legacy,
     )
-
-
-    _copy_theme_assets(config.theme, destination)
-    for page in pages:
-        diagnostics.extend(check_body(destination, page.url, page.body))
-    return diagnostics

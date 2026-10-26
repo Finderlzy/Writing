@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from tools.content import Layout, Stage
+from tools.obsidian_compat.urls import legacy_redirects
 from tools.render import (
     SiteConfig,
     build_pages,
@@ -31,6 +32,8 @@ class Workspace:
         self.root = Path(tempfile.mkdtemp())
         self.docs = self.root / "docs"
         self.site = self.root / "site"
+        # 首页的作者的话来自 docs/index.md，每个测试的 docs/ 都得有一份
+        files = {"index.md": "# 首页\n\n欢迎。\n", **files}
         for name, text in files.items():
             path = self.docs / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -43,7 +46,11 @@ class Workspace:
 
     def build(self) -> list:
         self.site.mkdir(parents=True, exist_ok=True)
-        return build_pages(self.docs, self.site, SiteConfig(theme=self.theme), LAYOUT)
+        return [
+            diagnostic
+            for diagnostic in build_pages(self.docs, self.site, SiteConfig(theme=self.theme), LAYOUT)
+            if not diagnostic.code.startswith("W_")
+        ]
 
     def html(self, url: str) -> str:
         return (self.site / url / "index.html").read_text(encoding="utf-8")
@@ -87,11 +94,12 @@ class BuildTests(unittest.TestCase):
         )
         diagnostics = workspace.build()
         self.assertFalse(diagnostics, [diagnostic.format() for diagnostic in diagnostics])
-        written = sorted(
+        written = {
             path.relative_to(workspace.site).parts[0]
             for path in workspace.site.rglob("index.html")
-        )
-        self.assertEqual(["blog", "drafts", "opus", "thoughts"], sorted(set(written)))
+        }
+        written.discard("index.html")  # 根目录的 index.html 是首页
+        self.assertEqual({"blog", "drafts", "opus", "thoughts", "posts"}, written)
         for folder in ("00收集", "01系统", "02笔记", "07自己", "09归档"):
             self.assertFalse((workspace.site / folder).exists())
 
@@ -153,22 +161,207 @@ class BuildTests(unittest.TestCase):
         self.assertIn("2026-10-14", html)
 
 
-class ConfigTests(unittest.TestCase):
+def _article(url: str) -> str:
+    return (Path(__file__).resolve().parents[1] / "theme" / "assets" / url).read_text(encoding="utf-8")
+
+
+class HomePageTests(unittest.TestCase):
+    def build(self) -> Workspace:
+        workspace = Workspace(
+            {
+                "index.md": "# 首页\n\n欢迎来到这里。\n",
+                "04技术/新博客.md": "---\ncreatedDate: 2026-10-02\ndescription: 一句简介\n---\n# 新博客\n",
+                "04技术/旧博客.md": "---\ncreatedDate: 2026-09-01\n---\n# 旧博客\n",
+                "05作品/星期四.md": "---\ncreatedDate: 2026-10-01\n---\n# 星期四\n",
+                "03思考/一篇思考.md": "---\ncreatedDate: 2026-10-05\n---\n# 一篇思考\n",
+                "03思考/初稿/黑框眼镜.md": "---\ncreatedDate: 2026-10-06\n---\n# 黑框眼镜\n",
+            }
+        )
+        self.assertFalse(workspace.build())
+        return workspace
+
+    def test_author_words_come_first_then_blog_and_work_newest_first(self):
+        html = self.build().html("")
+        self.assertLess(html.index("欢迎来到这里"), html.index("博客与作品"))
+        titles = ("新博客", "星期四", "旧博客")
+        positions = [html.index(title) for title in titles]
+        self.assertEqual(sorted(positions), positions)
+        self.assertNotIn("一篇思考", html)
+        self.assertNotIn("黑框眼镜", html)
+        self.assertIn("一句简介", html)
+        self.assertIn("全部文章", html)
+
+    def test_header_has_only_home_and_posts(self):
+        html = self.build().html("")
+        header = html[html.index("<header"): html.index("</header>")]
+        nav = header[header.index("<nav"):]
+        self.assertIn('href="../"', nav)
+        self.assertIn('href="../posts/"', nav)
+        self.assertEqual(2, nav.count("<a "))
+        self.assertIn('class="site-title" href="../"', header)
+
+    def test_home_page_has_no_comments_and_no_filters(self):
+        html = self.build().html("")
+        self.assertNotIn("giscus", html)
+        self.assertNotIn("data-filters", html)
+
+
+class PostsPageTests(unittest.TestCase):
+    def build(self) -> Workspace:
+        workspace = Workspace(
+            {
+                "03思考/学术一点的思考.md": "---\ncreatedDate: 2026-10-05\ntags: [学习, AI]\ndescription: 思考简介\n---\n# 学术一点的思考\n",
+                "04技术/博客.md": "---\ncreatedDate: 2026-10-02\ntags: [AI]\n---\n# 博客\n",
+            }
+        )
+        self.assertFalse(workspace.build())
+        return workspace
+
+    def test_lists_every_article_with_stage_and_tags(self):
+        html = self.build().html("posts/")
+        self.assertIn("学术一点的思考", html)
+        self.assertIn("博客", html)
+        self.assertIn('data-stage="思考"', html)
+        self.assertIn('data-stage="博客"', html)
+        self.assertIn("思考简介", html)
+        self.assertIn('data-tag="学习"', html)
+
+    def test_filters_and_list_work_without_javascript(self):
+        html = self.build().html("posts/")
+        self.assertIn("data-filters hidden", html)
+        self.assertIn("data-empty-result hidden", html)
+        self.assertEqual(2, html.count('class="article-item"'))
+
+    def test_script_reads_and_writes_stage_and_tag_parameters(self):
+        script = _article("site.js")
+        self.assertIn('"stage"', script)
+        self.assertIn('"tag"', script)
+        self.assertIn("URLSearchParams", script)
+        self.assertIn("replaceState", script)
+
+
+class WarningTests(unittest.TestCase):
+    def test_article_without_a_date_is_listed_last_and_only_warns(self):
+        workspace = Workspace(
+            {
+                "03思考/有日期.md": "---\ncreatedDate: 2026-10-01\n---\n# 有日期\n",
+                "03思考/没日期.md": "---\n---\n# 没日期\n",
+            }
+        )
+        workspace.site.mkdir(parents=True, exist_ok=True)
+        diagnostics = build_pages(workspace.docs, workspace.site, SiteConfig(theme=workspace.theme), LAYOUT)
+        codes = [diagnostic.code for diagnostic in diagnostics]
+        self.assertIn("W_POST_DATE_MISSING", codes)
+        self.assertFalse([code for code in codes if not code.startswith("W_")])
+        html = workspace.html("posts/")
+        self.assertLess(html.index("有日期"), html.index("没日期"))
+
+    def test_mathjax_is_only_loaded_where_there_is_math(self):
+        workspace = Workspace(
+            {
+                "03思考/有公式.md": "---\ncreatedDate: 2026-10-01\n---\n\n能量公式 $E=mc^2$。\n",
+                "03思考/没公式.md": "---\ncreatedDate: 2026-10-02\n---\n\n只有文字。\n",
+            }
+        )
+        self.assertFalse(workspace.build())
+        pages = {path.parent.name: path.read_text(encoding="utf-8") for path in (workspace.site / "thoughts").glob("*/index.html")}
+        self.assertEqual(1, sum("mathjax@3.2.2" in html for html in pages.values()))
+        self.assertNotIn("mathjax", workspace.html("posts/"))
+        self.assertNotIn("mathjax", workspace.html(""))
+
+
+class NotFoundTests(unittest.TestCase):
+    def test_404_page_is_written_with_way_back(self):
+        workspace = Workspace({"03思考/一.md": "---\ncreatedDate: 2026-10-01\n---\n# 一\n"})
+        self.assertFalse(workspace.build())
+        html = (workspace.site / "404.html").read_text(encoding="utf-8")
+        self.assertIn("页面不存在", html)
+        self.assertIn('href="../"', html)
+        self.assertIn('href="../posts/"', html)
+
+
+class LegacyRedirectTests(unittest.TestCase):
+    def test_old_address_redirects_to_the_page_that_exists(self):
+        workspace = Workspace(
+            {"04技术/如何订阅claude（纯操作版）.md": "---\nslug: subscribe-claude-quick\ncreatedDate: 2026-10-08\n---\n# 纯操作版\n"}
+        )
+        workspace.site.mkdir(parents=True, exist_ok=True)
+        target = "blog/subscribe-claude-quick"
+        diagnostics = build_pages(
+            workspace.docs,
+            workspace.site,
+            SiteConfig(theme=workspace.theme),
+            LAYOUT,
+            [("tech/subscribe-claude-quick", target)],
+        )
+        self.assertFalse([d for d in diagnostics if not d.code.startswith("W_")], [d.format() for d in diagnostics])
+        page = workspace.site / "tech" / "subscribe-claude-quick" / "index.html"
+        self.assertTrue(page.is_file())
+        html = page.read_text(encoding="utf-8")
+        self.assertIn('http-equiv="refresh"', html)
+        self.assertIn("../../blog/subscribe-claude-quick/", html)
+        self.assertIn('<meta name="robots" content="noindex">', html)
+        self.assertTrue((workspace.site / target / "index.html").is_file())
+
+    def test_missing_target_stops_the_build(self):
+        workspace = Workspace(
+            {"04技术/如何订阅claude（纯操作版）.md": "---\nslug: subscribe-claude-quick\ncreatedDate: 2026-10-08\n---\n# 纯操作版\n"}
+        )
+        workspace.site.mkdir(parents=True, exist_ok=True)
+        diagnostics = build_pages(
+            workspace.docs,
+            workspace.site,
+            SiteConfig(theme=workspace.theme),
+            LAYOUT,
+            [("tech/subscribe-claude-quick", "blog/not-here")],
+        )
+        self.assertIn("E_REDIRECT_TARGET_MISSING", [d.code for d in diagnostics])
+
+    def test_conflict_with_a_real_page_is_reported(self):
+        workspace = Workspace({"03思考/甲.md": "---\ncreatedDate: 2026-10-01\n---\n# 甲\n"})
+        workspace.build()
+        page_url = next(
+            path.parent.relative_to(workspace.site).as_posix()
+            for path in sorted(workspace.site.rglob("index.html"))
+            if path.parent.name not in {"site", "posts"}
+        )
+        self.assertTrue((workspace.site / page_url / "index.html").is_file())
+        diagnostics = legacy_redirects(workspace.site, [(page_url + "/", page_url)], None)
+        self.assertEqual(["E_REDIRECT_CONFLICT"], [d.code for d in diagnostics])
+
+
+class SiteConfigTests(unittest.TestCase):
     def test_reads_site_toml(self):
         path = Path(tempfile.mkdtemp()) / "site.toml"
         path.write_text(
-            "# 注释\nsite_name = \"Writing\"\nsite_url = \"https://example.test/Writing/\"\ntheme = \"theme\"\n",
+            "# 注释\nsite_name = \"Writing\"\nsite_url = \"https://example.test/Writing/\"\ntheme = \"theme\"\n"
+            "\n[[social]]\nname = \"GitHub\"\nlink = \"https://github.com/example\"\n"
+            "\n[[social]]\nname = \"X\"\nlink = \"https://x.com/example\"\n"
+            "\n[giscus]\nrepo = \"a/b\"\nrepo_id = \"R_1\"\ncategory = \"Comments\"\ncategory_id = \"D_1\"\n",
             encoding="utf-8",
         )
         config = load_config(path)
         self.assertEqual("Writing", config.site_name)
         self.assertEqual("https://example.test/Writing/", config.site_url)
         self.assertEqual(Path("theme"), config.theme)
+        self.assertEqual(["GitHub", "X"], [link.name for link in config.social])
+        self.assertEqual("a/b", config.giscus.repo)
+        self.assertTrue(config.giscus.enabled)
+
+    def test_giscus_is_off_without_a_category_id(self):
+        path = Path(tempfile.mkdtemp()) / "site.toml"
+        path.write_text("[giscus]\nrepo = \"a/b\"\nrepo_id = \"R_1\"\ncategory_id = \"\"\n", encoding="utf-8")
+        self.assertFalse(load_config(path).giscus.enabled)
 
     def test_the_repository_config_points_at_the_real_theme(self):
         config = load_config(Path(__file__).resolve().parents[1] / "site.toml")
         self.assertEqual(Path("theme"), config.theme)
         self.assertTrue((Path(__file__).resolve().parents[1] / config.theme / "templates" / "article.html").is_file())
+        self.assertTrue(config.giscus.enabled)
+        self.assertIn(
+            'data-mapping="pathname"',
+            (Path(__file__).resolve().parents[1] / "theme" / "templates" / "article.html").read_text(encoding="utf-8"),
+        )
 
 
 if __name__ == "__main__":

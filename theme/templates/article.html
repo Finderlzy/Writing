@@ -2,23 +2,27 @@
 {% block content %}
 <article class="article">
   <header class="article-header">
-    <h1>{{ page.title }}</h1>
-    {% if page.article.date %}
+    <h1 class="article-title">{{ page.title }}</h1>
     <p class="article-meta">
       <span class="article-stage">{{ page.article.stage.name }}</span>
-      <time datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>
+      {% if page.article.date %}<time datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>{% endif %}
+      {% for tag in page.article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
     </p>
-    {% endif %}
-    {% if page.article.description %}
-    <p class="article-description">{{ page.article.description }}</p>
+    {% if page.series %}
+    <p class="article-series-line">
+      属于系列
+      <a href="{{ root }}{{ page.series[0].url }}">{{ page.article.series }}</a>（共 {{ page.series | length }} 篇）
+    </p>
     {% endif %}
   </header>
   {% if toc %}
-  <nav class="article-toc">
+  <nav class="article-toc" aria-label="目录">
     <p class="article-toc-title">目录</p>
     <ul>
-      {% for item in toc %}
-      <li><a href="#{{ item.id }}">{{ item.name }}</a></li>
+      {% for item in toc recursive %}
+      <li><a href="#{{ item.id }}">{{ item.name }}</a>{% if item.children %}
+        <ul>{{ loop(item.children) }}</ul>
+      {% endif %}</li>
       {% endfor %}
     </ul>
   </nav>
@@ -26,5 +30,46 @@
   <div class="article-body">
 {{ page.body | safe }}
   </div>
+  {% if page.series %}
+  <p class="series-next">
+    {% if page.following and page.following.series %}
+    系列里的下一篇：<a href="{{ root }}{{ page.following.url }}">{{ page.following.title }}</a>
+    {% else %}
+    这是系列「{{ page.article.series }}」的最后一篇，<a href="{{ root }}{{ page.series[0].url }}">回到系列目录</a>。
+    {% endif %}
+  </p>
+  {% endif %}
+  {% if page.previous or page.following %}
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    {% if page.previous %}
+    <a class="neighbour previous" href="{{ root }}{{ page.previous.url }}" rel="prev"><span class="neighbour-label">上一篇</span>{{ page.previous.title }}</a>
+    {% endif %}
+    {% if page.following %}
+    <a class="neighbour next" href="{{ root }}{{ page.following.url }}" rel="next"><span class="neighbour-label">下一篇</span>{{ page.following.title }}</a>
+    {% endif %}
+  </nav>
+  {% endif %}
+  {% if page.comments %}
+  <section class="comments" id="comments">
+    <h2 class="comments-title">留言</h2>
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="{{ site.giscus.repo }}"
+      data-repo-id="{{ site.giscus.repo_id }}"
+      data-category="{{ site.giscus.category }}"
+      data-category-id="{{ site.giscus.category_id }}"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </section>
+  {% endif %}
 </article>
 {% endblock %}

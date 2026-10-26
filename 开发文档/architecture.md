@@ -77,6 +77,7 @@ class Article:
     tags: tuple[str, ...]
     description: str
     series: str | None      # 所属系列名（入口篇标题）；入口篇自己也属于系列
+    url: str = ""           # 站内网址，由渲染层按 urls 填好再交给模板（T2 加）
 
 class Catalog:
     @classmethod
@@ -85,6 +86,11 @@ class Catalog:
     def home(self) -> tuple[Article, ...]   # 不在系列子文件夹里的博客 + 全部作品，同样排序（R-UI-3、R-UI-6）
     def neighbours(self, a: Article) -> tuple[Article | None, Article | None]   # 上一篇、下一篇
     def series(self, a: Article) -> tuple[Article, ...]                        # a 所在系列的阅读顺序，不在系列里时为空
+    def entry_of(self, folder: str) -> Article | None                          # 系列的入口篇
+    def article(self, source_path: Path) -> Article | None
+
+def series_diagnostics(docs: Path, pages: Iterable[Path], layout: Layout = LAYOUT) -> list[Diagnostic]
+    # E_STAGE_SUBFOLDER / E_SERIES_ENTRY_MISSING / E_SERIES_UNCONFIGURED，见 §6
 ```
 
 规则：
@@ -92,6 +98,160 @@ class Catalog:
 - **阶段**只由一级文件夹决定（R-STR-1）。`stage` 是 `Article` 的必填字段，模板直接用 `stage.name` 显示。
 - **上一篇 / 下一篇**：系列里的文章按系列阅读顺序；其他文章在同一阶段内按 `createdDate`，“上一篇”是更早的一篇。【选定】
 - **系列**：见 §6。
+- **坏 front matter**：`_read_article` 里再解析一次 YAML（`_strict_meta`），解析不了报 `E_FRONT_MATTER_INVALID` 并停止；`read_meta` 本身仍对坏数据返回 `{}`，供只需要容错的调用方（转换层取 slug）使用。
+- **阶段按最长前缀匹配，诊断里也一样**：`E_STAGE_SUBFOLDER` 只对“最具体的那个阶段”的页面报警，否则预览用旧布局时 `03思考/初稿` 下的两篇初稿会被算成“思考的子文件夹”。`E_SERIES_ENTRY_MISSING` 只要求入口篇在它**所属阶段的根目录**（正式布局 `04博客/`，预览的旧布局 `04技术/`），不要求它在系列文件夹里。`E_SERIES_UNCONFIGURED` 对每个真实的顶层子文件夹只报一次。
+- **`W_` 开头的诊断只提示**：`build_pages` 遇到警告照常写完站点，只有错误才提前返回。`W_POST_DATE_MISSING` 让缺日期的文章排在最后（R-UI-4）；`W_MATHJAX_UNUSED` 是一篇带公式的公开文章都没有时的自检提示。
+- **系列文件夹里可能还有一份作者手写的目录页**（如 `04技术/原理版/如何订阅claude.md`），它也是系列成员，但系列顺序从 `Layout.series` 登记的入口篇开始。`series()` 按源路径去重，`_reading_order` 以入口篇为起点沿双链展开，没被链到的按文件名排最后。
+- **`home()` 的口径**：属于某个阶段、且不在任何系列文件夹里的文章；`series()` 返回空元组表示不在系列里，模板用 `series[0].url` 指到入口篇。
+- **标签按钮顺序**：`_tag_counts` 按篇数从多到少、同数按字典序，避免每次构建按钮顺序抖动。
+- **配置**：`site.toml` 的 `[giscus]` 里 `repo`、`repo_id`、`category_id` 三项齐全时 `GiscusConfig.enabled` 为真，文章页才输出评论区脚本；`[[social]]` 每项 `name` + `url`，渲染在页脚。
+
+### 4.2 Obsidian 转换层 `tools/obsidian_compat/`（已有，小改）
+
+| 文件 | 接口 | 5.0.0 的变化 |
+| --- | --- | --- |
+| `index.py` | `VaultIndex.scan(docs)` → 页面、附件、标题锚点、块 ID | 不变 |
+| `converter.py` | `Converter(index, is_published).convert(path, text)` → `ConversionResult(text, references, diagnostics)` | 构造参数从 `unpublished_paths` 改为 `content.is_published`；页面链接仍输出为指向目标 `.md` 的相对路径加锚点，由渲染层改写成网址 |
+| `urls.py` | `plan_page_urls(docs, pages, is_published, prefixes)`；`write_redirects(site, redirects, site_url)`；`legacy_redirects(site, pairs, site_url)`（T2 加） | 删除 `PageUrlPlugin`、`renamed_folder_redirects` 和逐页中文路径跳转（不再保留旧网址）；`front_matter_slug` 改用 `content.read_meta` 取值，只额外定位行号 |
+| `html_check.py` | `check_site(site, site_url)`；`check_body(site, page_url, body)` | 新增 `check_body`：只检查单页正文的链接、锚点和残留标记。T1 只生成文章页，模板里的站名和样式表指向尚未生成的页面，整站检查会在 T2 补齐页面后才用 |
+| `parser.py`、`slug.py`、`models.py`、`diagnostics.py` | — | 不变 |
+
+### 4.3 渲染层 `tools/render.py`
+
+一个深模块：输入转换好的 Markdown 和目录，输出整个 `site/`。入口是 `write_site`，
+扫描和转换在 `build_pages` 里完成后再交给它：
+
+```python
+def write_site(
+    site: Path,
+    catalog: Catalog,
+    converted: Mapping[str, str],   # 公开页面的源路径（POSIX 字符串）→ 转换后的 Markdown
+    urls: Mapping[str, str],        # 源路径（POSIX 字符串）→ 站内网址，如 "blog/subscribe-claude-quick/"
+    attachments: Iterable[Path],    # 要复制的附件（只含公开文章引用的）
+    config: SiteConfig,
+    docs: Path,                     # 复制附件时读源文件
+    index: VaultIndex,              # 查目标页面的标题锚点
+    references: Mapping[str, list], # 源路径 → ConversionResult.references
+    diagnostics: list[Diagnostic] | None = None,
+    legacy: Iterable[tuple[str, str]] = (),   # 旧地址 → 现地址，交给 urls.legacy_redirects（T2 加）
+) -> list[Diagnostic]
+
+def build_pages(
+    docs: Path,
+    destination: Path,
+    config: SiteConfig,
+    layout: Layout = LAYOUT,
+    legacy: Iterable[tuple[str, str]] = (),
+) -> list[Diagnostic]
+```
+
+`write_site` 用 `urls.legacy_redirects(site, [(旧, 新)], site_url)` 写跳转页：地址先规整成 `/a/b/`，目标页面不存在报 `E_REDIRECT_TARGET_MISSING`，与已有页面冲突由 `write_redirects` 报 `E_REDIRECT_CONFLICT`。`Page` 带 `url`、`articles`、`previous`、`following`、`series`、`toc`、`tags`、`rows`、`comments`、`highlight_nav` 这些模板字段；`_context` 另给 `root`（到站点根目录的相对路径）、`mathjax`、`unit_separator`（列表项 `data-tags` 的分隔符，用不可见的 U+0001，因为主题标签里可能出现逗号）。所有页面都加载 `site.js`；MathJax 只在 `page.has_math` 的页面加载，判定依据是转换后 Markdown 里的 `$…# 架构：5.0.0 读者网站
+
+> 写于 2026-10-26，状态：**定稿，待实施**。需求见 [requirements.md](requirements.md)，术语见 [CONTEXT.md](../CONTEXT.md)，复用调研见 [reuse-research.md](reuse-research.md)，关键决策见 [adr/0001-drop-mkdocs.md](adr/0001-drop-mkdocs.md)。
+>
+> 标注沿用需求文档：【选定】是需求授权后由架构阶段选定的方案，可以推翻。凡写“计划”的文件、函数和命令目前还不存在；现状是 4.1.0。
+
+## 1. 总体方案
+
+构建仍是一条 Python 流水线，在 GitHub Actions 里跑，产物发布到 GitHub Pages，托管方式不变。变化在后半段：MkDocs 和 Material 主题整体去掉，换成项目自己的渲染层，只生成首页、全部文章、文章页和跳转页四种页面。【选定，理由见 ADR-0001】
+
+```mermaid
+flowchart LR
+  D[docs/ 只读] --> IX[VaultIndex 扫描]
+  IX --> CV[Converter 转换与检查]
+  IX --> CT[Catalog 文章目录]
+  CT --> U[plan_page_urls 网址]
+  CV --> R[Renderer 渲染 HTML]
+  CT --> R
+  U --> R
+  R --> S[site/]
+  S --> HC[check_site 链接检查]
+```
+
+## 2. 技术栈与运行
+
+| 项 | 选择 | 说明 |
+| --- | --- | --- |
+| 语言 | Python ≥ 3.13（CI 固定 3.13.15，本地 `.venv` 是 3.14） | 沿用 |
+| Markdown | Python-Markdown 3.10 + pymdown-extensions 11 | 沿用；扩展：`toc`、`admonition`、`attr_list`、`nl2br`、`sane_lists`、`tables`、`fenced_code`、`pymdownx.arithmatex`（generic） |
+| 模板 | Jinja2 3.1 | 现在是 MkDocs 的间接依赖，改为直接写进 `requirements.txt` |
+| front matter | PyYAML 6 | 同上，改为直接依赖 |
+| 公式 | MathJax 3，固定版本（计划 `mathjax@3.2.2`），只在含公式的文章页加载 | 现在是不带版本号的 unpkg 链接 |
+| 评论 | Giscus，`data-mapping="pathname"` | 沿用参数；只在文章页出现 |
+| 部署 | `.github/workflows/deploy.yml`：测试 → 构建 → 上传 `site/` → Pages | 工作流不用改，变的只是 `requirements.txt` |
+
+去掉的依赖：`mkdocs`、`mkdocs-material`。不引入 Node、打包工具或 CSS 框架；样式一个 CSS 文件，脚本一个原生 JS 文件。
+
+## 3. 复用决策
+
+- **复用自己的转换层**：`tools/obsidian_compat` 的扫描、转换、行号诊断、网址分配、HTML 检查全部保留，这是需求第 6 节“构建失败要说清楚”和 R-PUB-3 的基础。上游版本即本仓库 4.1.0。
+- **复用库**：Python-Markdown（含 `toc` 的标题锚点规则，`slug.py` 已与之对齐，订阅教程里的中文锚点不会变）、pymdown-extensions、Jinja2、PyYAML。
+- **不复用框架**：Quartz、Zensical、obsidian-export 都只作参考，原因见调研记录。
+- **自己写的部分**：内容目录 `Catalog`、渲染层 `Renderer`、四个模板、样式和脚本。
+
+## 4. 模块
+
+按依赖方向从下到上。每个模块只列调用方需要知道的接口。
+
+### 4.1 发布范围与内容目录 `tools/content.py`（计划，取代 `tools/site_nav.py`）
+
+一个深模块，回答“哪些是文章、它们是什么、怎么排”。其他模块不再自己判断是否公开，也不再自己读 front matter。4.1.0 里“是否公开”在转换器、发布计数、附件规则和测试里各写了一遍，slug 用正则读、其他元数据用 YAML 读，两者对同一份 front matter 会给出不同结果，这一版都收进这个模块。
+
+```python
+@dataclass(frozen=True)
+class Stage:
+    folder: str             # 文件夹路径前缀，如 "02思考"；按最长前缀匹配，所以也可以是 "03思考/初稿"
+    name: str               # 思考 / 初稿 / 博客 / 作品
+    prefix: str             # 网址前缀 thoughts / drafts / blog / opus
+
+@dataclass(frozen=True)
+class Layout:               # 文件夹与阶段的对应，加上系列配置
+    stages: tuple[Stage, ...]
+    series: dict[str, str]  # 系列子文件夹 → 入口篇，见 §6
+
+LAYOUT: Layout              # 5.0.0 的正式对应：02思考、03初稿、04博客、05作品
+HOME_PAGE = Path("index.md")
+
+def is_published(path: Path, layout: Layout = LAYOUT) -> bool   # 唯一的“是否公开”判断：属于某个阶段的 .md，或首页
+def read_meta(text: str) -> dict          # 唯一的 front matter 解析（YAML）；坏 front matter 返回 {}
+
+@dataclass(frozen=True)
+class Article:
+    source_path: Path
+    stage: Stage
+    title: str              # front matter 的 title，没写就用文件名
+    date: date | None       # createdDate
+    tags: tuple[str, ...]
+    description: str
+    series: str | None      # 所属系列名（入口篇标题）；入口篇自己也属于系列
+    url: str = ""           # 站内网址，由渲染层按 urls 填好再交给模板（T2 加）
+
+class Catalog:
+    @classmethod
+    def load(cls, docs: Path, pages: Iterable[Path], layout: Layout = LAYOUT) -> tuple["Catalog", list[Diagnostic]]
+    articles: tuple[Article, ...]           # 全部文章，createdDate 从新到旧，无日期的排最后（W_POST_DATE_MISSING）
+    def home(self) -> tuple[Article, ...]   # 不在系列子文件夹里的博客 + 全部作品，同样排序（R-UI-3、R-UI-6）
+    def neighbours(self, a: Article) -> tuple[Article | None, Article | None]   # 上一篇、下一篇
+    def series(self, a: Article) -> tuple[Article, ...]                        # a 所在系列的阅读顺序，不在系列里时为空
+    def entry_of(self, folder: str) -> Article | None                          # 系列的入口篇
+    def article(self, source_path: Path) -> Article | None
+
+def series_diagnostics(docs: Path, pages: Iterable[Path], layout: Layout = LAYOUT) -> list[Diagnostic]
+    # E_STAGE_SUBFOLDER / E_SERIES_ENTRY_MISSING / E_SERIES_UNCONFIGURED，见 §6
+```
+
+规则：
+
+- **阶段**只由一级文件夹决定（R-STR-1）。`stage` 是 `Article` 的必填字段，模板直接用 `stage.name` 显示。
+- **上一篇 / 下一篇**：系列里的文章按系列阅读顺序；其他文章在同一阶段内按 `createdDate`，“上一篇”是更早的一篇。【选定】
+- **系列**：见 §6。
+- **坏 front matter**：`_read_article` 里再解析一次 YAML（`_strict_meta`），解析不了报 `E_FRONT_MATTER_INVALID` 并停止；`read_meta` 本身仍对坏数据返回 `{}`，供只需要容错的调用方（转换层取 slug）使用。
+- **阶段按最长前缀匹配，诊断里也一样**：`E_STAGE_SUBFOLDER` 只对“最具体的那个阶段”的页面报警，否则预览用旧布局时 `03思考/初稿` 下的两篇初稿会被算成“思考的子文件夹”。`E_SERIES_ENTRY_MISSING` 只要求入口篇在它**所属阶段的根目录**（正式布局 `04博客/`，预览的旧布局 `04技术/`），不要求它在系列文件夹里。`E_SERIES_UNCONFIGURED` 对每个真实的顶层子文件夹只报一次。
+- **`W_` 开头的诊断只提示**：`build_pages` 遇到警告照常写完站点，只有错误才提前返回。`W_POST_DATE_MISSING` 让缺日期的文章排在最后（R-UI-4）；`W_MATHJAX_UNUSED` 是一篇带公式的公开文章都没有时的自检提示。
+- **系列文件夹里可能还有一份作者手写的目录页**（如 `04技术/原理版/如何订阅claude.md`），它也是系列成员，但系列顺序从 `Layout.series` 登记的入口篇开始。`series()` 按源路径去重，`_reading_order` 以入口篇为起点沿双链展开，没被链到的按文件名排最后。
+- **`home()` 的口径**：属于某个阶段、且不在任何系列文件夹里的文章；`series()` 返回空元组表示不在系列里，模板用 `series[0].url` 指到入口篇。
+- **标签按钮顺序**：`_tag_counts` 按篇数从多到少、同数按字典序，避免每次构建按钮顺序抖动。
+- **配置**：`site.toml` 的 `[giscus]` 里 `repo`、`repo_id`、`category_id` 三项齐全时 `GiscusConfig.enabled` 为真，文章页才输出评论区脚本；`[[social]]` 每项 `name` + `url`，渲染在页脚。
 
 ### 4.2 Obsidian 转换层 `tools/obsidian_compat/`（已有，小改）
 
@@ -119,11 +279,7 @@ def write_site(
     docs: Path,                     # 复制附件时读源文件
     index: VaultIndex,              # 查目标页面的标题锚点
     references: Mapping[str, list], # 源路径 → ConversionResult.references
-    diagnostics: list[Diagnostic] | None = None,
-) -> list[Diagnostic]
-
-def build_pages(docs: Path, destination: Path, config: SiteConfig, layout: Layout = LAYOUT) -> list[Diagnostic]
-```
+ / `$…$`。
 
 `build_pages` 负责 `VaultIndex.scan` → `Converter.convert`（全部公开页面）→ `plan_page_urls`
 → `Catalog.load`，收集要复制的附件后调用 `write_site`。预览入口和单元测试都走 `build_pages`。
@@ -163,6 +319,7 @@ def build_pages(docs: Path, destination: Path, config: SiteConfig, layout: Layou
   ```
 
   构建时查出目标的新网址并写跳转页（沿用 `redirect_html`：`meta refresh` + `location.replace`，保留查询串和锚点）。目标不存在或未公开时报 `E_REDIRECT_TARGET_MISSING` 并停止；跳转地址与已有页面冲突时报 `E_REDIRECT_CONFLICT`（R-PUB-4）。这篇文章已有 `slug: subscribe-claude-quick`，新地址是 `/blog/subscribe-claude-quick/`。
+  T2 的实现：`REDIRECTS` 声明在 `tools/build_site.py`（`{"tech/subscribe-claude-quick": "blog/subscribe-claude-quick"}`，不带首尾斜杠），4.1.0 的构建不读它，线上网址一字不变；`tools/preview_v5.py` 把它转成 `(旧, 新)` 列表传给 `build_pages`。T3 换流水线时 `build_site.py` 直接把这个字典交给 `write_site` 的 `legacy` 参数。
 
 ## 6. 系列博客
 
@@ -189,11 +346,14 @@ SERIES = {
 | `home.html` | `docs/index.md` 渲染的作者的话；`Catalog.home()` 列表，每项标题、日期、阶段、简介；末尾“全部文章”入口；不放评论和筛选（R-UI-3） |
 | `posts.html` | 全部文章列表，每项标题、日期、阶段、系列名、简介；阶段按钮和标签按钮两组筛选；结果为空时的提示（R-UI-4） |
 | `article.html` | 标题、日期、阶段、标签、目录（条件显示）、正文、系列导航（所属系列与系列内下一篇）、上一篇 / 下一篇、Giscus（R-UI-5、R-UI-6） |
+| `404.html` | “页面不存在”加回首页、全部文章的入口（R-PUB-4） |
 
 脚本 `theme/assets/site.js`（计划）只做两件事，没有 JS 时页面照常可读：
 
 - 全部文章页的筛选：读写 `stage`、`tag` 查询参数，两个条件同时满足才显示，空结果时显示提示。每项的阶段和标签由构建写在 `data-` 属性里。
-- 代码块的复制按钮。
+- 代码块的复制按钮（`navigator.clipboard` 为主，`execCommand` 兜底）。
+
+实现要点（T2）：筛选按钮和筛选结果摘要默认 `hidden`，由 `site.js` 显示，所以没有 JS 时按钮不出现、列表全部可见；查询参数里的阶段或标签对不上任何按钮时按“没筛选”处理；筛选状态用 `history.replaceState` 写回地址，可以分享。样式集中在 `theme/assets/site.css` 一个文件里，颜色走 CSS 变量，`prefers-color-scheme: dark` 时整体切换；MathJax 的读屏辅助层 `mjx-assistive-mml` 挪出排版流（否则会撑出横向滚动），行内公式和行间公式各自在容器内横向滚动。
 
 去掉的前端内容：Material 主题与 `overrides/`、左侧导航树、站内搜索、不蒜子访问统计（`counter.js`，属于非目标）。`docs/javascripts/` 里的三个脚本移出 Obsidian 仓库（MathJax 配置并入 `site.js`）。
 

@@ -3,21 +3,31 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% if page.article %}{{ page.title }} · {{ site.site_name }}{% else %}{{ page.title }}{% endif %}</title>
+    <title>{% if page.url == "" %}{{ site.site_name }}{% elif page.url == "posts/" or page.article %}{{ page.title }} · {{ site.site_name }}{% else %}{{ page.title }}{% endif %}</title>
     <link rel="stylesheet" href="{{ root }}assets/theme/site.css">
     {% if mathjax %}
-    <script defer src="{{ root }}assets/theme/mathjax.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
     {% endif %}
+    <script defer src="{{ root }}assets/theme/site.js"></script>
   </head>
   <body>
     <header class="site-header">
       <a class="site-title" href="{{ root }}">{{ site.site_name }}</a>
+      <nav class="site-nav">
+        <a href="{{ root }}"{% if page.highlight_nav == "home" %} aria-current="page"{% endif %}>首页</a>
+        <a href="{{ root }}posts/"{% if page.highlight_nav == "posts" %} aria-current="page"{% endif %}>全部文章</a>
+      </nav>
     </header>
     <main class="site-main">
 {% block content %}{% endblock %}
     </main>
     <footer class="site-footer">
-      <p>{{ site.site_name }}</p>
+      {% if site.social %}
+      <p class="site-footer-links">
+        {% for link in site.social %}<a href="{{ link.url }}" rel="me noopener">{{ link.name }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+      </p>
+      {% endif %}
+      <p>© {{ site.site_name }}</p>
     </footer>
   </body>
 </html>
