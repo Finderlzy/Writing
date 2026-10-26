@@ -45,7 +45,7 @@
 - 不发布的路径由 `tools/build_site.py` 的 `UNPUBLISHED_PATHS` 控制，目前是 `00收集`、`07自己`、`docs/AGENTS.md`。这些页面不参与构建，但仍参与双链检查，公开页面指向它们的双链渲染成纯文字，只被它们引用的附件不复制；它们仍随 Git 推送到公开仓库。
 - 网址前缀见 `SECTION_SLUGS`，新增一级文件夹必须补上，否则报 `E_URL_SECTION_MISSING`。slug 只能用小写字母、数字和单个连字符，同一栏目内唯一；不写 slug 的页面按源文件路径生成 8 位短 ID，文件移动或改名后会变。
 - 子文件夹在导航里折叠成一组：组内第一项是链接最多的页面（通常是目录页），其余按它链接过去的顺序，没被链到的排最后。
-- **订阅教程旧链接**：`04技术/如何订阅claude（纯操作版）.md`（`/tech/subscribe-claude-quick/`）在视频里公开过。在 5.0.0 改版落地之前不要动它；改版时允许移动或改名，但这个旧网址必须跳转到新地址。`scripts/setup.sh` 是转发到 [reality-setup](https://github.com/Finderlzy/reality-setup) 的壳，5.0.0 改版时删除。
+- **订阅教程旧链接**：`04技术/如何订阅claude（纯操作版）.md`（`/tech/subscribe-claude-quick/`）在视频里公开过。在 5.0.0 改版落地之前不要动它；改版时它随 `04技术` 迁到 `04博客`，这个旧网址必须跳转到新地址。`scripts/setup.sh` 是转发到 [reality-setup](https://github.com/Finderlzy/reality-setup) 的壳，5.0.0 改版时删除。
 - **5.0.0 改版**：术语见根目录 `CONTEXT.md`，范围、规则和验收见 `开发文档/requirements.md`。
 
 ### 写作语法
