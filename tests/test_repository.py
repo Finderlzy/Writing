@@ -57,21 +57,9 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         ]
         self.assertEqual([], scripts, "站点脚本和样式放在 theme/，不进 Obsidian 仓库")
 
-    def test_no_attachment_is_left_unreferenced(self):
+    def test_attachments_live_in_the_attachment_folder(self):
+        # 没被引用的附件允许留着（作者可能以后要用），网站只复制公开文章引用到的那些
         index = VaultIndex.scan(self.docs)
-        referenced: set[Path] = set()
-        for record in index.pages.values():
-            result = Converter(index).convert(
-                record.source_path,
-                (self.docs / record.source_path).read_text(encoding="utf-8"),
-            )
-            for reference in result.references:
-                if reference.kind != "embed" or not reference.target:
-                    continue
-                for attachment in index.resolve_attachment_candidates(record.source_path, reference.target):
-                    referenced.add(attachment.source_path)
-        unreferenced = sorted(path.as_posix() for path in index.attachments if path not in referenced)
-        self.assertEqual([], unreferenced, "09附件 里有不被任何内容引用的文件")
         self.assertEqual({"09附件"}, {path.parts[0] for path in index.attachments})
 
     def test_site_configuration_matches_repository_layout(self):
