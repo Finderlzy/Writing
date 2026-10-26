@@ -4,7 +4,7 @@
 
 这里放我的思考、初稿、博客和文学作品。所有内容在 Obsidian 里写，用仓库里自带的 Python 脚本生成网站，推送到 GitHub 后自动发布到 GitHub Pages。
 
-当前版本：**5.3.0**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
+当前版本：**5.3.1**，版本记录见 [开发文档/DEVELOPMENT.md](开发文档/DEVELOPMENT.md)。
 
 ## 日常写作流程
 

@@ -10,6 +10,7 @@ from tools.obsidian_compat.urls import legacy_redirects
 from tools.content import Article
 from tools.render import (
     SiteConfig,
+    SocialLink,
     build_pages,
     giant_chars,
     group_by_month,
@@ -258,6 +259,20 @@ class HomePageTests(unittest.TestCase):
         self.assertIn('<link rel="icon" href="../../assets/theme/favicon.svg" type="image/svg+xml">', article)
         self.assertTrue((workspace.site / "assets" / "theme" / "favicon.svg").is_file())
         self.assertTrue((workspace.site / "assets" / "theme" / "apple-touch-icon.png").is_file())
+
+    def test_footer_shows_icons_with_the_name_as_label_and_text_for_links_without_one(self):
+        workspace = Workspace({})
+        workspace.site.mkdir(parents=True, exist_ok=True)
+        social = (SocialLink("GitHub", "https://github.com/example", "github"), SocialLink("博客园", "https://example.test/"))
+        build_pages(
+            workspace.docs, workspace.site, SiteConfig(theme=workspace.theme, social=social), LAYOUT, font_specs=None
+        )
+        footer = workspace.html("")
+        footer = footer[footer.index('<footer class="site-footer">'):]
+        self.assertIn('aria-label="GitHub" title="GitHub"><svg class="social-icon"', footer)
+        self.assertIn('<use href="#icon-github"/></svg></a>', footer)
+        self.assertIn('rel="me noopener" data-font="head">博客园</a>', footer)
+        self.assertNotIn(">GitHub<", footer)
 
     def test_home_page_has_no_comments_and_no_filters(self):
         html = self.build().html("")

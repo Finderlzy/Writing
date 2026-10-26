@@ -376,10 +376,16 @@ hr {
 }
 
 .site-footer-links a {
+  color: var(--ink-soft);
+}
+
+/* 联系方式只有图标时点按区域太小，撑到 2rem 见方，手机上也好点 */
+.social-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  color: var(--ink-soft);
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
 }
 
 .social-icon {

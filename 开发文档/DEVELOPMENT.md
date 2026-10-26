@@ -1,5 +1,10 @@
 # 开发日志
 
+## 2026-10-26 — 5.3.1
+
+- 调整：页脚联系方式只显示图标（18px，点按区域 2rem 见方），名字放进 `title` 和 `aria-label`；去掉链接之间的“·”。没写 `icon` 的联系方式照旧显示名字。
+- 验证：unittest 146 个通过（新增页脚渲染断言）；构建成功；浏览器检查页脚只剩图标，读屏结构里链接名仍是平台名。
+
 ## 2026-10-26 — 5.3.0
 
 - 新增：页脚联系方式前加单色图标（R-VIS-8）。`site.toml` 的 `[[social]]` 加可选的 `icon` 字段，`tools/render.py` 的 `SocialLink` 跟着加 `icon`，图标是 `base.html` 里的 `<symbol id="icon-github|x|bilibili|douyin">`。顺手去掉了 `base.html` 里多出来的一个 `</svg>`。
