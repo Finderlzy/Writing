@@ -128,12 +128,8 @@ class BuildNavTests(unittest.TestCase):
         pages = [
             Path("index.md"),
             Path("01系统/规则.md"),
-            Path("02笔记/课程/Java/泛型.md"),
-            Path("02笔记/概念/链表.md"),
-            Path("02笔记/一篇.md"),
             Path("04技术/教程.md"),
             Path("05作品/星期四.md"),
-            Path("09归档/旧.md"),
         ]
         nav = build_nav(
             pages,
@@ -142,23 +138,17 @@ class BuildNavTests(unittest.TestCase):
                 "技术": ["04技术/教程.md"],
                 "作品": ["05作品/星期四.md"],
             },
-            ("笔记", "02笔记"),
         )
-        self.assertEqual(["首页", "思考", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
+        self.assertEqual(["首页", "思考", "技术", "作品"], [next(iter(item)) for item in nav])
         self.assertEqual(
             ["03思考/index.md", "03思考/关于读书.md", "03思考/CLANNAD~AFTER STORY~（p9—p11）.md"],
             nav[1]["思考"],
         )
-        notes = nav[4]["笔记"]
-        self.assertEqual("02笔记/一篇.md", notes[0])
-        self.assertIn({"Java": ["02笔记/课程/Java/泛型.md"]}, notes[2]["课程"])
         flat = repr(nav)
         self.assertNotIn("01系统", flat)
-        self.assertNotIn("09归档", flat)
 
-
-    def test_empty_notes_folder_is_left_out(self):
-        nav = build_nav([Path("index.md")], {"思考": []}, ("笔记", "02笔记"))
+    def test_empty_section_is_listed_without_pages(self):
+        nav = build_nav([Path("index.md")], {"思考": []})
         self.assertEqual(["首页", "思考"], [next(iter(item)) for item in nav])
 
 
@@ -195,12 +185,11 @@ class RealSiteTests(unittest.TestCase):
         pages = [path.relative_to(build_site.DOCS) for path in build_site.DOCS.rglob("*.md")]
         pages = [path for path in pages if path.parts[0] not in build_site.UNPUBLISHED_PATHS and ".obsidian" not in path.parts]
         posts = {title: collect_posts(build_site.DOCS, pages, folder) for title, folder in build_site.NAV_POSTS.items()}
-        nav = build_nav(pages, {title: section_nav(build_site.DOCS, section) for title, section in posts.items()}, build_site.NAV_NOTES)
-        self.assertEqual(["首页", "思考", "技术", "作品", "笔记"], [next(iter(item)) for item in nav])
+        nav = build_nav(pages, {title: section_nav(build_site.DOCS, section) for title, section in posts.items()})
+        self.assertEqual(["首页", "思考", "技术", "作品"], [next(iter(item)) for item in nav])
         self.assertIn("04技术/如何订阅claude（纯操作版）.md", nav[2]["技术"])
         flat = repr(nav)
         self.assertNotIn("01系统", flat)
-        self.assertNotIn("09归档", flat)
         self.assertEqual("thoughts/", build_site.ARTICLES_URL)
         self.assertEqual("tech", build_site.SECTION_SLUGS["04技术"])
         self.assertEqual("thoughts", build_site.SECTION_SLUGS["03思考"])

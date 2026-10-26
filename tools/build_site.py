@@ -19,16 +19,13 @@ UNPUBLISHED_PATHS = ("00收集", "07自己", "AGENTS.md")
 SECTION_SLUGS = {
     "00收集": "inbox",
     "01系统": "system",
-    "02笔记": "notes",
     "03思考": "thoughts",
     "04技术": "tech",
     "05作品": "opus",
     "07自己": "self",
-    "09归档": "archive",
 }
-# 导航顺序：首页 · 思考 · 技术 · 作品 · 笔记。没列出的一级目录（01系统、09归档）不进导航，页面照常发布
+# 导航顺序：首页 · 思考 · 技术 · 作品。没列出的一级目录（01系统）不进导航，页面照常发布
 NAV_POSTS = {"思考": "03思考", "技术": "04技术", "作品": "05作品"}
-NAV_NOTES = ("笔记", "02笔记")
 # 构建时生成的文章列表页及其网址
 ARTICLES_INDEX = "03思考/index.md"
 ARTICLES_URL = "thoughts/"
@@ -166,7 +163,7 @@ def _write_site_pages(pages: list[Path]) -> tuple[list, list[Diagnostic]]:
     home.write_text(home_with_recent(home.read_text(encoding="utf-8"), articles, ARTICLES_INDEX, HOME_RECENT_POSTS), encoding="utf-8")
     sections = {title: section_nav(DOCS, section) for title, section in posts.items()}
     sections["思考"].insert(0, ARTICLES_INDEX)
-    return build_nav(pages, sections, NAV_NOTES), []
+    return build_nav(pages, sections), []
 
 
 def build() -> int:

@@ -211,14 +211,16 @@ class RepositoryAcceptanceTests(unittest.TestCase):
         self._assert_no_depth_dependent_central_attachment_embeds(references)
         self.assertEqual([], diagnostics)
 
-    def test_real_current_page_block_link_uses_fragment_only(self):
+    def test_real_current_page_heading_link_uses_fragment_only(self):
         index = VaultIndex.scan(self.docs)
-        source_path = self._unique_page_by_file_name(index, "chrome扩展学习Day2").source_path
+        source_path = self._unique_page_by_file_name(index, "自建梯子：VPS + 3x-ui + VLESS Reality").source_path
         result = Converter(index).convert(
             source_path,
             (self.docs / source_path).read_text(encoding="utf-8"),
         )
-        self.assertIn("[text](#^57ac7b)", result.text)
+        self.assertIn("[[#原理]]", (self.docs / source_path).read_text(encoding="utf-8"))
+        self.assertNotIn("[[#原理]]", result.text)
+        self.assertIn("(#", result.text)
         self.assertFalse(result.diagnostics)
 
 

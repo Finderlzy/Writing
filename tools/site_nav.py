@@ -13,9 +13,7 @@ import re
 from collections import Counter
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from pathlib import Path, PurePosixPath
-
-from mkdocs.utils import nest_paths
+from pathlib import Path
 
 from .content import read_meta
 
@@ -174,19 +172,9 @@ def section_nav(docs: Path, posts: Sequence[Post]) -> list:
     return nav
 
 
-def _sort_key(path: Path):
-    parts = PurePosixPath(path.as_posix()).parts
-    return parts[:-1], path.stem != "index", parts[-1]
-
-
-def build_nav(pages: Iterable[Path], sections: dict[str, list[str]], notes: tuple[str, str]) -> list:
-    """首页, then `sections` in order, then the notes folder as a tree; other folders stay off the navigation."""
+def build_nav(pages: Iterable[Path], sections: dict[str, list[str]]) -> list:
+    """首页, then `sections` in order; other folders stay off the navigation."""
+    del pages  # 导航只用 sections；参数保留，调用方和测试仍然传入全部页面
     nav: list = [{"首页": "index.md"}]
     nav += [{title: entries} for title, entries in sections.items()]
-    notes_title, notes_folder = notes
-    note_pages = sorted((path for path in pages if path.parts[0] == notes_folder and len(path.parts) > 1), key=_sort_key)
-    # nest_paths 是 MkDocs 默认导航用的同一个函数，目录名转标题的规则（如首字母大写）与原来保持一致
-    tree = nest_paths(path.as_posix() for path in note_pages)
-    if tree:
-        nav.append({notes_title: next(iter(tree[0].values()))})
     return nav
