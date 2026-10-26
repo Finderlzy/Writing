@@ -1,0 +1,816 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>自建梯子：VPS + 3x-ui + VLESS Reality · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">自</div><div class="giant g2" aria-hidden="true" data-font="head">ty</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-09-25">2026.09.25 写</time><time class="date" data-font="slab" datetime="2026-10-09">10.09 改</time>      </div>
+      <h1 class="post-title" data-font="head">自建梯子：VPS + 3x-ui + VLESS Reality</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 25 分钟"><b data-font="slab">25</b><span data-font="slab">min read</span></div>
+  </header>
+  <nav class="article-toc" aria-label="目录">
+    <p class="article-toc-title" data-font="cute">目录</p>
+    <ul>
+      <li><a href="#vps">一、购买 VPS</a>        <ul>      <li><a href="#_1">选购时注意什么</a></li>
+      <li><a href="#_2">买完之后要拿到什么</a></li>
+</ul>
+</li>
+      <li><a href="#vps_1">二、远程连接 VPS</a>        <ul>      <li><a href="#1">1. 打开本地命令行</a></li>
+      <li><a href="#2">2. 连接</a></li>
+      <li><a href="#3">3. 看命令前先搞清两件事</a></li>
+</ul>
+</li>
+      <li><a href="#3x-ui">三、安装 3x-ui</a>        <ul>      <li><a href="#1_1">1. 更新系统</a></li>
+      <li><a href="#2-80">2. 安装前：放行 80 端口</a></li>
+      <li><a href="#3_1">3. 运行安装脚本</a></li>
+      <li><a href="#4">4. 回答安装问题</a></li>
+      <li><a href="#5">5. 保存面板信息</a></li>
+      <li><a href="#6-x-ui">6. 认识 x-ui 管理菜单</a></li>
+</ul>
+</li>
+      <li><a href="#_3">四、开启防火墙并放行端口</a>        <ul>      <li><a href="#1_2">1. 安装并开启系统防火墙</a></li>
+      <li><a href="#2_1">2. 放行面板端口和节点端口</a></li>
+      <li><a href="#3_2">3. 商家后台的防火墙</a></li>
+      <li><a href="#4_1">4. 打开面板</a></li>
+      <li><a href="#5-ssh">5. 用 SSH 隧道打开面板（直连打不开时用）</a></li>
+      <li><a href="#6">6. 修改面板路径</a></li>
+</ul>
+</li>
+      <li><a href="#_4">五、创建节点</a>        <ul>      <li><a href="#1_3">1. 添加入站</a></li>
+      <li><a href="#2_2">2. 检查点：节点端口放行了吗？</a></li>
+      <li><a href="#3_3">3. 添加客户端</a></li>
+      <li><a href="#4_2">4. 导出节点链接</a></li>
+</ul>
+</li>
+      <li><a href="#_5">六、导入代理软件</a>        <ul>      <li><a href="#_6">选哪个软件</a></li>
+      <li><a href="#v2rayn">以 v2rayN 为例</a></li>
+      <li><a href="#_7">手机导入</a></li>
+      <li><a href="#_8">检查是否成功</a></li>
+</ul>
+</li>
+      <li><a href="#_9">常见问题</a>        <ul>      <li><a href="#_10">面板打不开</a></li>
+      <li><a href="#_11">节点连不上</a></li>
+      <li><a href="#clash-verge">链接导入 Clash Verge 失败</a></li>
+</ul>
+</li>
+      <li><a href="#_12">原理</a>        <ul>      <li><a href="#_13">全局链路图</a></li>
+      <li><a href="#_14">一句话原理</a></li>
+      <li><a href="#_15">代理协议是什么</a></li>
+      <li><a href="#3x-ui-xray">3x-ui 和 Xray 的关系</a></li>
+      <li><a href="#xray">浏览器为什么会把请求发给 Xray</a></li>
+</ul>
+</li>
+    </ul>
+  </nav>
+  <div class="article-body">
+<blockquote>
+<p>claude整理于 2026-10-07<br />
+下篇：<a href="../vps-residential-ip">给 VPS 节点套上住宅 IP</a></p>
+</blockquote>
+<p>这篇教程会带你从零搭一个只给自己用的节点。做完之后，你的电脑和手机都能通过自己的服务器上网。</p>
+<div class="admonition warning">
+<p class="admonition-title">免责声明</p>
+<ul>
+<li>本文只是记录个人的操作经历，仅供学习和技术交流，不构成任何建议。</li>
+<li>请遵守你所在地区的法律法规，自行判断相关操作是否合规，并自行承担由此产生的风险和后果。</li>
+<li>不要将文中的任何方法用于违法违规的用途。</li>
+<li>文中提到的服务商都是我自己用过或了解过的，推广链接已在文中注明，通过它们购买我会拿到一点返佣，除此之外我和它们没有其他关系。它们的稳定性、安全性和合规性，我无法保证。</li>
+</ul>
+</div>
+<p><strong>整体流程：</strong> 买 VPS → 远程连上 VPS → 安装 3x-ui 面板 → 放行端口 → 在面板里建节点 → 把节点导入电脑/手机。</p>
+<p><strong>你需要准备：</strong> 一台电脑、一个支持银行卡或支付宝的支付方式。大概需要 30–60 分钟。不需要编程基础，所有命令都可以直接复制粘贴。</p>
+<p>原理放在文末，想先搞懂再动手的可以先看<a href="#_12">原理</a>。</p>
+<h2 id="vps">一、购买 VPS</h2>
+<hr />
+<p>VPS 就是一台放在国外机房、24 小时开机的云服务器。我们要做的，是让它替你访问外网。</p>
+<p>这是我使用的购买网站：https://www.voyracloud.com/?ref_code=HYEWZ46M</p>
+<blockquote>
+<p>这是我的推广链接。通过它购买，你的价格只会低，不会高，但同时我会拿到一点佣金。不介意的话可以用，介意的话直接搜商家名字就行。</p>
+</blockquote>
+<h3 id="_1">选购时注意什么</h3>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>怎么选</th>
+<th>为什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>系统</td>
+<td><strong>Ubuntu 22.04 / 24.04</strong> 或 <strong>Debian 12</strong></td>
+<td>后面的命令都是按这两个系统写的，CentOS 等系统命令不一样</td>
+</tr>
+<tr>
+<td>配置</td>
+<td>1 核 CPU、1 GB 内存就够</td>
+<td>只跑节点，资源占用很小；想顺便部署网站再加配置</td>
+</tr>
+<tr>
+<td>带宽/流量</td>
+<td>看自己用量，一般每月几百 GB 足够</td>
+<td>看视频比较费流量</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>美国、日本、新加坡等</td>
+<td>离你越近延迟越低，但还要看线路</td>
+</tr>
+<tr>
+<td>IP</td>
+<td><strong>重点看</strong></td>
+<td>IP 的纯净度决定了你用起来会不会被各种网站限制</td>
+</tr>
+</tbody>
+</table>
+<p>下面是我的配置（云 VPS）：</p>
+<p><img alt="Snipaste_2026-09-25_16-58-54.png" src="../../assets/09%E9%99%84%E4%BB%B6/Snipaste_2026-09-25_16-58-54.png" /></p>
+<div class="admonition warning">
+<p class="admonition-title">关于这家的 IP</p>
+<p>这家云 VPS 的 IP 质量一般。我用不同工具检测，结果不太一致：有的显示纯净，有的显示不纯净。建议多用几个工具交叉对比（比如 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a>、<a href="https://scamalytics.com/">scamalytics.com</a>）。 如果你要用 ChatGPT、TikTok 这类对 IP 很敏感的服务，可以看下篇<a href="../vps-residential-ip">给 VPS 节点套上住宅 IP</a>。</p>
+</div>
+<h3 id="_2">买完之后要拿到什么</h3>
+<p>买好后，商家会给你三样东西（一般在控制台的服务器详情页，或者发到你的邮箱）：</p>
+<ul>
+<li><strong>服务器 IP</strong>：形如 <code>165.154.xxx.xxx</code></li>
+<li><strong>用户名</strong>：一般是 <code>root</code></li>
+<li><strong>密码</strong>：root 的密码</li>
+</ul>
+<p>记下来，下一步要用。</p>
+<div class="admonition tip">
+<p class="admonition-title">防火墙菜单</p>
+<p>顺便看一眼商家后台有没有"防火墙""安全组"之类的菜单。如果有，记住它的位置，第三步和第四步都要用到。</p>
+</div>
+<h2 id="vps_1">二、远程连接 VPS</h2>
+<hr />
+<p>VPS 在云端，没法直接操作。我们用 SSH 连上去，连上之后你的命令行窗口就相当于 VPS 的终端，在里面输入的命令都是在 VPS 上执行的。</p>
+<h3 id="1">1. 打开本地命令行</h3>
+<ul>
+<li><strong>Windows</strong>：按 <code>Win + R</code>，输入 <code>cmd</code> 回车；或者在开始菜单搜索"PowerShell"。Windows 10/11 自带 SSH，不用另外安装。</li>
+<li><strong>Mac</strong>：打开"启动台"，搜索"终端"。</li>
+<li><strong>Linux</strong>：打开"终端"。</li>
+</ul>
+<h3 id="2">2. 连接</h3>
+<p>输入下面的命令，把 <code>你的服务器IP</code> 换成真实 IP：</p>
+<pre><code class="language-bash">ssh root@你的服务器IP
+</code></pre>
+<p>接下来会依次出现：</p>
+<ol>
+<li>第一次连接会问 <code>Are you sure you want to continue connecting (yes/no/[fingerprint])?</code>，意思是"是否信任这台主机"，输入 <code>yes</code> 回车。</li>
+<li>然后出现 <code>root@xxx's password:</code>，输入 root 密码。<strong>输入密码时屏幕不显示任何字符，这是正常的</strong>，输完直接回车。密码可以复制后在命令行里右键（或 <code>Ctrl + Shift + V</code>）粘贴。</li>
+</ol>
+<p>看到命令行开头变成 <code>root@...:~#</code> 就说明连上了。</p>
+<h3 id="3">3. 看命令前先搞清两件事</h3>
+<p><strong>命令在哪里运行。</strong> 本文的命令分两种：</p>
+<ul>
+<li>在 <strong>VPS</strong> 上运行（绝大多数）：<code>apt</code>、<code>x-ui</code>、<code>ufw</code>、<code>ss</code>、<code>curl</code> 这些，都要在 SSH 连上之后、开头是 <code>root@...:~#</code> 的窗口里输入。</li>
+<li>在 <strong>本地电脑</strong> 上运行（只有两条）：<code>ssh root@...</code> 和 <code>ssh -L ...</code>（SSH 隧道），在没连 SSH 的命令行窗口里输入。</li>
+</ul>
+<p>不管你用的是 Windows 还是 Mac，VPS 上的命令都一样，因为它们是在 VPS（Linux）上执行的。</p>
+<p><strong>中文要替换。</strong> 命令里的中文（<code>你的服务器IP</code>、<code>面板端口</code>、<code>访问路径</code>、<code>节点端口</code>）都是占位符，要换成你自己的实际值再运行。直接照抄会报错，比如：</p>
+<table>
+<thead>
+<tr>
+<th>直接照抄</th>
+<th>报错</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ufw allow 面板端口/tcp</code></td>
+<td><code>ERROR: Bad port</code></td>
+</tr>
+<tr>
+<td><code>curl -k https://127.0.0.1:面板端口/访问路径/</code></td>
+<td><code>URL using bad/illegal format</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3x-ui">三、安装 3x-ui</h2>
+<hr />
+<p>3x-ui 是一个网页管理面板，让你用点鼠标的方式配置节点，不用手写配置文件。</p>
+<div class="admonition note">
+<p class="admonition-title">版本说明</p>
+<p>本文按 2026 年 10 月的 3x-ui 版本编写。脚本更新后，问题的顺序和措辞可能略有不同，但意思基本一样。</p>
+</div>
+<h3 id="1_1">1. 更新系统</h3>
+<p>刚买的服务器，软件一般不是最新的，先更新一下：</p>
+<pre><code class="language-bash">apt update &amp;&amp; apt upgrade -y
+apt install curl wget -y
+</code></pre>
+<ul>
+<li>第一行更新系统软件，可能要跑几分钟，等它结束、重新出现 <code>root@...:~#</code> 再进行下一步。</li>
+<li>中途如果弹出紫色/蓝色的对话框（比如问要不要重启某些服务），直接按回车选默认项。</li>
+<li>第二行安装下载工具 <code>curl</code> 和 <code>wget</code>，后面的安装脚本要用。</li>
+</ul>
+<h3 id="2-80">2. 安装前：放行 80 端口</h3>
+<p>安装过程中会给面板申请 SSL 证书（让面板能用 <code>https</code> 安全访问），申请时需要用到 <strong>80 端口</strong>。</p>
+<ul>
+<li><strong>系统防火墙</strong>：新机器一般默认没开，不用管。</li>
+<li><strong>商家后台</strong>：如果有防火墙/安全组，先在里面放行 <strong>TCP 80</strong> 端口。</li>
+</ul>
+<h3 id="3_1">3. 运行安装脚本</h3>
+<pre><code class="language-bash">bash &lt;(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+</code></pre>
+<h3 id="4">4. 回答安装问题</h3>
+<p>脚本会依次问你几个问题，按下表回答：</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>怎么选</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据库（SQLite / PostgreSQL）</td>
+<td>选 <code>1</code> <strong>SQLite</strong>（直接回车）</td>
+<td>自己用完全够，PostgreSQL 是给几百个用户的大面板准备的</td>
+</tr>
+<tr>
+<td><code>Would you like to customize the Panel Port settings?</code></td>
+<td><code>y</code> 后填一个端口（比如 <code>8080</code>），或 <code>n</code> 让它随机生成</td>
+<td><strong>记下这个端口</strong>，后面放行防火墙要用</td>
+</tr>
+<tr>
+<td><code>Choose SSL certificate setup method</code></td>
+<td>选 <code>2</code> <strong>Let's Encrypt for IP Address</strong>（直接回车就是它）</td>
+<td>没有域名就选这个</td>
+</tr>
+<tr>
+<td><code>Is xxx the correct incoming public IPv4 address?</code></td>
+<td>确认显示的是你的服务器 IP，回车</td>
+<td>如果不对，输入 <code>n</code> 再手动填</td>
+</tr>
+<tr>
+<td><code>Do you have an IPv6 address to include?</code></td>
+<td>没有就直接回车跳过</td>
+<td></td>
+</tr>
+<tr>
+<td><code>Port to use for ACME HTTP-01 listener</code></td>
+<td>直接回车，用默认的 80</td>
+<td>申请证书用的端口</td>
+</tr>
+<tr>
+<td><code>Would you like to set this certificate for the panel?</code></td>
+<td><code>y</code></td>
+<td>把证书装到面板上</td>
+</tr>
+</tbody>
+</table>
+<p>申请证书时会刷出一大堆 <code>[Thu Oct ...]</code> 开头的日志，还有一段 <code>-----BEGIN CERTIFICATE-----</code>，都是正常的。看到 <code>Certificate issued successfully</code> 就说明成功了。</p>
+<div class="admonition note">
+<p class="admonition-title">关于 IP 证书</p>
+<p>证书有效期只有约 6 天，但会自动续期，不用管。前提是 80 端口一直保持放行，续期时也要用到它。</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">SSL 不要选 4（跳过）</p>
+<p>选 4 后面板只能走不加密的 http，脚本接着还会问"是否只绑定 127.0.0.1"。如果答了 <code>y</code>，面板就<strong>只能通过 SSH 隧道访问</strong>，浏览器直接输入 IP 是打不开的。我第二次搭的时候就踩了这个坑，解决办法见<a href="#_10">面板打不开</a>。</p>
+</div>
+<h3 id="5">5. 保存面板信息</h3>
+<p>安装结束后，终端会打印一个 <code>Panel Installation Complete!</code> 的信息框，重点是这几项：</p>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Username / Password</td>
+<td>面板登录的用户名和密码（随机生成的）</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>面板端口</td>
+</tr>
+<tr>
+<td>WebBasePath</td>
+<td>访问路径，一串随机字符，比如 <code>L8pQzzPiF9SZJmHtAW</code></td>
+</tr>
+<tr>
+<td>Database</td>
+<td>数据库，应该显示 <code>SQLite (/etc/x-ui/x-ui.db)</code></td>
+</tr>
+<tr>
+<td>Access URL</td>
+<td>完整的面板地址，形如 <code>https://服务器IP:端口/访问路径</code>，直接复制到浏览器就能用</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一定要截图保存。</strong> 访问路径相当于面板的"暗门"，地址里少了它，面板是打不开的。</p>
+<p>忘了也没关系，随时可以用下面的命令查看端口和访问路径（<code>webBasePath</code> 那一行就是访问路径，<code>Access URL</code> 是完整地址）：</p>
+<pre><code class="language-bash">x-ui settings
+</code></pre>
+<p>密码不会显示。忘了的话，输入 <code>x-ui</code> 打开管理菜单，选 <code>7</code>（Reset Username &amp; Password）重新设置。</p>
+<h3 id="6-x-ui">6. 认识 x-ui 管理菜单</h3>
+<p>直接输入 <code>x-ui</code> 会打开一个带编号的管理菜单，输入编号回车就能执行。常用的几项：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>功能</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td>重置用户名和密码</td>
+</tr>
+<tr>
+<td>8</td>
+<td>重置访问路径</td>
+</tr>
+<tr>
+<td>10</td>
+<td>修改面板端口</td>
+</tr>
+<tr>
+<td>11</td>
+<td>查看当前设置（端口、访问路径、证书状态）</td>
+</tr>
+<tr>
+<td>14</td>
+<td>重启面板</td>
+</tr>
+<tr>
+<td>16</td>
+<td>查看运行状态</td>
+</tr>
+<tr>
+<td>20</td>
+<td>SSL 证书管理</td>
+</tr>
+<tr>
+<td>23</td>
+<td>防火墙管理</td>
+</tr>
+</tbody>
+</table>
+<p>菜单底部的 <code>Panel state</code> 和 <code>xray state</code> 都显示 <code>Running</code>，就说明面板和代理内核都在正常运行。按 <code>Ctrl + C</code> 退出菜单。</p>
+<h2 id="_3">四、开启防火墙并放行端口</h2>
+<hr />
+<p>这一步决定了外面能不能连到你的服务器。防火墙的作用是"只开需要的门，其他门全关上"。需要放行的端口有：</p>
+<table>
+<thead>
+<tr>
+<th>端口</th>
+<th>用途</th>
+<th>什么时候确定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>22</td>
+<td>SSH 远程连接</td>
+<td>固定</td>
+</tr>
+<tr>
+<td>80</td>
+<td>申请和续期 SSL 证书</td>
+<td>固定</td>
+</tr>
+<tr>
+<td>面板端口</td>
+<td>用浏览器打开 3x-ui</td>
+<td>第三步安装时</td>
+</tr>
+<tr>
+<td>节点端口</td>
+<td>代理软件连接节点</td>
+<td>第五步建节点时</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">两个端口都要放行</p>
+<p>很多人只放行了面板端口，结果面板能打开，节点却连不上。<strong>面板端口和节点端口都要放行。</strong></p>
+</div>
+<h3 id="1_2">1. 安装并开启系统防火墙</h3>
+<p>很多 VPS 默认没有开防火墙，等于所有端口都对外敞开。用 3x-ui 自带的菜单开启：</p>
+<ol>
+<li>输入 <code>x-ui</code> 打开管理菜单，输入 <code>23</code>（Firewall Management）回车；</li>
+<li>在防火墙子菜单里输入 <code>1</code>（Install Firewall）回车。</li>
+</ol>
+<p>它会自动安装 ufw（Ubuntu/Debian 常用的防火墙），放行 22（SSH）、80、443、2053、2096 这几个端口，然后开启防火墙。因为 22 已经放行，所以 SSH 不会断。</p>
+<p>完成后输入 <code>0</code> 返回主菜单，再按 <code>Ctrl + C</code> 退出。</p>
+<div class="admonition warning">
+<p class="admonition-title">先放行 SSH</p>
+<p>如果你不用菜单，而是自己用 <code>ufw enable</code> 开启防火墙，一定要先执行 <code>ufw allow 22/tcp</code> 放行 SSH，否则开启后 SSH 会立刻断开，你就连不回服务器了。</p>
+</div>
+<h3 id="2_1">2. 放行面板端口和节点端口</h3>
+<p>上面自动放行的端口里没有你的面板端口，需要手动加上（把 <code>面板端口</code> 换成你的实际端口，比如 <code>ufw allow 8080/tcp</code>）：</p>
+<pre><code class="language-bash">ufw allow 面板端口/tcp
+</code></pre>
+<p>看到 <code>Rule added</code> 就成功了。</p>
+<p>节点端口如果用 443，上一步已经放行了；如果用别的端口，同样执行一次：</p>
+<pre><code class="language-bash">ufw allow 节点端口/tcp
+</code></pre>
+<p>最后检查一下：</p>
+<pre><code class="language-bash">ufw status
+</code></pre>
+<p>第一行显示 <code>Status: active</code>，列表里能看到 22、80、443、面板端口（以及你的节点端口），就没问题了。</p>
+<h3 id="3_2">3. 商家后台的防火墙</h3>
+<p>有些商家在网页后台还有一层防火墙（可能叫"防火墙""安全组"）。这一层在 VPS 外面，ufw 管不到它。如果有，也要在里面放行上面这些端口，协议选 TCP。</p>
+<h3 id="4_1">4. 打开面板</h3>
+<p>在本地电脑的浏览器访问（注意是 <strong>https</strong>）：</p>
+<pre><code>https://服务器IP:面板端口/访问路径/
+</code></pre>
+<p>也就是安装结束时打印的 Access URL。</p>
+<p>打开后是登录页，页面上有"语言"选项，可以切换为简体中文。用第三步保存的用户名和密码登录。</p>
+<p><strong>如果一直转圈、打不开</strong>，而端口也确实放行了，很可能是直连被干扰了（我就遇到了，而且是长期打不开）。原因见<a href="#_10">面板打不开</a>。不用纠结，直接用下面的 SSH 隧道。</p>
+<h3 id="5-ssh">5. 用 SSH 隧道打开面板（直连打不开时用）</h3>
+<p>SSH 隧道的意思是：借着已经能连上的 SSH，把 VPS 上的面板"搬"到你本地电脑的一个端口上。它不受面板端口放行和线路干扰的影响，也更安全（面板端口甚至可以不对公网放行）。</p>
+<p>在<strong>本地电脑</strong>新开一个命令行窗口（不是已经连着 VPS 的那个），运行：</p>
+<pre><code class="language-bash">ssh -L 18080:127.0.0.1:面板端口 root@服务器IP
+</code></pre>
+<p>输入密码登录后，<strong>这个窗口不要关</strong>。然后在本地浏览器访问：</p>
+<pre><code>https://127.0.0.1:18080/访问路径/
+</code></pre>
+<ul>
+<li>浏览器会提示证书不匹配，点"高级"→"继续前往"。</li>
+<li>如果安装时没配证书，把 <code>https</code> 换成 <code>http</code>。</li>
+<li>窗口一关，隧道就断了，下次要用时再运行一次。</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">用隧道打开面板，导出的节点地址会变成 127.0.0.1</p>
+<p>面板生成节点链接时，用的是浏览器地址栏里的地址。通过隧道访问时，导出的链接里地址就成了 <code>127.0.0.1</code>，导入代理软件后一定连不上。解决办法见第五步的<a href="#4_2">导出节点链接</a>。</p>
+</div>
+<h3 id="6">6. 修改面板路径</h3>
+<p>安装时随机生成的访问路径不好记，可以改成你自己记得住的：</p>
+<ol>
+<li>进入左侧菜单"面板设置"，找到面板路径那一栏，改成你自己的路径（别用 <code>admin</code> 这种太容易猜的）；</li>
+<li>点"保存"，再点"重启面板"。</li>
+</ol>
+<p>之后要用新路径打开面板：<code>https://服务器IP:面板端口/新路径/</code>。忘了的话，在 VPS 上运行 <code>x-ui settings</code> 就能看到。</p>
+<h2 id="_4">五、创建节点</h2>
+<hr />
+<p>在面板里，<strong>入站 = 节点，客户端 = 用户</strong>。我们先建一个入站（节点），再给它加一个客户端（你自己）。</p>
+<h3 id="1_3">1. 添加入站</h3>
+<p>点击左侧菜单"入站" → "添加入站"。只需要填下面几项，其他都保持默认：</p>
+<table>
+<thead>
+<tr>
+<th>标签页</th>
+<th>设置项</th>
+<th>填写内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础配置</td>
+<td>备注</td>
+<td>随便写，方便自己认，比如节点所在地"洛杉矶"</td>
+</tr>
+<tr>
+<td>基础配置</td>
+<td>端口</td>
+<td><strong>推荐 443</strong>；被占用时改用 10000–65000 之间的端口</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>安全</td>
+<td>选 Reality</td>
+</tr>
+<tr>
+<td>安全</td>
+<td>目标</td>
+<td>输入一个网站，比如 <code>www.microsoft.com:443</code>（<strong>冒号是英文冒号</strong>），输入完点旁边的"扫描"</td>
+</tr>
+</tbody>
+</table>
+<p>填完滑到最下面点保存（按钮可能叫"添加"或"创建"）。回到入站列表，能看到刚建的节点，"启用"开关是打开的，就说明建好了。</p>
+<p><img alt="Pasted image 20260925172640.png" src="../../assets/09%E9%99%84%E4%BB%B6/Pasted%20image%2020260925172640.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">为什么推荐 443</p>
+<p>Reality 会把你的流量伪装成访问某个正常网站的 HTTPS 流量，而 HTTPS 默认就走 443 端口，用 443 最不显眼。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">目标填什么网站</p>
+<p>选大公司官网就行（比如上面的微软），要求是国内没被墙、不是你自己的网站。点"扫描"后结果不可用的话，换一个网站再试。</p>
+</div>
+<h3 id="2_2">2. 检查点：节点端口放行了吗？</h3>
+<div class="admonition tip">
+<p class="admonition-title">这一步最容易漏</p>
+<p>漏了的话，导入软件后测速会一直超时。建好入站后，马上回到 VPS 终端确认一下。</p>
+</div>
+<p>先看 Xray 实际监听的端口：</p>
+<pre><code class="language-bash">ss -tlnp | grep xray
+</code></pre>
+<p>输出类似这样：</p>
+<pre><code>LISTEN 0  4096   127.0.0.1:11111   0.0.0.0:*   users:((&quot;xray-linux-amd6&quot;,...))
+LISTEN 0  4096   127.0.0.1:62789   0.0.0.0:*   users:((&quot;xray-linux-amd6&quot;,...))
+LISTEN 0  4096           *:8555          *:*   users:((&quot;xray-linux-amd6&quot;,...))
+</code></pre>
+<p>找 <code>*:端口</code> 这一行，比如上面的 <code>*:8555</code>，节点端口就是 8555。<code>127.0.0.1</code> 开头的是 Xray 内部用的端口，不用管。</p>
+<p>放行这个端口（443 在第四步已经放行过，可以跳过）：</p>
+<pre><code class="language-bash">ufw allow 节点端口/tcp
+</code></pre>
+<p>确认放行成功，列表里能看到节点端口就对了：</p>
+<pre><code class="language-bash">ufw status
+</code></pre>
+<p>商家后台有防火墙/安全组的话，也要放行这个端口。</p>
+<h3 id="3_3">3. 添加客户端</h3>
+<p>客户端就是"谁能用这个节点"。给自己用的话，建一个就够了。点击左侧菜单"客户端" → "添加客户端"，填下面几项，其他保持默认：</p>
+<table>
+<thead>
+<tr>
+<th>标签页</th>
+<th>设置项</th>
+<th>填写内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础</td>
+<td>备注</td>
+<td>随便写，比如 <code>me</code></td>
+</tr>
+<tr>
+<td>基础</td>
+<td>关联入站</td>
+<td>选择刚刚建的节点</td>
+</tr>
+<tr>
+<td>凭据</td>
+<td>Flow</td>
+<td>选 <code>xtls-rprx-vision</code>，<strong>不要漏</strong></td>
+</tr>
+</tbody>
+</table>
+<p>保存即可。</p>
+<h3 id="4_2">4. 导出节点链接</h3>
+<p>回到"入站"列表，点击铅笔图标旁边的三个点（"菜单"）：</p>
+<p><img alt="Pasted image 20260925173042.png" src="../../assets/09%E9%99%84%E4%BB%B6/Pasted%20image%2020260925173042.png" /></p>
+<p>选择"导出链接"，会得到一段以 <code>vless://</code> 开头的很长的代码。复制下来，下一步要用。</p>
+<p>这段链接里包含了服务器地址、端口、UUID、公钥、SNI 等全部连接信息。<strong>它就是你节点的"钥匙"，不要发给别人或公开贴出来。</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">二维码</p>
+<p>在"客户端"页面点开某个客户端，也能看到它的"链接"和"二维码"。手机导入时直接扫二维码最方便。</p>
+</div>
+<p><strong>用 SSH 隧道打开面板的，一定要看这里。</strong> 链接里 <code>@</code> 后面、端口前面的就是节点地址，比如：</p>
+<pre><code>vless://xxxxxxxx@127.0.0.1:8555?type=tcp&amp;security=reality...
+</code></pre>
+<p>如果地址是 <code>127.0.0.1</code>，说明它用了浏览器地址栏的隧道地址，导入后肯定连不上。两种解决办法：</p>
+<ul>
+<li><strong>临时改</strong>：导入代理软件后，打开节点详情，把"地址"改成你的服务器 IP。</li>
+<li><strong>一劳永逸</strong>：在面板里编辑这个入站，打开"外部代理"（External Proxy），地址填服务器 IP，端口填节点端口，保存。之后导出的链接和二维码都会带上正确的地址。</li>
+</ul>
+<h2 id="_5">六、导入代理软件</h2>
+<hr />
+<h3 id="_6">选哪个软件</h3>
+<table>
+<thead>
+<tr>
+<th>平台</th>
+<th>推荐软件</th>
+<th>获取方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>v2rayN</td>
+<td>GitHub 搜索 <code>2dust/v2rayN</code>，在 Releases 里下载 Windows 版压缩包，解压即用</td>
+</tr>
+<tr>
+<td>iOS</td>
+<td>Tunna\Shadowrocket</td>
+<td>App Store（需要非国区 Apple ID）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="v2rayn">以 v2rayN 为例</h3>
+<ol>
+<li>复制第五步导出的 <code>vless://</code> 链接；</li>
+<li>打开 v2rayN，点击左上角"配置项" → "从剪贴板导入分享链接"，列表里会多出一个节点；</li>
+<li>双击节点检查一下"地址"是不是你的服务器 IP（不是 <code>127.0.0.1</code>）；</li>
+<li>在列表中选中这个节点，按回车（或右键 → "设为活动服务器"）；</li>
+<li>点击底部"系统代理"，切换为"自动配置系统代理"。</li>
+</ol>
+<p><img alt="Pasted image 20260925173934.png" src="../../assets/09%E9%99%84%E4%BB%B6/Pasted%20image%2020260925173934.png" /></p>
+<p>如果要用 TUN 模式（让不走系统代理的软件也走代理），需要以管理员身份运行 v2rayN。</p>
+<h3 id="_7">手机导入</h3>
+<p>在手机的代理软件里找"扫描二维码"或"从剪贴板导入"：</p>
+<ul>
+<li>扫码：在面板"客户端"页面打开二维码，用手机扫；</li>
+<li>剪贴板：把 <code>vless://</code> 链接发到手机上（比如发给自己的备忘录），复制后在软件里导入。</li>
+</ul>
+<p>导入后同样检查一下节点地址是不是服务器 IP。打开连接开关，系统会弹窗请求添加 VPN 配置，点"允许"。</p>
+<h3 id="_8">检查是否成功</h3>
+<p>打开 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a>，如果最上面显示的 IP 是你的 VPS IP，就说明成功了。想看 IP 质量的话，把这个 IP 复制下来，粘贴到 <a href="https://scamalytics.com/">scamalytics.com</a> 等检测网站里查。再试着打开 Google、YouTube，能正常加载就大功告成。</p>
+<h2 id="_9">常见问题</h2>
+<hr />
+<h3 id="_10">面板打不开</h3>
+<p><strong>先确认面板本身在正常运行。</strong> 在 VPS 上运行：</p>
+<pre><code class="language-bash">x-ui status
+</code></pre>
+<p>看到 <code>Active: active (running)</code> 就说明面板在跑（按 <code>q</code> 退出）。然后在 VPS 上自己访问一次面板（换成你的端口和访问路径）：</p>
+<pre><code class="language-bash">curl -k https://127.0.0.1:面板端口/访问路径/
+</code></pre>
+<p>能返回一大段 HTML，说明面板没问题，问题出在你的电脑到 VPS 这段路上。</p>
+<div class="admonition note">
+<p class="admonition-title">curl 加了 -I 返回 404 是正常的</p>
+<p><code>curl -kI ...</code> 发的是 HEAD 请求，面板不响应这种请求，会返回 <code>404 Not Found</code>。不要被它误导，去掉 <code>-I</code> 再试。</p>
+</div>
+<p>面板没问题的话，按顺序检查：</p>
+<ol>
+<li><strong>地址对不对</strong>：是 <code>https</code> 还是 <code>http</code>？末尾的访问路径有没有带上？最好直接复制 <code>x-ui settings</code> 里的 <code>Access URL</code>。</li>
+<li><strong>端口放行了没有</strong>：<code>ufw status</code> 里有没有面板端口，商家后台有没有放行。</li>
+<li><strong>是不是直连被干扰了</strong>：见下面的"TLS handshake error"。</li>
+<li><strong>面板是不是只监听了本机</strong>：见下面的"127.0.0.1"。</li>
+</ol>
+<p><strong>日志里一堆 TLS handshake error</strong></p>
+<p><code>x-ui status</code> 输出的最后几行日志里，如果有很多这样的记录：</p>
+<pre><code>http: TLS handshake error from 你的本地IP:端口: read tcp ... i/o timeout
+</code></pre>
+<p>说明问题不在 VPS 上，而在你和 VPS 之间的线路上：TCP 连接已经到了服务器，但浏览器发出的 HTTPS 握手包在路上被丢掉了，服务器一直等不到，最后超时。"国外 IP + 非标准端口 + IP 证书"这种 HTTPS 连接特征很明显，很容易被识别和干扰。这种干扰时有时无，所以可能偶尔能打开，大部分时候打不开。</p>
+<p>这时候怎么改防火墙都没用。SSH 隧道能进去，是因为它把面板流量包在 SSH（22 端口）里，外面看不出里面是 HTTPS，也就不会被拦。</p>
+<p>想直接访问面板，可以试这几种办法：</p>
+<table>
+<thead>
+<tr>
+<th>办法</th>
+<th>做法</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>继续用隧道（推荐）</td>
+<td>每次用面板前运行一次 <code>ssh -L</code> 命令</td>
+<td>最稳；面板端口还可以不对公网放行，不会被扫描</td>
+</tr>
+<tr>
+<td>换面板端口</td>
+<td><code>x-ui</code> 菜单选 <code>10</code> 改端口（比如 2053、2096 或 10000 以上的端口），ufw 和商家后台都要放行新端口</td>
+<td>有一定概率有效，不保证</td>
+</tr>
+<tr>
+<td>用域名访问</td>
+<td>买一个域名解析到 VPS，用域名申请证书来访问面板</td>
+<td>比 IP 直连隐蔽、稳定，但要花钱，步骤也多</td>
+</tr>
+</tbody>
+</table>
+<p>面板只在建节点、改配置时才用，平时用不到，所以用隧道并不麻烦。具体步骤见<a href="#5-ssh">SSH 隧道</a>。注意用隧道打开面板时，导出的节点地址要改，见<a href="#4_2">导出节点链接</a>。</p>
+<p><strong>面板只监听了 127.0.0.1</strong></p>
+<p>在 VPS 上运行：</p>
+<pre><code class="language-bash">ss -tlnp | grep 面板端口
+</code></pre>
+<ul>
+<li>显示 <code>*:面板端口</code> 或 <code>0.0.0.0:面板端口</code>：正常，问题不在这里。</li>
+<li>显示 <code>127.0.0.1:面板端口</code>：面板只允许 VPS 自己访问，外面当然打不开。这通常是因为安装时 SSL 选了"跳过"，又选择了只绑定本机。</li>
+</ul>
+<p>解决办法：</p>
+<ol>
+<li>先补上证书：输入 <code>x-ui</code>，选 <code>11</code> 查看设置，问到 <code>Generate SSL certificate for IP now?</code> 时输入 <code>y</code>，后面的问题都直接回车，最后问 <code>Would you like to set this certificate for the panel?</code> 时输入 <code>y</code>。</li>
+<li>再取消"只绑定本机"：用 SSH 隧道进入面板，在"面板设置"里把"面板监听 IP"清空，点"保存"，再点"重启面板"。</li>
+<li>再运行一次 <code>ss -tlnp | grep 面板端口</code>，变成 <code>*:面板端口</code> 后，就能用 <code>https://服务器IP:面板端口/访问路径/</code> 直接打开了。</li>
+</ol>
+<h3 id="_11">节点连不上</h3>
+<p>按顺序检查：</p>
+<ol>
+<li><strong>节点地址是不是 <code>127.0.0.1</code></strong>：用 SSH 隧道打开面板时导出的链接，地址会变成 <code>127.0.0.1</code>。在代理软件里把地址改成服务器 IP，详见<a href="#4_2">导出节点链接</a>。我第一次导入到手机就是卡在这里。</li>
+<li><strong>节点端口有没有放行</strong>：系统防火墙和商家后台都要看，按<a href="#2_2">第五步的检查点</a>走一遍。测速一直超时，多半就是这两个原因之一。</li>
+<li>在 VPS 上运行 <code>x-ui</code>，看菜单底部 <code>xray state</code> 是不是 <code>Running</code>；</li>
+<li>客户端的 Flow 有没有选 <code>xtls-rprx-vision</code>；</li>
+<li>客户端里的端口、UUID、公钥、SNI 是否和面板一致（用导出链接一般不会错，改过入站设置后记得重新导出）；</li>
+<li>本地电脑或手机的系统时间是否准确，时间差太多也会连不上；</li>
+<li>换一个 Reality 目标网站试试，有些网站不适合做伪装目标。</li>
+</ol>
+<h3 id="clash-verge">链接导入 Clash Verge 失败</h3>
+<p>不同代理软件用的内核不同：</p>
+<table>
+<thead>
+<tr>
+<th>软件</th>
+<th>内核</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v2rayN</td>
+<td>Xray-core</td>
+</tr>
+<tr>
+<td>Clash Verge</td>
+<td>Mihomo</td>
+</tr>
+<tr>
+<td>Hiddify</td>
+<td>sing-box</td>
+</tr>
+</tbody>
+</table>
+<p>这三个内核都支持 VLESS + Reality，问题出在<strong>导入方式</strong>：v2rayN 和 Hiddify 可以直接粘贴 <code>vless://</code> 链接；Clash Verge 主要使用 YAML 配置或订阅链接，直接粘贴不一定能导入。新手建议直接用 v2rayN。</p>
+<h2 id="_12">原理</h2>
+<hr />
+<h3 id="_13">全局链路图</h3>
+<p><img alt="ChatGPT_Image_2026年9月25日_17_44_54 1.png" src="../../assets/09%E9%99%84%E4%BB%B6/ChatGPT_Image_2026%E5%B9%B49%E6%9C%8825%E6%97%A5_17_44_54%201.png" /></p>
+<h3 id="_14">一句话原理</h3>
+<p><strong>VPS 上运行代理服务端（Xray），你的设备作为客户端连过去，把流量加密后交给 VPS，由 VPS 替你访问目标网站。</strong></p>
+<h3 id="_15">代理协议是什么</h3>
+<p>代理协议是<strong>客户端（你的电脑）和代理服务器（VPS）之间约定好的一套通信规则</strong>，它解决这些问题：</p>
+<ul>
+<li>客户端怎么向服务器证明身份？</li>
+<li>客户端想访问哪个网站，怎么告诉服务器？</li>
+<li>数据怎么封装、加密、伪装？</li>
+<li>服务器怎么把数据转发出去，再把结果传回来？</li>
+</ul>
+<p>本教程用的 VLESS 就是一种代理协议，Reality 则负责伪装。</p>
+<h3 id="3x-ui-xray">3x-ui 和 Xray 的关系</h3>
+<p>3x-ui 只是一个可视化面板，真正干活的是底层的 Xray。部署后：</p>
+<ol>
+<li>Xray 在服务器的某个端口（如 443）上监听。服务器有公网 IP，只要有客户端连这个 IP + 端口，Xray 就会接收并处理。没有监听端口，外面根本找不到服务入口。</li>
+<li>面板生成连接信息（地址、端口、UUID、公钥等），也就是你导出的那段链接。</li>
+<li>你的代理软件用这些信息，主动连到服务器。</li>
+</ol>
+<h3 id="xray">浏览器为什么会把请求发给 Xray</h3>
+<p>正常情况下，浏览器访问网站会直接连目标网站。但开了代理软件后，流量会先被它截下来：</p>
+<ol>
+<li>代理软件在本地监听一个端口（比如 10808），或者用 TUN 模式接管整个系统的网络；</li>
+<li>系统被设置成"所有流量先交给本地代理"；</li>
+<li>代理软件按节点配置把数据重新封装、加密，再发到 VPS 上 Xray 监听的端口；</li>
+<li>VPS 解密后，替你访问真正的网站，再把结果传回来。</li>
+</ol>
+<p>所以不是浏览器自己去连节点，而是代理软件在替你转发。不开代理软件，浏览器根本不会去连节点端口。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour next" href="../../blog/vps-residential-ip/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">给 VPS 节点套上住宅 IP</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

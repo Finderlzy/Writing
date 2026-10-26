@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>读者实测：方案一和方案三的住宅 IP 对比 · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">读</div><div class="giant g2" aria-hidden="true" data-font="head">对比</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-10-13">2026.10.13 写</time>      </div>
+      <h1 class="post-title" data-font="head">读者实测：方案一和方案三的住宅 IP 对比</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 8 分钟"><b data-font="slab">8</b><span data-font="slab">min read</span></div>
+  </header>
+  <nav class="article-toc" aria-label="目录">
+    <p class="article-toc-title" data-font="cute">目录</p>
+    <ul>
+      <li><a href="#_1">前言</a></li>
+      <li><a href="#_2">测试对象</a></li>
+      <li><a href="#_3">结果一览</a></li>
+      <li><a href="#_4">我的看法</a>        <ul>      <li><a href="#_5">延迟：方案三明显更高</a></li>
+      <li><a href="#_6">风险评分：各家说法不一样</a></li>
+      <li><a href="#ip">免费住宅 IP 的质量看运气</a></li>
+      <li><a href="#scamalytics-0">关于 Scamalytics 的 0 分</a></li>
+      <li><a href="#_7">总结</a></li>
+</ul>
+</li>
+      <li><a href="#ip_1">怎么看 IP 质量</a>        <ul>      <li><a href="#_8">逐项看</a></li>
+      <li><a href="#ip_2">我的这个 IP 怎么样</a></li>
+      <li><a href="#_9">判断顺序</a></li>
+</ul>
+</li>
+      <li><a href="#_10">截图</a>        <ul>      <li><a href="#ipnetcoffee">ip.net.coffee</a></li>
+      <li><a href="#ipinfo">IPinfo</a></li>
+      <li><a href="#ipkk">IPKK</a></li>
+      <li><a href="#ipok">IPOK</a></li>
+      <li><a href="#scamalytics">Scamalytics</a></li>
+</ul>
+</li>
+      <li><a href="#_11">致谢</a></li>
+    </ul>
+  </nav>
+  <div class="article-body">
+<blockquote>
+<p>相关文章：<a href="../subscribe-claude">如何订阅claude</a></p>
+</blockquote>
+<h2 id="_1">前言</h2>
+<hr />
+<p>读者 <a href="https://github.com/xiaobeizz">@xiaobeizz</a> 照着<a href="../subscribe-claude">如何订阅claude</a>，把<a href="../subscribe-claude#ip_1">方案一</a>和<a href="../subscribe-claude#_4">方案三</a>都搭了一遍，用五个检测网站各测了一次，整理好发给了我。我觉得对正在选方案的人很有参考价值，就整理成这篇文章。</p>
+<p>先说他的结论：<strong>这次测下来，方案三的 IP 质量很难说比方案一白嫖的强。</strong></p>
+<p>截图里的具体 IP 已经遮住，换成了“方案一”“方案三”；读者本地的 IP 和浏览器指纹也遮住了。</p>
+<div class="admonition warning">
+<p class="admonition-title">先看这里</p>
+<ul>
+<li>每个方案只测了一次，只能代表测试那一刻、那一个 IP 的情况，不代表长期表现。</li>
+<li>免费住宅 IP 和买来的住宅节点，每个人拿到的 IP 都不一样。别人测出来好，不代表你拿到的也好，反过来也一样。</li>
+<li>各检测网站的数据库和评分标准都不同，分数不能跨网站比较。</li>
+</ul>
+</div>
+<h2 id="_2">测试对象</h2>
+<hr />
+<table>
+<thead>
+<tr>
+<th></th>
+<th>方案一：普通服务器 + 白嫖住宅 IP</th>
+<th>方案三：直接买住宅节点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ASN</td>
+<td>AS2914，NTT America, Inc.</td>
+<td>AS26407，Carolina Digital Phone, Inc.</td>
+</tr>
+<tr>
+<td>ipinfo 显示的位置</td>
+<td>美国洛杉矶</td>
+<td>美国纽约</td>
+</tr>
+<tr>
+<td>分流</td>
+<td>只有 claude 相关域名和 ipinfo 走住宅 IP</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">结果一览</h2>
+<hr />
+<table>
+<thead>
+<tr>
+<th>检测网站 / 项目</th>
+<th>方案一</th>
+<th>方案三</th>
+<th>对比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip.net.coffee 信任评分</td>
+<td>100，极度纯净</td>
+<td>100，极度纯净</td>
+<td>持平</td>
+</tr>
+<tr>
+<td>ip.net.coffee：claude.ai 延迟</td>
+<td>273 ms</td>
+<td>920 ms</td>
+<td>方案三更慢</td>
+</tr>
+<tr>
+<td>ip.net.coffee：anthropic.com 延迟</td>
+<td>635 ms</td>
+<td>4118 ms</td>
+<td>方案三更慢</td>
+</tr>
+<tr>
+<td>IPKK：IP 属性</td>
+<td>机房 IP（Hosting）</td>
+<td>住宅 IP（Residential）</td>
+<td>方案三更好</td>
+</tr>
+<tr>
+<td>IPKK：claude.ai 延迟</td>
+<td>239 ms</td>
+<td>3682 ms</td>
+<td>方案三更慢</td>
+</tr>
+<tr>
+<td>IPKK：anthropic.com 延迟</td>
+<td>235 ms</td>
+<td>8728 ms</td>
+<td>方案三更慢</td>
+</tr>
+<tr>
+<td>IPOK 风险值（越低越好）</td>
+<td>35，安全</td>
+<td>70，高风险</td>
+<td>方案三更差</td>
+</tr>
+<tr>
+<td>Scamalytics Fraud Score（越低越好）</td>
+<td>100，Very high Risk</td>
+<td>20，Medium Risk</td>
+<td>方案三更好</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">我的看法</h2>
+<hr />
+<h3 id="_5">延迟：方案三明显更高</h3>
+<p>ip.net.coffee 和 IPKK 都显示，方案三访问 claude.ai 和 anthropic.com 的延迟更高，有几项到了好几秒。</p>
+<p>不过两次测试时，检测网站都显示 claude 服务处于“轻微故障”或 Partially Degraded Service 状态，延迟可能被拉高了。方案三的节点在纽约，离国内更远，本来也会慢一些。如果你用的是方案三，建议换个时间多测几次再下结论。</p>
+<h3 id="_6">风险评分：各家说法不一样</h3>
+<ul>
+<li><strong>Scamalytics</strong>：方案三是 20 分，方案一是 100 分，方案三明显更好。</li>
+<li><strong>IPOK</strong>：反过来，方案三是 70 分（高风险），方案一是 35 分。方案三扣分是因为命中了垃圾邮件黑名单（DNSBL），但页面也注明了“低置信，仅 DNSBL 一家给出直接证据”。</li>
+<li><strong>IPKK</strong>：把方案一认成机房 IP，方案三认成住宅 IP。</li>
+</ul>
+<p>所以我在教程里一直说，要用几个网站交叉测，不要只看一家。</p>
+<h3 id="ip">免费住宅 IP 的质量看运气</h3>
+<p>方案一用的免费住宅 IP 属于 NTT 的段。ipinfo 把它标成 ISP 类型，但 IPKK 认为它是机房 IP，Scamalytics 也给了 100 分。这位读者拿到的这个 IP，质量只能算一般。</p>
+<p>免费 IP 每个人拿到的不一样，我自己拿到的那个检测结果比这个好。所以拿到 IP 之后一定要自己测一遍，不满意可以找商家换。</p>
+<h3 id="scamalytics-0">关于 Scamalytics 的 0 分</h3>
+<p>读者在截图里标注了一处：某个页面上写着“正确配置应显示 Fraud Score: 0”，但实际测出来是 20 分。我的教程里没有这句话，我的看法是：<strong>分数越低越好，不一定要做到 0</strong>。</p>
+<h3 id="_7">总结</h3>
+<p>这次对比里，没有哪个方案在所有项目上都更好：</p>
+<ul>
+<li>方案一（免费住宅 IP）：延迟低，但这个 IP 在部分网站上被认成机房 IP，Scamalytics 风险分很高。</li>
+<li>方案三（买的住宅节点）：住宅属性识别得更好，Scamalytics 分数低，但延迟高，IPOK 报了黑名单。</li>
+</ul>
+<p>不管选哪个方案，搭好之后都先开着代理打开 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a> 拿到自己的住宅 IP，再把这个 IP 拿到 <a href="https://scamalytics.com/">scamalytics.com</a> 等几个网站交叉测一下，再决定要不要用。具体怎么看，见下一节。</p>
+<h2 id="ip_1">怎么看 IP 质量</h2>
+<hr />
+<p>下面用我自己白嫖到的住宅 IP 举例。开着代理打开 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a>（记得让 ipinfo 也走住宅 IP），页面最上面显示的就是你的出口 IP，先把它复制下来，后面去别的网站测要用。然后往下拉到 Summary，只看下面几行就够了。</p>
+<p><img alt="住宅IP实测-ipinfo-作者的白嫖IP.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipinfo-%E4%BD%9C%E8%80%85%E7%9A%84%E7%99%BD%E5%AB%96IP.png" width="600" /></p>
+<h3 id="_8">逐项看</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>我的结果</th>
+<th>怎么看</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AS Type</td>
+<td>Isp</td>
+<td><strong>最关键的一项。</strong> <code>isp</code> 表示运营商的 IP，可以用；<code>hosting</code> 表示机房 IP，建议直接换；<code>business</code> 是企业网络，介于两者之间。</td>
+</tr>
+<tr>
+<td>Privacy</td>
+<td>false</td>
+<td>有没有被识别成 VPN、代理、Tor 或中继。<code>false</code> 才对，<code>true</code> 基本就不能用了。</td>
+</tr>
+<tr>
+<td>ASN</td>
+<td>AS174，Cogent Communications</td>
+<td>这段 IP 登记在哪个网络名下。看名字能大概知道是家庭宽带运营商，还是骨干网、云服务商。</td>
+</tr>
+<tr>
+<td>Company</td>
+<td>NetLab</td>
+<td>这段 IP 实际交给谁在用。和 ASN 不一样时，说明运营商把这段地址分给了别的公司。</td>
+</tr>
+<tr>
+<td>Hosted domains</td>
+<td>0</td>
+<td>这段 IP 上挂了多少网站。机房 IP 上常挂着网站，0 比较好。</td>
+</tr>
+<tr>
+<td>Anycast</td>
+<td>false</td>
+<td>是不是多个节点共用的地址，正常是 <code>false</code>。</td>
+</tr>
+</tbody>
+</table>
+<p>ASN 后面那个 <code>#6</code> 是 IPinfo 给这个网络的排名，综合的是它覆盖多少用户、承载多少线路，<strong>和 IP 干不干净没有关系</strong>。上面读者截图里方案三的 <code>#20,676</code>，也只说明那个网络规模小，不代表 IP 差。</p>
+<h3 id="ip_2">我的这个 IP 怎么样</h3>
+<ul>
+<li>AS Type 是 <code>isp</code>，Privacy 是 <code>false</code>，Hosted domains 是 0，ipinfo 这一关算过了。</li>
+<li>Scamalytics 风险分是 0，是最好的结果。</li>
+<li>但严格说它不是家庭宽带。Scamalytics 下面的说明里也写了，它不是普通家庭网络（not a standard domestic connection）。Cogent 是美国的骨干网运营商，主要做企业和机房线路，不是 Comcast、AT&amp;T、Spectrum 这类家庭宽带运营商；实际使用者 NetLab 也不是。这种 IP 一般叫“ISP IP”或“静态住宅”，教程里说的“ISP 类型也算这一类”就是指它。</li>
+<li>目前我用它订阅和使用 claude 都正常，对我来说够用。</li>
+</ul>
+<p>Scamalytics 的结果（IP 已遮盖）：</p>
+<p><img alt="住宅IP实测-scamalytics-作者的白嫖IP.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-scamalytics-%E4%BD%9C%E8%80%85%E7%9A%84%E7%99%BD%E5%AB%96IP.png" width="600" /></p>
+<h3 id="_9">判断顺序</h3>
+<ol>
+<li>开着代理打开 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a>，复制最上面显示的 IP。AS Type 是 <code>isp</code>，Privacy 是 <code>false</code>。不满足就别用了，直接换。</li>
+<li>把复制的 IP 粘贴到 <a href="https://scamalytics.com/">scamalytics.com</a> 查风险分，越低越好。我这个是 0 分，但不一定都能做到 0，分数低就可以。</li>
+<li>再把这个 IP 拿到一两个网站交叉测（比如上面的 IPKK、IPOK、ip.net.coffee）。各家结论不一致很正常，大部分说是住宅/ISP、风险低就可以。</li>
+<li>最后看实际使用：claude 能正常打开，不频繁弹人机验证。</li>
+</ol>
+<h2 id="_10">截图</h2>
+<hr />
+<p>每个网站上面是方案一，下面是方案三（带读者的标注）。</p>
+<h3 id="ipnetcoffee">ip.net.coffee</h3>
+<p>方案一：</p>
+<p><img alt="住宅IP实测-ip.net.coffee-方案一.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ip.net.coffee-%E6%96%B9%E6%A1%88%E4%B8%80.png" width="600" /></p>
+<p>方案三：</p>
+<p><img alt="住宅IP实测-ip.net.coffee-方案三.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ip.net.coffee-%E6%96%B9%E6%A1%88%E4%B8%89.png" width="600" /></p>
+<h3 id="ipinfo">IPinfo</h3>
+<p>方案一：</p>
+<p><img alt="住宅IP实测-ipinfo-方案一.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipinfo-%E6%96%B9%E6%A1%88%E4%B8%80.png" width="600" /></p>
+<p>方案三（标注里的“ASN 很差”指排名 <code>#20,676</code> 靠后。这个排名只反映网络规模，和 IP 质量无关，见<a href="#ip_1">怎么看 IP 质量</a>）：</p>
+<p><img alt="住宅IP实测-ipinfo-方案三.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipinfo-%E6%96%B9%E6%A1%88%E4%B8%89.png" width="600" /></p>
+<h3 id="ipkk">IPKK</h3>
+<p>方案一：</p>
+<p><img alt="住宅IP实测-ipkk-方案一.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipkk-%E6%96%B9%E6%A1%88%E4%B8%80.png" width="600" /></p>
+<p>方案三（标注里的“强于方案一”只指被识别为住宅 IP，延迟其实更高）：</p>
+<p><img alt="住宅IP实测-ipkk-方案三.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipkk-%E6%96%B9%E6%A1%88%E4%B8%89.png" width="600" /></p>
+<h3 id="ipok">IPOK</h3>
+<p>方案一：</p>
+<p><img alt="住宅IP实测-ipok-方案一.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipok-%E6%96%B9%E6%A1%88%E4%B8%80.png" width="600" /></p>
+<p>方案三：</p>
+<p><img alt="住宅IP实测-ipok-方案三.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-ipok-%E6%96%B9%E6%A1%88%E4%B8%89.png" width="600" /></p>
+<h3 id="scamalytics">Scamalytics</h3>
+<p>方案一：</p>
+<p><img alt="住宅IP实测-scamalytics-方案一.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-scamalytics-%E6%96%B9%E6%A1%88%E4%B8%80.png" width="600" /></p>
+<p>方案三：</p>
+<p><img alt="住宅IP实测-scamalytics-方案三.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E4%BD%8F%E5%AE%85IP%E5%AE%9E%E6%B5%8B-scamalytics-%E6%96%B9%E6%A1%88%E4%B8%89.png" width="600" /></p>
+<h2 id="_11">致谢</h2>
+<hr />
+<p>感谢 <a href="https://github.com/xiaobeizz">@xiaobeizz</a> 花时间把两个方案都搭了一遍，还整理好对比结果和截图发给我。这样的实测对完善教程帮助很大，也能帮后来的人少走弯路 🌹</p>
+<p>如果你也测过其他方案，欢迎分享你的结果。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/15f19546/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">前言</span></a>
+    <a class="neighbour next" href="../../blog/change-account-ip/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">方案一断连后：给账号更换 IP</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

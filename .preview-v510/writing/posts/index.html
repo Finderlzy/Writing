@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>全部文章 · Writing</title>
+    <link rel="stylesheet" href="../assets/theme/site.css">
+    <script defer src="../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../">首页</a>
+        <a href="../posts/" aria-current="page">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<section class="archives">
+  <header class="hero">
+    <div class="giant g1" aria-hidden="true" data-font="head">全</div>
+    <div class="hero-body">
+      <h1 class="page-title" data-font="head">全部文章</h1>
+      <p class="hero-lead"><span class="hero-lead-count" data-font="slab">108 pieces</span><span class="hero-lead-unit">· 按时间倒序，按月分组</span></p>
+    </div>
+  </header>
+  <div class="filters" data-filters hidden>
+    <div class="filter-group" role="group" aria-label="按阶段筛选">
+      <button type="button" class="filter-button" data-stage="" aria-pressed="true">全部</button>
+      <button type="button" class="filter-button" data-stage="思考" data-stage-chip="思考" aria-pressed="false">思考</button>
+      <button type="button" class="filter-button" data-stage="初稿" data-stage-chip="初稿" aria-pressed="false">初稿</button>
+      <button type="button" class="filter-button" data-stage="博客" data-stage-chip="博客" aria-pressed="false">博客</button>
+      <button type="button" class="filter-button" data-stage="作品" data-stage-chip="作品" aria-pressed="false">作品</button>
+    </div>
+    <div class="filter-group" role="group" aria-label="按主题筛选">
+      <button type="button" class="filter-button" data-tag="" aria-pressed="true">全部主题</button>
+      <button type="button" class="filter-button" data-tag="二次元" aria-pressed="false">二次元</button>
+      <button type="button" class="filter-button" data-tag="学习" aria-pressed="false">学习</button>
+      <button type="button" class="filter-button" data-tag="情感" aria-pressed="false">情感</button>
+      <button type="button" class="filter-button" data-tag="大学生活" aria-pressed="false">大学生活</button>
+      <button type="button" class="filter-button" data-tag="读书" aria-pressed="false">读书</button>
+      <button type="button" class="filter-button" data-tag="AI" aria-pressed="false">AI</button>
+      <button type="button" class="filter-button" data-tag="CLANNAD" aria-pressed="false">CLANNAD</button>
+      <button type="button" class="filter-button" data-tag="思考方法" aria-pressed="false">思考方法</button>
+      <button type="button" class="filter-button" data-tag="中国文学" aria-pressed="false">中国文学</button>
+      <button type="button" class="filter-button" data-tag="就业" aria-pressed="false">就业</button>
+      <button type="button" class="filter-button" data-tag="暗恋" aria-pressed="false">暗恋</button>
+      <button type="button" class="filter-button" data-tag="解决问题" aria-pressed="false">解决问题</button>
+      <button type="button" class="filter-button" data-tag="专注" aria-pressed="false">专注</button>
+      <button type="button" class="filter-button" data-tag="作息" aria-pressed="false">作息</button>
+      <button type="button" class="filter-button" data-tag="模仿写作" aria-pressed="false">模仿写作</button>
+      <button type="button" class="filter-button" data-tag="知青小说" aria-pressed="false">知青小说</button>
+      <button type="button" class="filter-button" data-tag="计划" aria-pressed="false">计划</button>
+      <button type="button" class="filter-button" data-tag="迷茫" aria-pressed="false">迷茫</button>
+    </div>
+  </div>
+  <p class="filter-summary" data-filter-summary hidden></p>
+  <div class="archive-list" data-article-list>
+    <section class="month" data-month="2026-10">
+      <h2 class="month-label"><span data-font="slab">10</span><small><span data-font="slab">2026</span> · 十月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/38db3f92/">
+            <span class="t">
+              <strong>后记与致谢</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/71364e25/">
+            <span class="t">
+              <strong>客户端配置与环境验证：iOS 端</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/62edfedb/">
+            <span class="t">
+              <strong>客户端配置与环境验证：安卓端</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/4571e15d/">
+            <span class="t">
+              <strong>客户端配置与环境验证：电脑端</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/bf85823e/">
+            <span class="t">
+              <strong>整体思路与方案选型</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/f70d3b58/">
+            <span class="t">
+              <strong>方案一：搭建专属住宅代理节点</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/cdc1f403/">
+            <span class="t">
+              <strong>方案二：配置住宅 IP 服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e482e3a7/">
+            <span class="t">
+              <strong>日常维护、风控应对与常见故障</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/5f76578d/">
+            <span class="t">
+              <strong>账号注册与订阅全流程：iOS 端</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/14b9e0b1/">
+            <span class="t">
+              <strong>账号注册与订阅全流程：安卓端</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e13f37c1/">
+            <span class="t">
+              <strong>IP 质量实测合集</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/8b42b035/">
+            <span class="t">
+              <strong>iPhone：下载 Gmail</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e4d5989f/">
+            <span class="t">
+              <strong>iPhone：买礼品卡充值</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/1d56849d/">
+            <span class="t">
+              <strong>iPhone：在 App Store 登录</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/3abbe05c/">
+            <span class="t">
+              <strong>iPhone：在 app 内订阅</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/c3b5c971/">
+            <span class="t">
+              <strong>iPhone：导入代理软件</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/fc15d5f2/">
+            <span class="t">
+              <strong>iPhone：把 App Store 改到奥地利</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/47947a0c/">
+            <span class="t">
+              <strong>iPhone：注册美区 Apple ID</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e6e76a25/">
+            <span class="t">
+              <strong>iPhone：购买未完成</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/7787ded6/">
+            <span class="t">
+              <strong>一、购买服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/87557c89/">
+            <span class="t">
+              <strong>三、把服务器变成节点</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/0c246ebf/">
+            <span class="t">
+              <strong>二、购买 ISP 代理</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/904990d2/">
+            <span class="t">
+              <strong>修改 Google 账号地区</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/4fbda690/">
+            <span class="t">
+              <strong>先用两天</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/ff68b860/">
+            <span class="t">
+              <strong>免责声明</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/afe1a0f3/">
+            <span class="t">
+              <strong>前言</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/9e677c3a/">
+            <span class="t">
+              <strong>后记</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/c74e1b6f/">
+            <span class="t">
+              <strong>四、打开面板</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e3355bdf/">
+            <span class="t">
+              <strong>安卓：下载 Gmail</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/3122a98a/">
+            <span class="t">
+              <strong>安卓：下载 Google Play</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/6c95930b/">
+            <span class="t">
+              <strong>安卓：导入代理软件</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/90572a41/">
+            <span class="t">
+              <strong>安卓：订阅</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/e87ae45c/">
+            <span class="t">
+              <strong>实测：Decodo ISP</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/b82611cd/">
+            <span class="t">
+              <strong>实测：QSU 住宅服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/0c6911ce/">
+            <span class="t">
+              <strong>实测：VoyraCloud 住宅服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/33e5887d/">
+            <span class="t">
+              <strong>实测：ipequal 住宅节点</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/7d6d66e6/">
+            <span class="t">
+              <strong>实测：proxy.qsu.hk 白嫖 ISP</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/673080b8/">
+            <span class="t">
+              <strong>实测：丽萨住宅服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/c0315e33/">
+            <span class="t">
+              <strong>导入代理软件</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习AI解决问题">
+          <a href="../thoughts/4a71340a/">
+            <span class="t">
+              <strong>搜索解决方法</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.21</span>            </span>
+<span class="d">作者想起刘伟鹏先生说遇到问题先用搜索引擎和维基百科，自己用搜索找了很久也没找到解决方法，于是改用AI搜索，结果很快找到了官方文档等方案。作者认为用模型辅助搜索更准、更快、更能过滤广告，并吐槽CSDN广告多，最后提出一个问题：直接让模型输入…</span>          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/4dafdb5c/">
+            <span class="t">
+              <strong>改时区</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/575ab2b8/">
+            <span class="t">
+              <strong>方案三：直接买住宅节点</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/bdd9ff71/">
+            <span class="t">
+              <strong>方案二：住宅 IP 服务器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/bdfa4e1b/">
+            <span class="t">
+              <strong>注册 Gmail</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/1788e81b/">
+            <span class="t">
+              <strong>注册 claude</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/924283d3/">
+            <span class="t">
+              <strong>测 IP 质量</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/ef7695b2/">
+            <span class="t">
+              <strong>清理旧账号和配置</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/0d97b332/">
+            <span class="t">
+              <strong>登录谷歌浏览器</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/ea936ad8/">
+            <span class="t">
+              <strong>致谢</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/c34a9109/">
+            <span class="t">
+              <strong>被封了：申诉解封</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/7dfba98f/">
+            <span class="t">
+              <strong>订阅</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/99edd43e/">
+            <span class="t">
+              <strong>订阅之后</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/8aa829e3/">
+            <span class="t">
+              <strong>选择手机系统</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/275e5b59/">
+            <span class="t">
+              <strong>选择方案</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/3f2645e1/">
+            <span class="t">
+              <strong>防泄漏</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/469a2897/">
+            <span class="t">
+              <strong>附录</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.21</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="就业AI学习思考方法">
+          <a href="../thoughts/3281014d/">
+            <span class="t">
+              <strong>《怎样花两年时间去面试一个人》续</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.20</span>            </span>
+<span class="d">作者从《怎样花两年时间去面试一个人》的遗留问题出发，认为 agent 时代面试官考察的是技术判断力，并以兴趣驱动、做项目带动学习，全程参与技术决策来提升判断力。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="就业大学生活读书学习">
+          <a href="../thoughts/95453da8/">
+            <span class="t">
+              <strong>《怎样花两年时间去面试一个人》</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.19</span>            </span>
+<span class="d">作者以刘未鹏“书单+github”的方案为起点，分析应聘者不知道学什么、招聘者难以识别人才的困境，并质疑手写项目的做法在agent时代是否还适用，最后提到要认真思考就业。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习解决问题思考方法读书">
+          <a href="../thoughts/3393371b/">
+            <span class="t">
+              <strong>《遇到问题为什么要自己动手》和《一直以来伴随我的一些学习习惯》</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.19</span>            </span>
+<span class="d">从遇到问题、提炼本质讲起，谈查资料的途径（AI、B站、X、请教前辈）、学习前要弄清的三个问题，以及读完一节后的思考、回顾、小结和笔记，并认为解决问题过程中的收获比答案更有价值。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/change-account-ip/">
+            <span class="t">
+              <strong>方案一断连后：给账号更换 IP</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">10.17</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习读书思考方法">
+          <a href="../thoughts/3e9b445c/">
+            <span class="t">
+              <strong>关于读书</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.14</span>            </span>
+<span class="d">作者反复思考“如何读书”，认为关键是读书时注意力要放在文字的意思上，并列出读到触动处、看到案例时和读完小节后三个展开思考的时机，小说则可从故事、冲突和反常处入手。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="作品" data-tags="大学生活中国文学模仿写作">
+          <a href="../opus/ae56ec53/">
+            <span class="t">
+              <strong>星期四</strong>
+              <span class="chip article-stage" data-stage="作品">作品</span>
+<span class="date" data-font="slab">10.14</span>            </span>
+<span class="d">借模仿王小波的口吻，写一个星期四因为吃饭、外卖和老师训斥、又被叫去开班会的校园日常，用荒诞幽默吐槽食堂、外卖和北京的消费。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/residential-ip-test/">
+            <span class="t">
+              <strong>读者实测：方案一和方案三的住宅 IP 对比</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">10.13</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/15f19546/">
+            <span class="t">
+              <strong>前言</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.12</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/subscribe-claude-quick/">
+            <span class="t">
+              <strong>如何订阅claude（纯操作版）</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.08</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/subscribe-claude-quick-new/">
+            <span class="t">
+              <strong>如何订阅claude（纯操作版）</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude（纯操作版）</span><span class="date" data-font="slab">10.08</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/subscribe-claude-new/">
+            <span class="t">
+              <strong>如何订阅claude</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.07</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/subscribe-claude/">
+            <span class="t">
+              <strong>如何订阅claude</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="article-series">系列：如何订阅claude</span><span class="date" data-font="slab">10.07</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="计划作息专注">
+          <a href="../thoughts/5074fa37/">
+            <span class="t">
+              <strong>看完《高性价比人生指南》后要做的行动</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">10.06</span>            </span>
+<span class="d">把《高性价比人生指南》的建议落成自己的每日行动：固定作息、干活时专注、限制抖音和推特的刷屏时间，并记录哪些已经做到、哪些暂时做不到。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/win11-ubuntu-dual-boot/">
+            <span class="t">
+              <strong>在win11中额外安装ubuntu系统</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">10.03</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-09">
+      <h2 class="month-label"><span data-font="slab">09</span><small><span data-font="slab">2026</span> · 九月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/self-hosted-proxy-log/">
+            <span class="t">
+              <strong>成功自建梯子，记录一下这个过程</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">09.26</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/vps-residential-ip/">
+            <span class="t">
+              <strong>给 VPS 节点套上住宅 IP</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">09.26</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="博客" data-tags="">
+          <a href="../blog/vless-reality/">
+            <span class="t">
+              <strong>自建梯子：VPS + 3x-ui + VLESS Reality</strong>
+              <span class="chip article-stage" data-stage="博客">博客</span>
+<span class="date" data-font="slab">09.25</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="读书中国文学知青小说">
+          <a href="../thoughts/7b55ecfb/">
+            <span class="t">
+              <strong>《棋王 树王 孩子王》</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">09.19</span>            </span>
+<span class="d">作者读阿城的三篇知青短篇，谈支书形象、淳朴而无希望的基调和无力感，概述三篇情节，并点评王一生的终局对弈、王福的作文，以及叙事视角。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="作品" data-tags="">
+          <a href="../opus/74c472c1/">
+            <span class="t">
+              <strong>这一次，我们有了合照</strong>
+              <span class="chip article-stage" data-stage="作品">作品</span>
+<span class="date" data-font="slab">09.13</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元情感">
+          <a href="../thoughts/d38e29c1/">
+            <span class="t">
+              <strong>龙与虎</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">09.06</span>            </span>
+<span class="d">评价动画《龙与虎》：剧情连贯、人物有血有肉，校园恋爱像夏日薄荷糖般清爽甜美；作者认同“真正的爱情是陪伴”，但不太喜欢它的叙事方式。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元CLANNAD情感">
+          <a href="../thoughts/92de090c/">
+            <span class="t">
+              <strong>CLANNAD~AFTER STORY~</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">09.04</span>            </span>
+<span class="d">逐篇评述 CLANNAD AFTER STORY 的剧情与人物，讲了渚的离开和汐的成长带来的触动，并给出五星评分与对结局的看法。</span>          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-08">
+      <h2 class="month-label"><span data-font="slab">08</span><small><span data-font="slab">2026</span> · 八月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="作品" data-tags="大学生活情感暗恋">
+          <a href="../opus/0b4224e7/">
+            <span class="t">
+              <strong>黑框眼镜（作品）</strong>
+              <span class="chip article-stage" data-stage="作品">作品</span>
+<span class="date" data-font="slab">08.29</span>            </span>
+<span class="d">wdx 提醒我高中时认识的黑框眼镜女孩考上了我的大学，我答应照顾她，邀她吃火锅，饭桌和路上的交谈里发现她已换了眼镜，最后目送她离开。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="初稿" data-tags="">
+          <a href="../drafts/de1d1c64/">
+            <span class="t">
+              <strong>我讨厌BE结局</strong>
+              <span class="chip article-stage" data-stage="初稿">初稿</span>
+<span class="date" data-font="slab">08.28</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="作品" data-tags="情感二次元迷茫">
+          <a href="../opus/798b50db/">
+            <span class="t">
+              <strong>我讨厌BE结局（作品）</strong>
+              <span class="chip article-stage" data-stage="作品">作品</span>
+<span class="date" data-font="slab">08.28</span>            </span>
+<span class="d">作者被生活压力和迷茫笼罩，转而在追番、看书中寄托情感，希望虚构故事里的人物不要以分别收场，能一直留在彼此身边。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="初稿" data-tags="情感暗恋大学生活">
+          <a href="../drafts/bdc16d50/">
+            <span class="t">
+              <strong>黑框眼镜</strong>
+              <span class="chip article-stage" data-stage="初稿">初稿</span>
+<span class="date" data-font="slab">08.28</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/132e223c/">
+            <span class="t">
+              <strong>不想上课</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.26</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元CLANNAD情感">
+          <a href="../thoughts/c1c9d1c1/">
+            <span class="t">
+              <strong>CLANNAD~AFTER STORY~（p9—p11）</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.23</span>            </span>
+<span class="d">冈崎朋也踏入社会、独居工作，渚再次留级，两人相处的时间变少。文中写朋也的成长和芳野前辈的照顾，也担心渚的校园生活是否交不到朋友。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/393adb08/">
+            <span class="t">
+              <strong>对“大学学习”的深入认识</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元CLANNAD情感">
+          <a href="../thoughts/a452588a/">
+            <span class="t">
+              <strong>CLANNAD</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.20</span>            </span>
+<span class="d">作者评价动画《CLANNAD》平静中带忧伤的基调，并逐一点评朋也与渚、风子、杏、秋生、阳平等角色的刻画，以及自己喜欢的原因。</span>          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="AI">
+          <a href="../thoughts/c688facf/">
+            <span class="t">
+              <strong>使用不同AI阅读我写的文章的感受</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.19</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/b4f725e5/">
+            <span class="t">
+              <strong>夏日重现</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">08.03</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-07">
+      <h2 class="month-label"><span data-font="slab">07</span><small><span data-font="slab">2026</span> · 七月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/7e0fa36f/">
+            <span class="t">
+              <strong>轻音少女 第二季</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">07.17</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-06">
+      <h2 class="month-label"><span data-font="slab">06</span><small><span data-font="slab">2026</span> · 六月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/e37a642d/">
+            <span class="t">
+              <strong>从零开始的异世界生活 第二季</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">06.25</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="">
+          <a href="../thoughts/6de79ac0/">
+            <span class="t">
+              <strong>养成写日记的习惯</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">06.14</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-05">
+      <h2 class="month-label"><span data-font="slab">05</span><small><span data-font="slab">2026</span> · 五月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/96dca1f8/">
+            <span class="t">
+              <strong>Code Geass 反叛的鲁路修R2</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.24</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/588987ec/">
+            <span class="t">
+              <strong>Code Geass 反叛的鲁路修</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.22</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/b854c80a/">
+            <span class="t">
+              <strong>BanG Dream! It&#39;s MyGO!!!!!</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.17</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/d060d66f/">
+            <span class="t">
+              <strong>从零开始的异世界生活 第一季</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.17</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/db51f9c9/">
+            <span class="t">
+              <strong>轻音少女 第一季</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.17</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/48b08046/">
+            <span class="t">
+              <strong>Ave Mujica</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.14</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/783b55f5/">
+            <span class="t">
+              <strong>Ave Mujica 前三集后对人物形象的小结</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.13</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="">
+          <a href="../thoughts/6fb30250/">
+            <span class="t">
+              <strong>关于为什么我会觉得学习之外的东西很没有意义的思考</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.12</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="作品" data-tags="">
+          <a href="../opus/8565b8fa/">
+            <span class="t">
+              <strong>与篮球（DeepSeek改）</strong>
+              <span class="chip article-stage" data-stage="作品">作品</span>
+<span class="date" data-font="slab">05.07</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/055dd408/">
+            <span class="t">
+              <strong>要不要认真对待作业</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">05.01</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-04">
+      <h2 class="month-label"><span data-font="slab">04</span><small><span data-font="slab">2026</span> · 四月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/abc37f88/">
+            <span class="t">
+              <strong>CS106B作业的Test</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.30</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/6677d844/">
+            <span class="t">
+              <strong>焚诀</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.30</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="">
+          <a href="../thoughts/2cb7687c/">
+            <span class="t">
+              <strong>与导师聊天后的思考</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.27</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="">
+          <a href="../thoughts/481f737c/">
+            <span class="t">
+              <strong>如何处理想做的事情很多</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.19</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/9278db37/">
+            <span class="t">
+              <strong>期中考试还是可以的</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.18</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/a83329b2/">
+            <span class="t">
+              <strong>适合我的学习强度以及学习环境</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.11</span>            </span>
+          </a>
+        </li>
+        <li class="article-item" data-stage="思考" data-tags="二次元">
+          <a href="../thoughts/0d8d580d/">
+            <span class="t">
+              <strong>感兴趣的番vs不感兴趣的番</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">04.01</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+    <section class="month" data-month="2026-03">
+      <h2 class="month-label"><span data-font="slab">03</span><small><span data-font="slab">2026</span> · 三月</small></h2>
+      <ul class="items">
+        <li class="article-item" data-stage="思考" data-tags="学习">
+          <a href="../thoughts/3fb8c5af/">
+            <span class="t">
+              <strong>要不要看国外大学的课</strong>
+              <span class="chip article-stage" data-stage="思考">思考</span>
+<span class="date" data-font="slab">03.22</span>            </span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </div>
+  <p class="empty-result" data-empty-result hidden>没有同时满足这两个条件的文章，换一个阶段或主题试试。</p>
+</section>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

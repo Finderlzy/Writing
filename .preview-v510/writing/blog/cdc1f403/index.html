@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>方案二：配置住宅 IP 服务器 · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">方</div><div class="giant g2" aria-hidden="true" data-font="head">务器</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-10-22">2026.10.22 写</time>      </div>
+      <h1 class="post-title" data-font="head">方案二：配置住宅 IP 服务器</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+      <p class="article-series-line">
+        属于系列
+        <a href="../../blog/subscribe-claude/">如何订阅claude</a>（共 19 篇）
+      </p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 8 分钟"><b data-font="slab">8</b><span data-font="slab">min read</span></div>
+  </header>
+  <nav class="article-toc" aria-label="目录">
+    <p class="article-toc-title" data-font="cute">目录</p>
+    <ul>
+      <li><a href="#ip">方案二：配置住宅 IP 服务器</a>        <ul>      <li><a href="#_1">原理：一台机器就是住宅</a></li>
+      <li><a href="#_2">购买住宅服务器</a>        <ul>      <li><a href="#ip_1">住宅服务器也可能是机房 IP</a></li>
+</ul>
+</li>
+      <li><a href="#ip_2">先测服务器 IP</a></li>
+      <li><a href="#ssh">SSH 连接服务器</a></li>
+      <li><a href="#_3">运行一键脚本</a>        <ul>      <li><a href="#_4">部署成功的标志</a></li>
+</ul>
+</li>
+      <li><a href="#_5">打开面板（可选）</a>        <ul>      <li><a href="#_6">常见问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+    </ul>
+  </nav>
+  <div class="article-body">
+<h1 id="ip">方案二：配置住宅 IP 服务器</h1>
+<hr />
+<p>如果你不想同时维护 VPS 和 ISP 两个服务商，方案二更直接：<strong>买一台自带海外住宅 IP 的云服务器</strong>。它的出口本身就是运营商的住宅 IP，所以不用再买 SOCKS5 代理，只要在服务器上跑一次脚本，把它变成节点。</p>
+<pre><code class="language-text">选购住宅 IP 服务器
+   ↓
+先测 IP 质量
+   ↓
+SSH 连接服务器，运行一键脚本
+   ↓
+跳过住宅代理，保存节点链接
+</code></pre>
+<h3 id="_1">原理：一台机器就是住宅</h3>
+<p>打开 <code>claude.ai</code> 的时候，你的设备向 Claude 的服务器发出请求，服务器把网页数据返回给你。服务器要知道把数据送回哪里，靠的是请求上带着的 <strong>IP</strong>。</p>
+<p>IP 不只是一个地址，它还能看出两件事：</p>
+<ul>
+<li><strong>你在哪个国家。</strong> Claude 不对中国用户提供服务，看到来自中国的 IP 就会拒绝。</li>
+<li><strong>你是什么人。</strong> 每个 IP 都登记在某个组织名下。机房里的服务器，IP 登记在云服务商名下，叫<strong>机房 IP</strong>；家庭宽带用的 IP 登记在电信运营商名下，叫<strong>住宅 IP</strong>。普通人不会从机房上网，所以 Claude 看到机房 IP，就容易把你当成在用代理。</li>
+</ul>
+<p>方案二买的是一台放在海外、自带住宅 IP 的服务器。请求先交给它，由它替你发给 Claude；Claude 看到的就是这台服务器的住宅 IP。返回的数据也由它转交给你，这台替你收发请求的服务器，就是<strong>节点</strong>。</p>
+<h2 id="_2">购买住宅服务器</h2>
+<hr />
+<p>在本章推荐的几家里选一家，买一台 Debian 12、1 核 CPU、1 GB 内存、带“住宅 / ISP”标签的服务器，记下<strong>服务器 IP</strong>、<strong>SSH 端口</strong>（大部分是 22，有些商家会给一个随机高位端口）和 <strong>root 密码</strong>。</p>
+<p><strong>视频 03-1：购买住宅服务器</strong></p>
+<p>下面几家是我自己买过，或者身边有人用过的；链接都是推广链接，介意的话直接搜商家名字。</p>
+<ul>
+<li><a href="https://lisahost.com/aff.php?aff=15037">丽萨主机</a>：我买过一台“美国 9929 双 ISP 住宅 IP”的 VPS。产品页面确实不好看，但线路针对国内优化过，测出来是 ISP 类型，Scamalytics 5 分。</li>
+<li><a href="https://www.voyracloud.com/?ref_code=HYEWZ46M">VoyraCloud</a>：我现在用的就是它家的住宅服务器。第一台开出的是机房 IP，后来买的一台是 ISP 类型。由于他家要抽卡，所以我放在第二位了。</li>
+<li><a href="https://qsu.hk/aff/GAZUQBSL">QSU</a>：我用过它家子站 <code>proxy.qsu.hk</code> 的住宅代理；主站的住宅服务器我没有买过，有朋友说质量不错。</li>
+</ul>
+<p>按下面的标准选：</p>
+<table>
+<thead>
+<tr>
+<th>配置项</th>
+<th>推荐选择</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>操作系统</td>
+<td><strong>Debian 12</strong></td>
+<td>不要选 Ubuntu，原因和方案一相同。</td>
+</tr>
+<tr>
+<td>硬件配置</td>
+<td>1 核 CPU、1 GB 内存</td>
+<td>个人订阅够用。</td>
+</tr>
+<tr>
+<td>流量</td>
+<td>每月几百 GB</td>
+<td>文字和代码交互消耗很少。</td>
+</tr>
+<tr>
+<td>IP 属性</td>
+<td>双 ISP / 原生住宅</td>
+<td>下单时确认套餐带“住宅 / ISP”标签。</td>
+</tr>
+</tbody>
+</table>
+<p>系统还是只选 Debian。商家最高只给 Debian 11 的话，脚本会先升级到 Debian 12，多等 5～15 分钟。</p>
+<h3 id="ip_1">住宅服务器也可能是机房 IP</h3>
+<p>这是方案二最需要注意的地方：商家说是“住宅服务器”，分到你手上的不一定真是住宅 IP。</p>
+<p>我第一次买的 VoyraCloud 美国住宅服务器，测出来 ipinfo.io 显示 ASN 属于 Bunny Communications，类型是 <strong>Hosting（机房）</strong>，Privacy 为 <code>true</code>，Scamalytics 16 分。分数不算高，但它不是住宅 IP。</p>
+<p>这只是我一次购买的结果，不代表每家、每次都会这样。我后来又在 VoyraCloud 买了一台，测出来是 ISP 类型，Scamalytics 3 分，现在用的就是这一台。所以买完之后第一件事是测 IP；如果开出的是机房 IP，找商家换一台，或者退款。</p>
+<h2 id="ip_2">先测服务器 IP</h2>
+<hr />
+<p>在开始配置之前，先确认这台机器的 IP 合格。打开 <a href="https://ipinfo.io/">ipinfo.io</a>，在查询框里输入你的服务器 IP：<strong>AS Type 必须是 <code>isp</code></strong>，<strong>Privacy 必须是 <code>false</code></strong>；再打开 <a href="https://scamalytics.com/">Scamalytics</a>，输入同一个 IP 查风险分。0～20 属于低风险，20～40 需要留意，50 以上不建议使用；不要用 ping0.cc 查，它会暴露你国内的真实 IP。</p>
+<p><strong>视频 03-2：测住宅服务器的 IP</strong></p>
+<p>如果 AS Type 是 <code>hosting</code>，说明分到了机房段，不用往下做了，直接找客服换机。两项都合格再开始配置；不合格就先换 IP，换完重新测。</p>
+<h2 id="ssh">SSH 连接服务器</h2>
+<hr />
+<p>打开命令行（Windows 按 <code>Win + R</code>，输入 <code>cmd</code>；Mac 打开“终端”），输入下面的命令：</p>
+<pre><code class="language-bash">ssh root@你的服务器IP
+</code></pre>
+<p>如果商家后台的 SSH 端口不是 22，比如是 38221，就加小写 <code>-p</code>：</p>
+<pre><code class="language-bash">ssh -p 38221 root@你的服务器IP
+</code></pre>
+<p>第一次连接输入 <code>yes</code> 回车；出现 <code>password:</code> 时输入 root 密码，屏幕上不会显示字符，输完直接回车。看到 <code>root@...:~#</code> 就说明连上了。</p>
+<p><strong>视频 03-3：SSH 连接服务器（与 02-4 共用，录一次即可）</strong></p>
+<p>如果提示 <code>Permission denied, please try again.</code>，先在商家后台重置一次 root 密码，新开一个命令行窗口重试；也可以用商家后台的“控制台 / VNC”登录。</p>
+<h2 id="_3">运行一键脚本</h2>
+<hr />
+<p>复制下面这行命令，粘贴到终端，回车：</p>
+<pre><code class="language-bash">bash &lt;(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v2.0.1/setup.sh)
+</code></pre>
+<p>脚本会安装 Xray 和管理面板，然后把服务器变成节点；安装过程中会问几个问题。</p>
+<p><strong>视频 03-4：运行一键脚本（方案二）</strong></p>
+<table>
+<thead>
+<tr>
+<th>终端提问</th>
+<th>方案二怎么填</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>是否删掉旧的重新装？</td>
+<td>只有装过本脚本或 3x-ui 面板才会问。想重装输入 <code>y</code>，否则不要动。</td>
+</tr>
+<tr>
+<td>服务器 IP 是 xxx 吗？</td>
+<td>和你的服务器 IP 一样就直接回车；不一样就手动输入。</td>
+</tr>
+<tr>
+<td>住宅代理 IP</td>
+<td><strong>直接回车跳过。</strong> 你的服务器本身就是住宅 IP，不需要再套一层。</td>
+</tr>
+<tr>
+<td>住宅代理端口、用户名、密码</td>
+<td>上一步跳过后，这三项不会再问。</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">为什么这里要跳过</p>
+<p>“住宅代理”那一项是给方案一的普通机房 VPS 用的。方案二的服务器已经是住宅出口，再套一层只会多一个故障点。</p>
+</div>
+<p>之后等 2～4 分钟。如果是 Debian 11，脚本会先升级系统，时间会更长；弹出紫色或蓝色配置窗口时，直接回车保持默认。</p>
+<h3 id="_4">部署成功的标志</h3>
+<p>看到下面两行，说明节点已经装好：</p>
+<pre><code class="language-text">节点自测 Reality：成功
+节点自测 Hysteria2：成功
+</code></pre>
+<p>请保存好：<strong>主节点链接</strong>以 <code>vless://</code> 开头，平时用这个，忘了可以运行 <code>cat /root/vless.txt</code> 查看；<strong>备用节点链接</strong>以 <code>hysteria2://</code> 开头，主节点连不上或很慢时换它，忘了就运行 <code>cat /root/hy2.txt</code>；还有安装完成时打印的<strong>面板登录信息</strong>。</p>
+<p>如果商家后台有防火墙或安全组，确认放行了 <strong>TCP 443</strong> 和 <strong>UDP 443</strong>。升级过系统的，最后找时间运行 <code>reboot</code>，节点会随系统自动启动。</p>
+<h2 id="_5">打开面板（可选）</h2>
+<hr />
+<p>和方案一一样，面板只开在服务器本机，需要用 SSH 隧道。在本地命令行运行下面这行，保持窗口不关：</p>
+<pre><code class="language-bash">ssh -L 8080:127.0.0.1:8080 root@你的服务器IP
+</code></pre>
+<p><strong>视频 03-5：打开 3x-ui 面板（与 02-6 共用，录一次即可）</strong></p>
+<p>浏览器打开 <code>http://127.0.0.1:8080/访问路径</code>，用安装完成时打印的用户名和密码登录。忘了就在服务器上运行：</p>
+<pre><code class="language-bash">cat /etc/x-ui/install-result.env
+</code></pre>
+<p>面板默认用户名、密码、端口大家都一样，但外网直接打不开，要进来必须先通过 SSH 隧道，而隧道需要服务器密码；不改也没关系。</p>
+<p>在服务器上随时可以运行 <code>node-selftest</code>，重新自测两个节点。</p>
+<h3 id="_6">常见问题</h3>
+<h4 id="_7">换了一台机器，节点链接会变吗</h4>
+<p>会。节点链接和服务器绑定，换机器要重新运行脚本，重新导入客户端。</p>
+<h4 id="ip_3">以后想换 IP 或换套餐</h4>
+<p>如果商家支持换 IP，先在后台换，再用新 IP 测一次；如果换了一台全新的服务器，就按本章从头做一遍。</p>
+<h4 id="hosting">测出来是 <code>hosting</code>，但商家说这就是住宅</h4>
+<p>以检测结果为准。先找商家换一台，换完再测；如果连续几台都是 <code>hosting</code>，可以考虑退款，换一家，或者回到选择方案看看方案一。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <p class="series-next">
+    系列里的下一篇：<a href="../../blog/e482e3a7/">日常维护、风控应对与常见故障</a>
+  </p>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/f70d3b58/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">方案一：搭建专属住宅代理节点</span></a>
+    <a class="neighbour next" href="../../blog/e482e3a7/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">日常维护、风控应对与常见故障</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

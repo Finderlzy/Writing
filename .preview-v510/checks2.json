@@ -1,0 +1,141 @@
+{
+ "copy": {
+  "before": "复制",
+  "after": "已复制",
+  "clipboard": "ssh root@你的服务器IP\n",
+  "code": "ssh root@你的服务器IP\n"
+ },
+ "series": {
+  "title": "如何订阅claude（纯操作版） · Writing",
+  "seriesLine": "属于系列 如何订阅claude（纯操作版）（共 40 篇）",
+  "next": "系列里的下一篇：如何订阅claude（纯操作版）",
+  "nextHref": "../../blog/subscribe-claude-quick-new/",
+  "neighbours": [
+   "../../blog/subscribe-claude-quick-new/ next → 如何订阅claude（纯操作版）"
+  ],
+  "toc": 22,
+  "comments": true
+ },
+ "seriesNew": {
+  "seriesLine": "属于系列 如何订阅claude（纯操作版）（共 40 篇）",
+  "next": "系列里的下一篇：iPhone：下载 Gmail"
+ },
+ "noDescription": {
+  "say": null,
+  "sayCount": 0
+ },
+ "aveMujica": {
+  "giants": [
+   "A",
+   "ca"
+  ],
+  "say": null,
+  "minutes": "3"
+ },
+ "clannad": {
+  "giants": [
+   "C",
+   "AD"
+  ],
+  "bodyStart": "⭐⭐⭐⭐⭐\n下一季：CLANNAD~AFTER STORY~\n\n故事概要\n\n男主角冈崎朋也现在到高三了，在一天上学的路上，他遇到了一个奇怪的女孩——古河渚。两个",
+  "blockquotes": 1,
+  "dateNote": null,
+  "minutes": "4"
+ },
+ "heikuang": {
+  "giants": [
+   "黑",
+   "眼镜"
+  ],
+  "minutes": "6",
+  "words": 2261,
+  "kicker": "作品 2026.08.29 写 10.20 改",
+  "bodyHasDateNote": false
+ },
+ "dark": {
+  "home": {
+   "low": [],
+   "count": 6,
+   "borders": [
+    {
+     "cls": "bubble",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "none"
+    },
+    {
+     "cls": "line",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    },
+    {
+     "cls": "line",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    }
+   ],
+   "bg": "rgb(24, 23, 28)"
+  },
+  "posts": {
+   "low": [],
+   "count": 7,
+   "borders": [],
+   "bg": "rgb(24, 23, 28)"
+  },
+  "post": {
+   "low": [],
+   "count": 7,
+   "borders": [
+    {
+     "cls": "say",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "none"
+    },
+    {
+     "cls": "neighbour previous",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    },
+    {
+     "cls": "neighbour next",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    }
+   ],
+   "bg": "rgb(24, 23, 28)"
+  },
+  "tutorial": {
+   "low": [],
+   "count": 9,
+   "borders": [
+    {
+     "cls": "neighbour previous",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    },
+    {
+     "cls": "neighbour next",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    }
+   ],
+   "bg": "rgb(24, 23, 28)"
+  },
+  "nf": {
+   "low": [],
+   "count": 4,
+   "borders": [
+    {
+     "cls": "back-link",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    },
+    {
+     "cls": "back-link",
+     "border": "rgb(242, 238, 232)",
+     "shadow": "rgb(0, 0, 0) 4px 4px 0px 0px"
+    }
+   ],
+   "bg": "rgb(24, 23, 28)"
+  }
+ }
+}

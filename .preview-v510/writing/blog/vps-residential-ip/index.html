@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>给 VPS 节点套上住宅 IP · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">给</div><div class="giant g2" aria-hidden="true" data-font="head">IP</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-09-26">2026.09.26 写</time><time class="date" data-font="slab" datetime="2026-10-07">10.07 改</time>      </div>
+      <h1 class="post-title" data-font="head">给 VPS 节点套上住宅 IP</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 6 分钟"><b data-font="slab">6</b><span data-font="slab">min read</span></div>
+  </header>
+  <nav class="article-toc" aria-label="目录">
+    <p class="article-toc-title" data-font="cute">目录</p>
+    <ul>
+      <li><a href="#ip">为什么要套住宅 IP</a></li>
+      <li><a href="#ip_1">一、购买住宅 IP</a>        <ul>      <li><a href="#ip_2">下单前先测 IP</a></li>
+      <li><a href="#_1">记下这些信息</a></li>
+</ul>
+</li>
+      <li><a href="#_2">二、新增出站</a></li>
+      <li><a href="#_3">三、新增路由规则</a></li>
+      <li><a href="#xray">四、保存并重启 Xray</a></li>
+      <li><a href="#_4">五、检查效果</a></li>
+      <li><a href="#_5">注意事项</a></li>
+      <li><a href="#ip_3">购买住宅ip</a></li>
+      <li><a href="#vps">套到vps节点上</a>        <ul>      <li><a href="#_6">新增出站</a></li>
+      <li><a href="#_7">新增路由</a></li>
+</ul>
+</li>
+    </ul>
+  </nav>
+  <div class="article-body">
+<blockquote>
+<p>claude整理于 2026-10-07 <br />
+上篇：<a href="../vless-reality">自建梯子：VPS + 3x-ui + VLESS Reality</a>（需要先完成上篇，有一个能用的节点）</p>
+</blockquote>
+<p>这篇教程会在上篇搭好的节点基础上，再加一个住宅 IP。做完之后，访问指定网站时，对方看到的是住宅 IP，而不是 VPS 的机房 IP。</p>
+<div class="admonition warning">
+<p class="admonition-title">免责声明</p>
+<ul>
+<li>本文只是记录个人的操作经历，仅供学习和技术交流，不构成任何建议。</li>
+<li>请遵守你所在地区的法律法规，自行判断相关操作是否合规，并自行承担由此产生的风险和后果。</li>
+<li>不要将文中的任何方法用于违法违规的用途。</li>
+<li>文中提到的服务商都是我自己用过或了解过的，推广链接已在文中注明。通过它购买，你的价格只会低，不会高，但同时我会拿到一点佣金。不介意的话可以用，介意的话直接搜商家名字就行。除此之外我和它们没有其他关系，它们的稳定性、安全性和合规性，我无法保证。</li>
+</ul>
+</div>
+<p><strong>整体流程：</strong> 购买住宅 IP → 在 3x-ui 里新增出站 → 新增路由规则 → 保存重启 → 检查效果。</p>
+<p>下面展示一下套完住宅ip之后节点的质量：<br />
+<img alt="微信图片_20261007134009_3_2.png" src="../../assets/09%E9%99%84%E4%BB%B6/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20261007134009_3_2.png" /></p>
+<h2 id="ip">为什么要套住宅 IP</h2>
+<hr />
+<p>云 VPS 的 IP 属于机房 IP。有些网站（比如部分 AI 服务、TikTok、流媒体）能识别出机房 IP，并限制访问。住宅 IP 是家庭宽带的 IP，看起来就像普通用户在上网。</p>
+<p>套上之后，链路变成这样：</p>
+<pre><code>你的电脑 → VPS → 住宅IP → 目标网站
+</code></pre>
+<p>VPS 仍然负责"翻出去"，住宅 IP 只负责"最后一跳"。</p>
+<h2 id="ip_1">一、购买住宅 IP</h2>
+<hr />
+<p>这是我使用的购买网站：https://proxy.qsu.hk/</p>
+<div class="admonition note">
+<p class="admonition-title">买哪种</p>
+<p>这里要买的是<strong>住宅代理</strong>：商家给你一个 IP、端口和账号密码，用来套在已有的 VPS 上。注意别买错：同一家的 <a href="https://proxy.qsu.hk/">proxy.qsu.hk</a> 卖的是住宅代理，也就是住宅服务器上的一个端口，可以理解为一个住宅 IP；主站 <a href="https://qsu.hk/aff/GAZUQBSL">www.qsu.hk</a> 卖的是整台住宅服务器（这是我的推广链接，通过它购买我会拿到一点返佣）。 如果你还没有 VPS，也可以直接买住宅服务器，然后按上篇教程搭节点，就不需要再套了。</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">免费套餐</p>
+<p>注册 <a href="https://proxy.qsu.hk/">proxy.qsu.hk</a> 账号后，选择 <strong>SOCKS5 协议</strong>的套餐，下单时填写优惠码 <code>qiansu998</code>，就可以免费拿到一个住宅 IP 端口。优惠码随时可能失效，流量额度等以下单页面为准。</p>
+</div>
+<h3 id="ip_2">下单前先测 IP</h3>
+<p>IP 纯净度是最重要的。下单前可以找商家要一下 IP 地址，用几个工具交叉检测：</p>
+<ul>
+<li><a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a></li>
+<li><a href="https://scamalytics.com/">scamalytics.com</a></li>
+</ul>
+<p>重点看两项：IP 类型是不是"住宅/ISP"，风险分数高不高。各家工具的数据库不一样，不要只看一家（ping0.cc 的结果我觉得不太靠谱，不建议只用它）。</p>
+<h3 id="_1">记下这些信息</h3>
+<p>买好后，商家会给你下面这些信息，后面都要用：</p>
+<table>
+<thead>
+<tr>
+<th>信息</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>协议</td>
+<td>SOCKS5 或 HTTP</td>
+</tr>
+<tr>
+<td>IP 地址</td>
+<td>1.2.3.4</td>
+</tr>
+<tr>
+<td>端口</td>
+<td>12345</td>
+</tr>
+<tr>
+<td>用户名、密码</td>
+<td>商家提供</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">二、新增出站</h2>
+<hr />
+<p>在 3x-ui 面板里找到 Xray 的设置页面（不同版本叫法可能略有不同），切换到"出站"标签页，添加一个出站。</p>
+<div class="admonition note">
+<p class="admonition-title">出站是什么</p>
+<p>出站就是流量离开 VPS 的出口。原来只有一个出口：从 VPS 直接出去。新增出站后，就多了一个出口：经过住宅 IP 再出去。</p>
+</div>
+<p>按下表填写：</p>
+<table>
+<thead>
+<tr>
+<th>设置项</th>
+<th>填写内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>协议</td>
+<td>商家提供的协议（SOCKS5 或 HTTP）</td>
+</tr>
+<tr>
+<td>标签（Tag）</td>
+<td>起一个好认的名字，比如 <code>residential</code>，后面要用</td>
+</tr>
+<tr>
+<td>地址</td>
+<td>住宅 IP 地址</td>
+</tr>
+<tr>
+<td>端口</td>
+<td>商家给的端口</td>
+</tr>
+<tr>
+<td>用户名、密码</td>
+<td>商家给的账号密码</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">三、新增路由规则</h2>
+<hr />
+<p>有了出口，还需要规则来决定<strong>什么时候走住宅 IP，什么时候走 VPS</strong>。这就是路由的作用。</p>
+<div class="admonition question">
+<p class="admonition-title">为什么不让所有流量都走住宅 IP？</p>
+<p>住宅 IP 一般按流量计费，什么都走它，流量很快就会用完，用完就会卡住。而且多绕了一跳，速度也会慢一些。所以一般只让需要住宅 IP 的网站走它。</p>
+</div>
+<p>切换到"路由规则"标签页，添加一条规则：</p>
+<p><strong>域名（Domain）</strong>：填需要走住宅 IP 的网站，例如：</p>
+<pre><code>domain:chatgpt.com
+domain:openai.com
+domain:claude.ai
+domain:tiktok.com
+</code></pre>
+<p><strong>出站标签（Outbound Tag）</strong>：选择刚刚建的 <code>residential</code>。</p>
+<p>这样，访问上面这些网站会走住宅 IP，其他网站继续从 VPS 直接出去。</p>
+<div class="admonition tip">
+<p class="admonition-title">流量充足的话</p>
+<p>可以在左侧面板"路由"的"默认出站"中，直接选择住宅 IP 出站，这样所有流量都会走住宅 IP，不用一个个加域名。</p>
+</div>
+<h2 id="xray">四、保存并重启 Xray</h2>
+<hr />
+<p>改完之后一定要<strong>先点保存，再点"重启 Xray"</strong>。不重启的话，设置不会生效。</p>
+<h2 id="_4">五、检查效果</h2>
+<hr />
+<p>开着代理，访问 <a href="https://ipinfo.io/what-is-my-ip">ipinfo.io</a>，页面最上面显示的就是你现在的出口 IP：</p>
+<ul>
+<li>如果你把 <code>domain:ipinfo.io</code> 也加进了路由规则，显示的应该是<strong>住宅 IP</strong>；</li>
+<li>没加的话，显示的是 <strong>VPS 的 IP</strong>，这是正常的。</li>
+</ul>
+<p>如果显示的是住宅 IP，把它复制下来，粘贴到 <a href="https://scamalytics.com/">scamalytics.com</a> 等检测网站里，再交叉测一下质量。</p>
+<p>最直接的检查方法，是打开你要用的网站，看还会不会被限制。</p>
+<h2 id="_5">注意事项</h2>
+<hr />
+<ul>
+<li><strong>流量算两次</strong>：走住宅 IP 的流量，既消耗住宅 IP 的流量额度，也消耗 VPS 的流量。</li>
+<li><strong>规则不生效</strong>：先确认已经重启 Xray，再检查路由规则里的出站标签，是否和出站的 Tag 完全一致。</li>
+<li><strong>住宅 IP 连不上</strong>：检查地址、端口、账号密码是否填错，也可以联系商家确认这个 IP 是否正常。</li>
+</ul>
+<blockquote>
+<p>写于 2026-09-26<br />
+接上篇：<a href="../vless-reality">自建梯子：VPS + 3x-ui + VLESS Reality</a></p>
+</blockquote>
+<h2 id="ip_3">购买住宅ip</h2>
+<hr />
+<p>这是我的推广链接：https://qsu.hk/aff/GAZUQBSL ，通过它购买我会拿到一点返佣，不介意的话可以用</p>
+<p>节点干净程度最重要。下单之前可以找商家拿一下ip地址，去测一下。</p>
+<p>（ping0.cc似乎有点出生，不建议去那里测）</p>
+<h2 id="vps">套到vps节点上</h2>
+<hr />
+<h3 id="_6">新增出站</h3>
+<p>协议选择商家提供的协议</p>
+<p>地址就是购买的IP地址</p>
+<h3 id="_7">新增路由</h3>
+<p>添加出站，可以理解是：流量多了一条出去的选择，原来是只能走vps，现在还可以走住宅ip。而新增路由则可以理解为：<strong>制定规则，决定什么时候走住宅ip，什么时候走vps</strong>。</p>
+<p>为什么要这么麻烦？因为住宅ip也会花流量，到时候流量用完了就会卡住。</p>
+<p>当然，如果流量多的话，可以在左侧面板“路由”的“默认出站”中，直接选择刚刚新建的住宅ip出站。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/vless-reality/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">自建梯子：VPS + 3x-ui + VLESS Reality</span></a>
+    <a class="neighbour next" href="../../blog/self-hosted-proxy-log/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">成功自建梯子，记录一下这个过程</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>导入代理软件 · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">导</div><div class="giant g2" aria-hidden="true" data-font="head">软件</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-10-21">2026.10.21 写</time>      </div>
+      <h1 class="post-title" data-font="head">导入代理软件</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+      <p class="article-series-line">
+        属于系列
+        <a href="../../blog/subscribe-claude-quick/">如何订阅claude（纯操作版）</a>（共 40 篇）
+      </p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 2 分钟"><b data-font="slab">2</b><span data-font="slab">min read</span></div>
+  </header>
+  <div class="article-body">
+<h1 id="_1">导入代理软件</h1>
+<p>先记住三条：</p>
+<ul>
+<li><strong>打开 tun 模式，不要用“自动配置系统代理”之类的选项。</strong></li>
+<li>方案一、二有两个节点：<strong>平时用主节点</strong>（VLESS + Reality），主节点连不上或很慢时换备用节点（Hysteria2）。两个节点出口是同一台服务器，切换不算“换节点”。</li>
+<li><strong>用 claude 时固定用这一个节点，不要换来换去。</strong></li>
+</ul>
+<p><strong>电脑：v2rayN</strong></p>
+<ol>
+<li>从 GitHub 下载 <a href="https://github.com/2dust/v2rayN/releases">v2rayN</a>，选和你的系统对应的版本，解压。</li>
+<li>右键 v2rayN → <strong>以管理员身份运行</strong>。</li>
+<li>复制节点链接，在 v2rayN 里：配置项 → 从剪贴板导入。<br />
+   - 方案一、二：节点是运行脚本最后打印的那两个，<strong>通过剪贴板导入</strong>，不要截图发来发去。<br />
+   - 方案三：复制商家给的订阅链接，同样从剪贴板导入。</li>
+<li>选中主节点，设为当前使用的节点。</li>
+<li>主界面底部：系统代理选“清除系统代理”，打开“启用 Tun”。</li>
+<li>确认 claude 走代理：不管用“规则”还是“全局”模式，claude 相关的域名都不能直连。不放心的话，用 claude 时直接开全局。</li>
+</ol>
+<p><strong>电脑：Clash Verge</strong></p>
+<ol>
+<li>从 GitHub 下载 <a href="https://github.com/clash-verge-rev/clash-verge-rev/releases">Clash Verge Rev</a>，安装。</li>
+<li>导入节点：<br />
+   - 方案一、二：Clash Verge 导入不了 <code>vless://</code>、<code>hysteria2://</code> 这种分享链接。在服务器上运行 <code>cat /root/clash.yaml</code>，复制全部内容，在 Clash Verge 里新建一个本地配置粘贴进去保存。两个节点都在里面，默认选中备用节点 Hysteria2（Clash 的内核连 Reality 节点目前有兼容问题，还在排查）。<br />
+   - 方案三：复制商家给的订阅链接，在 Clash Verge 里导入订阅。</li>
+<li>设置 → 系统设置：打开“虚拟网卡模式”（也就是 tun 模式），第一次打开会提示安装服务模式，照着装上；“系统代理”保持关闭。</li>
+<li>和 v2rayN 一样，确认 claude 相关的域名不会直连。</li>
+</ol>
+<p><strong>手机</strong></p>
+<p>手机现在先不用管，等到注册 Gmail 之前再导入，见 选择手机系统。</p>
+<hr />
+<p>上一步：选择方案 ｜ 下一步：测 IP 质量</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <p class="series-next">
+    系列里的下一篇：<a href="../../blog/4dafdb5c/">改时区</a>
+  </p>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/90572a41/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">安卓：订阅</span></a>
+    <a class="neighbour next" href="../../blog/4dafdb5c/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">改时区</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

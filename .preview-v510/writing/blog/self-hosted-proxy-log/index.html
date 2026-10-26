@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>成功自建梯子，记录一下这个过程 · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">成</div><div class="giant g2" aria-hidden="true" data-font="head">过程</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-09-26">2026.09.26 写</time>      </div>
+      <h1 class="post-title" data-font="head">成功自建梯子，记录一下这个过程</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 3 分钟"><b data-font="slab">3</b><span data-font="slab">min read</span></div>
+  </header>
+  <div class="article-body">
+<p>1/<br />
+之前一直用现成的机场服务,很垃圾——纯净度极差,速度还慢。这周干脆自己动手,从买VPS到搭节点到套干净的住宅IP,整个链路走了一遍。记录一下,也给自己留个档。</p>
+<p>完整记录在这里,感兴趣的可以看看:<br />
+🔗 自建梯子：https://finderlzy.github.io/Writing/04%E6%8A%80%E6%9C%AF/%E8%87%AA%E5%BB%BA%E6%A2%AF%E5%AD%90%EF%BC%9AVPS%20%2B%203x-ui%20%2B%20VLESS%20Reality/<br />
+🔗 套住宅ip：https://finderlzy.github.io/Writing/04%E6%8A%80%E6%9C%AF/%E7%BB%99%20VPS%20%E8%8A%82%E7%82%B9%E5%A5%97%E4%B8%8A%E4%BD%8F%E5%AE%85%20IP/</p>
+<p>2/<br />
+第一步是买VPS。服务器配置其实不重要,CPU差点无所谓,真正要看的是IP地址干不干净。我用测IP工具挨个测了一圈才发现:同一家服务商,在不同网站测出来的"纯净度"完全不一样。这个坑不亲自测一遍根本不知道。（不建议用ping0.cc测）</p>
+<p>3/<br />
+连上服务器后装了3x-ui(一个可视化面板),底层其实跑的是Xray。这一步之前对我来说是纯黑箱——直到我搞懂了这句话:<br />
+"远端服务器运行代理服务端,你的设备做客户端连过去,把流量加密后交给服务器转发出去。"<br />
+一下子整个逻辑就通了。</p>
+<p>4/<br />
+配置节点的时候,协议选了VLESS,安全用的是Reality。中间有个巨坑:填"目标"地址的时候冒号必须是英文冒号,不然直接报错。</p>
+<p>5/<br />
+最有意思的是后来去研究"为什么本地打开网站,流量会跑去连Xray监听的那个端口"。<br />
+答案其实是:不是浏览器自己去连的,是代理客户端(比如v2rayN)偷偷把所有流量先截下来,重新封装了以后,才转发到远端服务器。没有客户端接管,浏览器根本不会主动碰那个端口。<br />
+这个"谁在替谁转发"的关系,是我这次折腾里最大的一次顿悟。</p>
+<p>6/<br />
+搞完基础节点后,又加了一层:套一个干净的住宅IP。<br />
+逻辑是新增一条"住宅IP出站",再配一条"路由规则"——不是所有流量都走住宅IP(流量费很贵),而是让系统自己判断什么时候该走VPS、什么时候该走住宅IP。</p>
+<p>7/<br />
+整个过程走下来最大的感受是:很多"网络黑话"听起来很吓人,但拆开看,每一层其实都是在回答一个具体问题——"谁在监听""谁在转发""流量怎么加密"。搞懂这几个问题,整个链路就不再是玄学了。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/vps-residential-ip/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">给 VPS 节点套上住宅 IP</span></a>
+    <a class="neighbour next" href="../../blog/win11-ubuntu-dual-boot/" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">在win11中额外安装ubuntu系统</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>

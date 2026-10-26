@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>账号注册与订阅全流程：安卓端 · Writing</title>
+    <link rel="stylesheet" href="../../assets/theme/site.css">
+    <script defer src="../../assets/theme/site.js"></script>
+  </head>
+  <body>
+    <svg class="doodle-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></symbol>
+        <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="currentColor" stroke-width="5"/>
+          <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="currentColor"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="currentColor"/></symbol>
+        <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
+        <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+        <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+      </defs>
+    </svg>
+    </svg>
+    <header class="site-header">
+      <a class="site-title" href="../../" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav">
+        <a href="../../">首页</a>
+        <a href="../../posts/">全部文章</a>
+      </nav>
+    </header>
+    <main class="site-main">
+<article class="article">
+  <header class="post-hero">
+<div class="giant g1" aria-hidden="true" data-font="head">账</div><div class="giant g2" aria-hidden="true" data-font="head">卓端</div>    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="博客">博客</span>
+<time class="date" data-font="slab" datetime="2026-10-22">2026.10.22 写</time>      </div>
+      <h1 class="post-title" data-font="head">账号注册与订阅全流程：安卓端</h1>
+      <p class="post-prefix" data-font="slab">blog</p>
+      <p class="article-series-line">
+        属于系列
+        <a href="../../blog/subscribe-claude/">如何订阅claude</a>（共 19 篇）
+      </p>
+    </div>
+    <div class="ring" role="note" aria-label="读完大约 4 分钟"><b data-font="slab">4</b><span data-font="slab">min read</span></div>
+  </header>
+  <nav class="article-toc" aria-label="目录">
+    <p class="article-toc-title" data-font="cute">目录</p>
+    <ul>
+      <li><a href="#_1">账号注册与订阅全流程：安卓端</a>        <ul>      <li><a href="#gmail">注册 Gmail</a></li>
+      <li><a href="#chrome">登录 Chrome，完善资料</a>        <ul>      <li><a href="#_2">先用两天</a></li>
+</ul>
+</li>
+      <li><a href="#google">修改 Google 账号地区（可选）</a></li>
+      <li><a href="#claude">注册 Claude</a></li>
+      <li><a href="#claude_1">安装 Claude</a></li>
+      <li><a href="#_3">支付</a></li>
+</ul>
+</li>
+    </ul>
+  </nav>
+  <div class="article-body">
+<h1 id="_1">账号注册与订阅全流程：安卓端</h1>
+<hr />
+<p>如果你用的是安卓手机，这一章带你完成从注册 Gmail 到安装 Claude 的过程。</p>
+<p>需要先说清楚一件事：<strong>我自己的订阅走的是 iOS 路线，安卓的支付环节我没有走通，也没有验证过。</strong> 下面只写到我已经确认的部分；付款那一段会明确标出来，不会把没试过的方法写成教程。</p>
+<pre><code class="language-text">注册 Gmail
+   ↓
+在 Chrome 登录，完善资料
+   ↓
+正常用两天
+   ↓（可选）修改 Google 账号地区
+注册 Claude
+   ↓
+在 Google Play 安装 Claude
+   ↓
+支付（待补）
+</code></pre>
+<h2 id="gmail">注册 Gmail</h2>
+<hr />
+<p>确认手机的 v2rayNG 已经连接，出口是你的住宅 IP。打开 Gmail App；如果还没装，用浏览器打开 <a href="https://google.com">google.com</a> 也可以。在“设置电子邮件”里选择 <strong>Google</strong>，点 <strong>创建账号</strong>，跟着指引走。</p>
+<p>姓名没有英文名就用拼音，出生日期要满 18 岁。如果要求手机号验证，可以用国内的 <code>+86</code> 手机号，这个验证是随机触发的，遇到就填，收短信即可；最后设置可靠的密码，记好辅助邮箱。</p>
+<p><strong>视频：注册 Gmail，与 07-1 共用</strong></p>
+<h2 id="chrome">登录 Chrome，完善资料</h2>
+<hr />
+<p>确认电脑的代理已经打开，安装并打开 <a href="https://www.google.com/chrome/">Chrome</a>。点右上角头像 → 登录，用刚注册的 Gmail 登录；再打开 <a href="https://myaccount.google.com/">myaccount.google.com</a>，在“个人信息”里补上名字、头像、生日。</p>
+<p><strong>视频：登录 Chrome、完善资料，与 07-2 共用</strong></p>
+<p>“付款和订阅”里什么都不要填。绑一张国内的卡，等于直接告诉对方你在哪里。</p>
+<h3 id="_2">先用两天</h3>
+<p>新注册的 Google 账号很脆弱，不要马上拿去注册 Claude 或绑定支付。先像普通人一样用两天：</p>
+<ul>
+<li>注册 X、Instagram，刷刷 YouTube，逛逛外网；</li>
+<li>保持代理开着，让账号一直在你的住宅 IP 下活动；</li>
+<li>不要高频请求。</li>
+</ul>
+<p>如果这两天账号被封了，去 日常维护那章的申诉部分看怎么处理。一直没事，就继续往下走。</p>
+<h2 id="google">修改 Google 账号地区（可选）</h2>
+<hr />
+<p>这一步不是硬性要求，只是我个人的经验，网上没有明确依据。想让账号的地区和住宅 IP 对上，可以改；不想改就跳过。</p>
+<p>保持代理开启，打开 <a href="https://policies.google.com/terms">policies.google.com/terms</a>，看页面上写的“国家/地区版本”。如果显示中国大陆或香港，可以在同一页面申请更改到住宅 IP 所在的地区。Google 会审核，可能要等一段时间；审核期间最好一直在住宅 IP 下。</p>
+<p><strong>视频：修改 Google 账号地区，与 07-3 共用（可选）</strong></p>
+<h2 id="claude">注册 Claude</h2>
+<hr />
+<p>前面所有步骤都做完、检测都通过，再去注册，不要边注册边调。打开 <a href="https://claude.ai">claude.ai</a>，点 <strong>Continue with Google</strong>，选择刚注册的 Gmail，按提示授权并完成注册；中途可能需要验证邮箱或手机号。</p>
+<p><strong>视频：注册 Claude，与 07-4 共用</strong></p>
+<p><strong>一个 IP 不要注册好几个账号。</strong> 注册后先正常用几天，最好把免费额度用完，等它主动弹出升级提示，再考虑订阅。</p>
+<h2 id="claude_1">安装 Claude</h2>
+<hr />
+<p>确认 v2rayNG 已经连接，并且 Google Play 已经登录你的 Google 账号。在 Google Play 里搜索 <strong>Claude</strong>，认准开发者是 Anthropic，安装；打开 App，用 Google 账号登录，确认能正常进入。</p>
+<p>Google Play 会根据 IP 和账号地区显示不同的应用。如果搜不到 Claude，先检查代理是否连上、节点出口是不是 Claude 支持的地区，再确认 Google Play 登录的是哪个账号。</p>
+<p><strong>视频 08-1：在 Google Play 安装 Claude</strong></p>
+<h2 id="_3">支付</h2>
+<hr />
+<p><strong>这一段我还没有验证过，不能给你一个“照着做就能成”的方案。</strong></p>
+<p>我听说过可以用美区 Google Play 礼品卡充值，再在 App 内订阅，但我没有试过，也没有认真研究过。具体会遇到什么，我没有一手经验，所以不把它写成步骤。</p>
+<p>所以有两个选择：</p>
+<ul>
+<li><strong>去别处找走过安卓路线的人的经验。</strong> 看的时候注意区分“他成功了”和“他听说可以”，也注意教程的发布时间。</li>
+<li><strong>借一台 iPhone 完成首次付款。</strong> 这是我自己走通的路。Claude 账号是用 Google 账号注册的，和 Apple ID 无关，所以在 iPhone 上订阅，之后回到安卓手机或电脑网页使用，Pro 权益是跟着 Claude 账号走的。具体步骤看 注册和订阅那章的“注册美区 Apple ID”到“在 App 内订阅”。</li>
+</ul>
+<p>如果你走通了安卓的支付，欢迎把步骤和录屏发给我，我把它补进这一章。</p>
+  </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle" data-doodle="ink"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle" data-doodle="star"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
+  <p class="series-next">
+    这是系列「如何订阅claude」的最后一篇，<a href="../../blog/subscribe-claude/">回到系列目录</a>。
+  </p>
+  <nav class="article-neighbours" aria-label="上一篇和下一篇">
+    <a class="neighbour previous" href="../../blog/5f76578d/" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">账号注册与订阅全流程：iOS 端</span></a>
+  </nav>
+  <section class="comments" id="comments">
+    <div class="comments-bar"><span class="comments-title" data-font="cute">留言</span><i class="comments-dots" aria-hidden="true"><b></b><b></b></i></div>
+    <div class="comments-in">
+    <script
+      src="https://giscus.app/client.js"
+      data-repo="Finderlzy/writing"
+      data-repo-id="R_kgDOT9EtHA"
+      data-category="Comments"
+      data-category-id="DIC_kwDOT9EtHM4DHOm0"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="1"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang="zh-CN"
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async>
+    </script>
+    </div>
+  </section>
+</article>
+    </main>
+    <footer class="site-footer">
+      <p class="site-footer-links">
+        <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
+<a href="https://github.com/Finderlzy" rel="me noopener" data-font="head">GitHub</a> · <a href="https://x.com/finderlzy" rel="me noopener" data-font="head">X</a> · <a href="https://space.bilibili.com/1276546447" rel="me noopener" data-font="head">哔哩哔哩</a> · <a href="https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10" rel="me noopener" data-font="head">抖音</a>        <span class="site-footer-copy">· © Writing</span>
+      </p>
+    </footer>
+  </body>
+</html>
