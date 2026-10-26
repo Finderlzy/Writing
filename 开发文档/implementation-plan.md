@@ -1,14 +1,144 @@
-# 实施计划：5.0.0
+# 实施计划
+
+## 5.1.0 视觉改版
+
+> 写于 2026-10-26。依据：[requirements.md §9](requirements.md)（R-VIS-1～7）、[architecture.md §7.1](architecture.md) 和 §14 的实施前评审、样稿 [设计样稿/5.1.0-首页与文章页.html](设计样稿/5.1.0-首页与文章页.html)。
+> 沿用 5.0.0 的做法：不使用 GitHub Issues，任务状态记在本表；每个任务的正文按 Issue 模板写，需要时可以直接贴成 Issue。下面的命令都是计划中的验收方式，没有执行过。
+> 推送 `main` 即部署。V1 推送后全站就换成新视觉，标题区先是简化版，V2～V4 逐页补齐；中间状态可以正常阅读，不需要长期分支。
+
+### 首个可开工任务
+
+**V0 字体子集化验证**，建议档位：强。新开会话，用 `task-implement` 执行“开发文档/implementation-plan.md 的 V0”。
+
+### 任务一览
+
+| ID | 任务 | 需求 | 依赖 | 档位 | 状态 |
+| --- | --- | --- | --- | --- | --- |
+| V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 未开始 |
+| V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 未开始 |
+| V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 待细化 |
+| V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 待细化 |
+| V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 待细化 |
+| V5 | 整体验收与交付记录 | §9 验收表全部 | V2、V3、V4 | 标准 | 待细化 |
+
+V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 → V4 串行；要并行就各用一个 worktree，按这个顺序合并。
+
+检查点：V1 推送后作者在手机和桌面上看一眼新配色和字体；V2 做完再看一次文章页，确认后再做首页。
+
+### V0 验证：字体子集化
+
+**目标**：确定 R-VIS-5 的做法能不能成立。用真实内容验证四款字体按用到的字子集化成 woff2 后的体积、构建多花的时间，以及源字体放进仓库还是 CI 下载。结果写回 [architecture.md §7.1](architecture.md) 的“字体”一段，决定 V1 怎么做。这是验证任务，不改线上网站。
+
+**涉及范围**：只在临时目录里试验；产物是 `开发文档/architecture.md` §7.1 的修改，以及（如果决定提交源字体）一份记录字体来源和许可的说明。不改 `tools/`、`theme/`、`requirements.txt`。
+
+**依赖**：可立即开工
+
+**建议档位**：强 — 未定的设计取舍：字体体积、源文件存放和依赖选择会决定 V1 的实现。
+
+**做法**：
+
+1. 在临时虚拟环境装 `fonttools` 和 `brotli`，记下版本。
+2. 从 google/fonts 仓库取源字体，记下网址、提交号和 SHA-256：`ofl/notosanssc/NotoSansSC[wght].ttf`（用 `fontTools.varLib.instancer` 固定到 wght=900）、`ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf`、`ofl/zillaslab/ZillaSlab-SemiBold.ttf` 和 `-Bold.ttf`、`ofl/gochihand/GochiHand-Regular.ttf`。路径不对时以仓库实际为准。
+3. 收字：head 用全部公开文章的标题（`Catalog.load` 的 `title`）、`docs/index.md` 第一段、“首页 全部文章 博客与作品 想法 灵感 思考 初稿 博客 作品 404”和数字；cute 用样稿里的短句（“讲了什么 完 冒出一个想法 来了一点灵感 博客与作品 留言”）；slab 用可打印 ASCII；hand 用 “yep!”。
+4. 用 `pyftsubset`（或 `fontTools.subset` 的 API）各出一个 woff2，记录体积；把 4 个文件放进样稿的一个副本，替换 Google Fonts 链接，用无头浏览器截图和样稿对比，确认字形一致。
+5. 计时：在 `.venv/bin/python tools/build_site.py` 之外单独计子集化耗时。
+6. 比较两种存放方式：提交源字体（仓库增加多少 MB）和 CI 下载（固定网址加 SHA-256，下载失败时构建怎么办）。
+
+**成功标准**：四个 woff2 合计不超过 300 KB；子集化耗时不超过 10 秒；截图里标题、大字、数字与样稿一致。达不到时，写清差多少，并给出退路（比如 head 只收标题首字和导航，标题正文退回系统粗体），由作者决定是否接受。
+
+**结果会影响**：V1 的 `tools/fonts.py` 接口是否成立、`requirements.txt` 加哪些依赖、`theme/fonts/` 是否存在、`.github/workflows/deploy.yml` 是否增加下载步骤。
+
+**验收**：
+- [ ] `开发文档/architecture.md` §7.1 的“字体”一段写明：依赖及版本、源字体来源与 SHA-256、存放方式、实测体积和耗时
+- [ ] 试验用的临时目录已删除
+
+### V1 全站视觉基础
+
+**目标**：把样稿的配色、字体、描边、涂鸦和正文排版铺到全站所有页面，标题区先用简化版（标题、日期、阶段、标签照现在的结构，只换样式）。推送后线上整站换成新视觉，内容和网址不变。对应 R-VIS-1、R-VIS-5、R-VIS-6、R-VIS-7。
+
+**涉及范围**：`theme/assets/site.css`（整份重写）、`theme/templates/base.html`、`theme/templates/article.html`、`theme/templates/home.html`、`theme/templates/posts.html`、`theme/templates/404.html`（这几个只加 `data-font` 和类名，不改结构）、`tools/fonts.py`（新）、`tools/render.py`（`build_pages` 调用 `subset_fonts`）、`requirements.txt`、按 V0 结论可能有 `theme/fonts/` 或 `.github/workflows/deploy.yml`、`tests/test_fonts.py`（新）、`tests/test_render.py`。
+
+**依赖**：依赖 V0
+
+**建议档位**：强 — 首个端到端切片，新增字体流水线这个跨模块接口（渲染层 → 字体模块 → 站点产物）。
+
+**参照**：
+- 视觉取值：样稿 `<style>` 里 `:root` 的变量、`.site-head`、`.brand`、`.site-nav`、`.chip`、`.neigh`、`.window`、`.foot` 和 `<svg>` 里的五个 `<symbol>`，直接搬，深色变量照抄。
+- 接口：[architecture.md §7.1](architecture.md) 的 `FontSpec`、`collect_chars`、`subset_fonts`（按 V0 的结论可能已调整）。
+- 现有结构：`base.html` 的顶部栏两项和页脚社交链接保持不变；`test_render.py` 第 186～223 行对首页顺序、顶部栏链接、资源路径的断言必须继续通过。
+- 构建顺序：`render.build_pages` 里 `write_site` 之后、`check_site` 之前调用 `subset_fonts`。
+
+**步骤**：
+
+1. **字体流水线**（先做，独立可测）：按 V0 的结论加依赖和源字体，写 `tools/fonts.py`。`collect_chars` 用 `html.parser` 扫 `site/**/*.html`，收集带 `data-font` 属性的元素（含子元素）的文字。边界用例：同一字出现在多个角色里各收一份；属性值不认识时报 `E_FONT_ROLE_UNKNOWN`；没有任何元素用到某角色时仍生成只含 `fixed` 字的文件，CSS 引用不会 404；源字体缺失报 `E_FONT_SOURCE_MISSING`；合计超过 300 KB 报 `W_FONT_BUDGET`。
+2. **样式和模板**：重写 `site.css`，`@font-face` 指向 `../fonts/<output>.woff2`（相对 `assets/theme/site.css`），`font-display: swap`，每个角色都有系统字体兜底。`base.html` 加涂鸦 `<symbol>` 和站名旁的星星；各模板给标题、站名、日期、按钮等加 `data-font`。正文里的 `h2`～`h4`、代码块和复制按钮、表格、提示块（`.admonition`）、引用、图片、`mark`、目录、系列提示行都要有新样式；表格、代码块、公式各自横向滚动。
+3. **深色和动效**：深色只改变量；`prefers-reduced-motion` 时关掉卡片悬停位移。
+
+**验收**：
+- [ ] 测试：`.venv/bin/python -m unittest discover -s tests` 通过，含新的 `tests/test_fonts.py`（收字、子集化后的字体包含所需字形、缺源字体的诊断、超预算的提示）
+- [ ] 构建：`.venv/bin/python tools/build_site.py` 输出 `build succeeded`，`site/assets/fonts/` 下有 4 个 woff2，合计不超过 300 KB
+- [ ] 手工验证：`.venv/bin/python -m http.server -d site 8000`，桌面和 375px 下打开首页、全部文章、《黑框眼镜》、《三、把服务器变成节点》 → 配色、字体、描边与样稿一致；教程的代码块能复制、表格能横向滚动；没有横向滚动；开发者工具里没有对 Google Fonts 的请求
+- [ ] 手工验证：系统切到深色 → 上面四页没有看不清的文字或消失的边框
+
+### V2 文章页标题区和文末（待细化）
+
+**目标**：做出样稿文章页的完整标题区和文末：淡色大字、读完时间黑圈、“讲了什么”对话框、阶段英文前缀、改于日期、跳过正文开头的日期引用块、文末涂鸦和“完”。对应 R-VIS-3。
+
+**涉及范围**：`tools/content.py`（`Article.updated`）、`tools/render.py`（`giant_chars`、`strip_date_notes`、`reading_minutes`、`Page` 新字段）、`theme/templates/article.html`、`theme/assets/site.css`、`tests/test_content.py`、`tests/test_render.py`。
+
+**依赖**：依赖 V1
+
+**建议档位**：标准 — 接口已在 architecture.md §7.1 定好，照样稿实现。
+
+**已知边界用例**（细化时补参照）：“黑框眼镜（作品）”→ 黑、眼镜；“CLANNAD~AFTER STORY~” → C、无第二个；“《棋王 树王 孩子王》” → 棋、子王；《CLANNAD》开头的 `>写于 2026-08-20` 没有空格、同一引用块里还有星级和“下一季”链接；操作版入口篇的引用块在日期行之后还有说明文字；没有 description 的文章。
+
+**验收**：需求 §9 验收表里 R-VIS-3 的三行。
+
+### V3 首页（待细化）
+
+**目标**：做出样稿首页：气泡标题取 `docs/index.md` 第一段，右侧“想法”“灵感”大字，黑圈总数，两条线的卡片（阶段名链接到 `posts/?stage=…`），博客和作品按月分组。对应 R-VIS-2，R-UI-3 的内容规则不变。
+
+**涉及范围**：`tools/content.py`（`stage_counts`）、`tools/render.py`（`split_home_intro`、首页按月分组的数据）、`theme/templates/home.html`、`theme/assets/site.css`、`tests/test_content.py`、`tests/test_render.py`。
+
+**依赖**：依赖 V1（建议在 V2 之后）
+
+**建议档位**：标准 — 照样稿和已定接口实现。
+
+**验收**：需求 §9 验收表里 R-VIS-2 那一行；`test_render.py` 原有的首页断言继续通过。
+
+### V4 全部文章和 404（待细化）
+
+**目标**：全部文章页按月分组、筛选按钮按阶段着色；404 页有大号淡色“404”和两个入口。对应 R-VIS-4，筛选行为不变。
+
+**涉及范围**：`theme/templates/posts.html`、`theme/templates/404.html`、`theme/assets/site.css`，按月分组如需数据则改 `tools/render.py`；`tests/test_render.py`。
+
+**依赖**：依赖 V1（建议在 V3 之后，复用首页的按月分组）
+
+**建议档位**：标准 — 复用 V3 的分组和 V1 的组件样式。
+
+**验收**：需求 §9 验收表里 R-VIS-4 那一行；`test_render.py` 里筛选相关断言继续通过。
+
+### V5 整体验收与交付记录（待细化）
+
+**目标**：按需求 §9 的验收表逐条在桌面、375px、深色下验收全部页面，记录到 `开发文档/delivery.md`，在 `开发文档/DEVELOPMENT.md` 写 5.1.0 的开发日志。用 `project-delivery` 执行。
+
+**依赖**：依赖 V2、V3、V4
+
+**建议档位**：标准 — 按验收表逐条检查。
+
+---
+
+## 5.0.0 按阶段管理内容（已完成）
 
 > 写于 2026-10-26。依据：[requirements.md](requirements.md)、[architecture.md](architecture.md)（第 13 节是实施前评审和过渡方案）、[CONTEXT.md](../CONTEXT.md)。
 > 不使用 GitHub Issues，任务状态记在本文的“状态”一栏。一个里程碑一个任务，任务内的步骤按顺序做，每步结束时测试和旧构建都要保持通过。
 > 下面列出的命令都是计划中的验收方式，没有执行过。
 
-## 首个可开工任务
+### 首个可开工任务
 
 **T1 新流水线骨架**，建议档位：强。新开会话，用 `task-implement` 执行“开发文档/implementation-plan.md 的 T1”。
 
-## 任务一览
+### 任务一览
 
 | ID | 任务 | 需求 | 依赖 | 档位 | 线上网站 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -20,7 +150,7 @@
 
 检查点：T1 结束时作者打开一次预览站点确认方向；T2 结束时作者在手机和桌面上过一遍全部页面，再开始 T3。
 
-## T1 新流水线骨架：预览构建生成文章页
+### T1 新流水线骨架：预览构建生成文章页
 
 **目标**：新流水线的第一个端到端切片。用真实内容（旧文件夹布局）在临时目录里构建出新版文章页：站内双链能点、锚点正确、图片显示，只有四个阶段的文章出现。线上网站不变。对应 R-PUB-1、R-PUB-2、R-PUB-3、R-PUB-5。
 
@@ -53,7 +183,7 @@
 - [x] 手工验证：用 `python -m http.server` 打开《CLANNAD》：双链 `../606b2865/`、`../9713cd15/` 都返回 200 且指向对应文章，页内 `#_1` 等锚点存在，图片 `assets/09附件/DM_20260821120227_001.webp` 返回 200 `image/webp`；临时目录里没有 `00收集`、`01系统`、`02笔记`、`07自己`、`09归档` 任何目录
 - [x] 验收后删除临时目录和 `site/`
 
-## T2 读者页面
+### T2 读者页面
 
 **目标**：在预览站点里做完读者能看到的全部页面，线上仍不变。对应 R-UI-1～R-UI-6 和 R-PUB-4 的跳转机制。开工前按 T1 落地的代码补全参照。
 
@@ -92,7 +222,7 @@
 要看的页面：`/`（首页）、`/posts/`（全部文章，点“思考”和“二次元”看筛选）、`/blog/subscribe-claude/`（长文：目录、上下篇、复制按钮、评论）、`/thoughts/05af6b0e/`（从首页或全部文章点进去的代表作）、`/tech/subscribe-claude-quick/`（应跳到 `/blog/subscribe-claude-quick/`）；随便打开一个不存在的地址看 404 页。
 `preview-t2/` 已在 `.gitignore` 里，看完直接删掉即可。
 
-## T3 切换上线
+### T3 切换上线
 
 **目标**：内容迁移到新文件夹，线上换成新网站，删除旧流水线，完成 5.0.0 的验收和记录。对应 R-STR-1～R-STR-5、R-CLN-1～R-CLN-3、R-PUB-1、R-PUB-2、R-PUB-4，以及需求第 7 节全部验收。开工前按 T2 落地的代码补全参照。
 

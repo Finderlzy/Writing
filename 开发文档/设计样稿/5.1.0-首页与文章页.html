@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- 5.1.0 视觉样稿，作者 2026-10-26 认可。样稿从 Google Fonts 加载字体，正式网站按 R-VIS-5 改为本站托管。 -->
+<title>Writing 样稿</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Zilla+Slab:wght@600;700&family=ZCOOL+KuaiLe&family=Gochi+Hand&display=swap">
+<style>
+/* 布局：像轻小说封面——白底上垫巨大的淡色字做图形，粗黑标题压在前面，一个红橙色强调，空白处散一点手画涂鸦 */
+:root {
+  --paper: #ffffff;
+  --ink: #1d1b19;
+  --ink-soft: #6c6762;
+  --rule: #e9e5e0;
+  --accent: #e5461f;      /* 封面上那个红橙色的“2” */
+  --pink: #f0d9ec;        /* 背景大字：想法 */
+  --peach: #fbe1cd;       /* 背景大字：灵感 */
+  --sky: #a8d6fb;
+  --mustard: #e3b43c;
+  --chip-think: #f6e6f2; --chip-draft: #fdebdc; --chip-blog: #e3f1fd; --chip-opus: #fde3db;
+  --shadow: #1d1b19;
+  --font-head: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-slab: "Zilla Slab", "Rockwell", Georgia, serif;
+  --font-cute: "ZCOOL KuaiLe", "Noto Sans SC", sans-serif;
+  --font-hand: "Gochi Hand", "Comic Sans MS", cursive;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #18171c; --ink: #f2eee8; --ink-soft: #a29c95; --rule: #2e2c33; --accent: #ff7a4f;
+  --pink: #33263a; --peach: #3a2b22; --sky: #3f6f96; --mustard: #d9ad3f;
+  --chip-think: #2e2433; --chip-draft: #33281f; --chip-blog: #1f2a35; --chip-opus: #3a231d; --shadow: #000000; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #18171c; --ink: #f2eee8; --ink-soft: #a29c95; --rule: #2e2c33; --accent: #ff7a4f;
+  --pink: #33263a; --peach: #3a2b22; --sky: #3f6f96; --mustard: #d9ad3f;
+  --chip-think: #2e2433; --chip-draft: #33281f; --chip-blog: #1f2a35; --chip-opus: #3a231d; --shadow: #000000; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.doodle { display: inline-block; vertical-align: middle; }
+.doodle svg { display: block; }
+
+/* 样稿切换（不属于设计本身） */
+.proto { border-bottom: 1px dashed var(--rule); padding-block: 8px; font-size: 12px; color: var(--ink-soft); }
+.proto-in { max-width: 64rem; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+.proto a, .proto button { font: inherit; color: var(--ink); background: none; border: 1px solid var(--rule); border-radius: 999px; padding: 2px 10px; text-decoration: none; cursor: pointer; }
+.proto [aria-current="true"], .proto [aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.proto .sp { flex: 1; }
+
+/* 站点头 */
+.site-head { max-width: 64rem; margin: 0 auto; padding-block: 1.4rem 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; position: relative; z-index: 2; }
+.brand { display: flex; align-items: center; gap: 8px; text-decoration: none; font-family: var(--font-slab); font-weight: 700; font-size: 1.35rem; letter-spacing: 0.01em; }
+.brand .doodle { transform: rotate(-12deg); }
+.site-nav { display: flex; flex-wrap: wrap; gap: 4px 18px; font-weight: 500; font-size: 0.95rem; }
+.site-nav a { text-decoration: none; padding-bottom: 2px; border-bottom: 2px solid transparent; }
+.site-nav a:hover, .site-nav a[aria-current="page"] { border-bottom-color: var(--accent); }
+
+/* ================= 首页 ================= */
+.home-hero { position: relative; max-width: 64rem; margin: 0 auto; padding-block: 2.5rem 3rem; min-height: 34rem; overflow: hidden; }
+.giant { position: absolute; z-index: 0; font-family: var(--font-head); font-weight: 900; line-height: 0.92; pointer-events: none; user-select: none; }
+.giant { white-space: nowrap; }
+.giant.v { writing-mode: vertical-rl; letter-spacing: -0.04em; }
+.home-hero .g1 { color: var(--pink); font-size: clamp(8rem, 18vw, 14rem); right: 0; top: -0.5rem; }
+.home-hero .g2 { color: var(--peach); font-size: clamp(8rem, 18vw, 14rem); right: clamp(7.5rem, 17vw, 13rem); top: 5rem; }
+.hero-body { position: relative; z-index: 1; display: grid; gap: 1.6rem; max-width: 30rem; }
+.bubble { position: relative; border: 3px solid var(--ink); border-radius: 50% 46% 48% 52% / 56% 50% 50% 44%; padding: 2.2rem 2.4rem 2.4rem; background: var(--paper); }
+.bubble .tail { position: absolute; left: 24%; bottom: -27px; width: 40px; height: 32px; }
+.bubble h1 { margin: 0; font-family: var(--font-head); font-weight: 900; font-size: clamp(2.2rem, 7vw, 3.1rem); line-height: 1.15; letter-spacing: 0.02em; }
+.bubble h1 .slab { display: block; font-family: var(--font-slab); color: var(--accent); font-weight: 700; font-size: 0.42em; letter-spacing: 0.02em; margin-top: 0.35rem; }
+.welcome { font-size: 1rem; line-height: 1.95; max-width: 27rem; margin: 0.6rem 0 0; }
+.welcome p { margin: 0 0 0.6em; }
+.welcome .ps { color: var(--ink-soft); font-size: 0.9rem; }
+.count { position: absolute; z-index: 1; right: 6%; bottom: 2.2rem; width: 8.5rem; height: 8.5rem; border: 5px solid var(--ink); border-radius: 50%;
+  display: grid; place-content: center; text-align: center; background: var(--paper); }
+.count b { font-family: var(--font-slab); font-weight: 700; font-size: 3.3rem; line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; }
+.count span { font-family: var(--font-slab); font-weight: 600; font-size: 0.95rem; }
+.count .doodle { position: absolute; top: -22px; right: -14px; }
+.hero-notes { position: absolute; z-index: 1; left: 31rem; top: 4rem; }
+@media (max-width: 760px) {
+  .home-hero { min-height: 0; padding-bottom: 10rem; }
+  .home-hero .giant.v { writing-mode: horizontal-tb; font-size: 5.2rem; top: auto; }
+  .home-hero .g1 { left: -0.3rem; right: auto; bottom: 5rem; } .home-hero .g2 { left: 3rem; right: auto; bottom: 0.4rem; }
+  .count { right: 4%; bottom: 1.5rem; width: 7.2rem; height: 7.2rem; } .count b { font-size: 2.7rem; }
+  .hero-notes { display: none; }
+  .bubble { padding: 1.8rem 1.6rem 2rem; }
+}
+
+.lines { max-width: 64rem; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 14px; padding-block: 0 3rem; }
+.line { border: 2.5px solid var(--ink); border-radius: 14px; padding: 1rem 1.2rem; box-shadow: 4px 4px 0 var(--shadow); display: grid; gap: 0.5rem; background: var(--paper); }
+.line .from { font-family: var(--font-cute); font-size: 1.15rem; }
+.line .path { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.9rem; }
+.line .path span:not(.arr) { padding: 2px 10px; border-radius: 999px; font-weight: 500; }
+.line .arr { color: var(--ink-soft); }
+.c-think { background: var(--chip-think); } .c-draft { background: var(--chip-draft); } .c-blog { background: var(--chip-blog); } .c-opus { background: var(--chip-opus); }
+.line .n { color: var(--ink-soft); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+
+.list { max-width: 64rem; margin: 0 auto; padding-block: 0 4rem; }
+.list-head { display: flex; align-items: baseline; gap: 12px; margin: 0 0 1.4rem; }
+.list-head h2 { font-family: var(--font-cute); font-weight: 400; font-size: 1.7rem; margin: 0; }
+.list-head .hand { font-family: var(--font-hand); color: var(--mustard); font-size: 1.6rem; transform: rotate(-6deg); }
+.month { display: grid; grid-template-columns: 1fr; gap: 0 2rem; padding: 1.2rem 0; border-top: 2px solid var(--ink); position: relative; }
+@media (min-width: 760px) { .month { grid-template-columns: 9rem minmax(0, 1fr); } }
+.month-label { font-family: var(--font-slab); font-weight: 700; font-size: 2.4rem; line-height: 1; color: var(--ink); }
+.month-label small { display: block; font-size: 0.9rem; color: var(--ink-soft); font-weight: 600; margin-top: 0.3rem; }
+.items { list-style: none; margin: 0; padding: 0; display: grid; }
+.items li { padding: 0.75rem 0; border-bottom: 1px solid var(--rule); min-width: 0; }
+.items li:last-child { border-bottom: 0; }
+.items a { text-decoration: none; display: grid; gap: 4px; }
+.items .t { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.items .t strong { font-weight: 700; font-size: 1.08rem; }
+.items a:hover strong { color: var(--accent); }
+.chip { font-size: 0.75rem; padding: 1px 8px; border-radius: 999px; font-weight: 500; }
+.items .d { color: var(--ink-soft); font-size: 0.875rem; line-height: 1.7; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.items .date { font-family: var(--font-slab); font-weight: 600; font-size: 0.85rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.more { margin-top: 1.4rem; font-weight: 500; }
+.more a { text-decoration: none; border-bottom: 2px solid var(--accent); }
+
+/* ================= 文章页 ================= */
+.post-hero { position: relative; max-width: 64rem; margin: 0 auto; padding-block: 3.5rem 2.5rem; overflow: hidden; }
+.post-hero .g1 { color: var(--pink); font-size: clamp(14rem, 44vw, 26rem); right: -2%; top: -2.5rem; line-height: 0.85; }
+.post-hero .g2 { color: var(--peach); font-size: clamp(6rem, 16vw, 10rem); right: clamp(12rem, 38vw, 24rem); bottom: -1rem; line-height: 0.85; }
+.post-head { position: relative; z-index: 1; max-width: 38rem; display: grid; gap: 1.1rem; }
+.kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 0.875rem; }
+.kicker .chip { font-size: 0.8rem; }
+.kicker .date { font-family: var(--font-slab); font-weight: 600; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.post-head h1 { margin: 0; font-family: var(--font-head); font-weight: 900; font-size: clamp(3rem, 12vw, 5.2rem); line-height: 1; letter-spacing: 0.02em; }
+.post-head .en { font-family: var(--font-slab); font-weight: 700; color: var(--accent); font-size: clamp(1rem, 3vw, 1.3rem); }
+.say { position: relative; max-width: 30rem; border: 2.5px solid var(--ink); border-radius: 18px; padding: 0.9rem 1.1rem; font-size: 0.925rem; line-height: 1.8; background: var(--paper); margin-top: 0.6rem; }
+.say::before { content: "讲了什么"; position: absolute; top: -0.8rem; left: 1rem; background: var(--paper); padding: 0 6px; font-family: var(--font-cute); font-size: 0.95rem; }
+.ring { position: absolute; z-index: 1; right: 4%; top: 3.2rem; width: 7.6rem; height: 7.6rem; border: 5px solid var(--ink); border-radius: 50%;
+  display: grid; place-content: center; text-align: center; background: var(--paper); }
+.ring b { font-family: var(--font-slab); font-weight: 700; font-size: 3rem; line-height: 0.9; color: var(--accent); }
+.ring span { font-family: var(--font-slab); font-weight: 600; font-size: 0.9rem; }
+@media (max-width: 760px) { .ring { position: static; width: 5.8rem; height: 5.8rem; border-width: 4px; } .ring b { font-size: 2.2rem; } }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.85rem; color: var(--ink-soft); }
+
+.post-body { max-width: 38rem; margin: 0 auto; font-size: 1.0625rem; line-height: 2; padding-block: 0.5rem 0; }
+.post-body p { margin: 0 0 1.05em; }
+.fin { max-width: 38rem; margin: 2.6rem auto 0; display: flex; align-items: center; gap: 14px; }
+.fin .ln { flex: 1; height: 0; border-top: 2px dashed var(--rule); }
+.fin .word { font-family: var(--font-cute); font-size: 1.4rem; }
+
+.after { max-width: 38rem; margin: 3rem auto 0; display: grid; gap: 1.6rem; padding-block: 0 4rem; }
+.neigh { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 14px; }
+.neigh a { text-decoration: none; border: 2.5px solid var(--ink); border-radius: 14px; padding: 0.9rem 1.1rem; box-shadow: 4px 4px 0 var(--shadow); display: grid; gap: 2px; background: var(--paper); transition: transform .12s, box-shadow .12s; }
+.neigh a:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--shadow); }
+.neigh small { font-family: var(--font-slab); font-weight: 600; color: var(--ink-soft); }
+.neigh strong { font-weight: 700; }
+.neigh a.next { text-align: right; }
+.window { border: 2.5px solid var(--ink); border-radius: 12px; overflow: hidden; box-shadow: 4px 4px 0 var(--shadow); }
+.window .bar { background: var(--ink); color: var(--paper); padding: 0.45rem 0.9rem; font-family: var(--font-slab); font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+.window .bar i { display: flex; gap: 6px; } .window .bar i b { width: 10px; height: 10px; border-radius: 50%; background: var(--paper); opacity: 0.6; }
+.window .in { padding: 1rem 1.1rem; color: var(--ink-soft); font-size: 0.925rem; line-height: 1.8; }
+
+.foot { border-top: 2px solid var(--ink); }
+.foot-in { max-width: 64rem; margin: 0 auto; padding-block: 1.2rem 2rem; display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; font-size: 0.85rem; color: var(--ink-soft); }
+
+@media (prefers-reduced-motion: reduce) { .neigh a { transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- 手画涂鸦 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="star" viewBox="0 0 48 48"><path d="M24 4.5c1.6 0 2.5 1.2 3.4 3.2l3.6 7.6 8.2 1.1c2.2.3 3.4 1.1 3.8 2.4.4 1.3-.2 2.6-1.9 4.1l-6 5.7 1.6 8.2c.4 2.2.1 3.6-1 4.4-1.1.8-2.6.6-4.5-.5L24 36.8l-7.2 3.9c-1.9 1.1-3.4 1.3-4.5.5-1.1-.8-1.4-2.2-1-4.4l1.6-8.2-6-5.7C5.2 21.4 4.6 20.1 5 18.8c.4-1.3 1.6-2.1 3.8-2.4l8.2-1.1 3.6-7.6c.9-2 1.8-3.2 3.4-3.2z" fill="var(--mustard)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M18.5 23.5c.6-1 1.8-1 2.4 0M27.1 23.5c.6-1 1.8-1 2.4 0M20.5 28c2 2.2 5 2.2 7 0" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="note" viewBox="0 0 40 48"><path d="M14 36V9l20-5v26" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 13l20-5" stroke="var(--ink)" stroke-width="5"/>
+      <ellipse cx="9" cy="37" rx="6.5" ry="5" transform="rotate(-18 9 37)" fill="var(--ink)"/><ellipse cx="29" cy="31" rx="6.5" ry="5" transform="rotate(-18 29 31)" fill="var(--ink)"/></symbol>
+    <symbol id="note1" viewBox="0 0 30 48"><path d="M13 38V6c3 5 10 6 12 13" fill="none" stroke="var(--ink)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="var(--ink)"/></symbol>
+    <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="var(--sky)" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--ink)" stroke-width="2.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="proto gutter"><div class="proto-in">
+  <span>样稿</span><a href="#home" data-v="home">首页</a><a href="#post" data-v="post">《黑框眼镜》</a>
+  <span class="sp"></span><span>颜色</span>
+  <button type="button" data-t="system">跟随系统</button><button type="button" data-t="light">浅色</button><button type="button" data-t="dark">深色</button>
+</div></div>
+
+<!-- ============ 首页 ============ -->
+<div id="v-home" hidden>
+  <div class="gutter">
+    <header class="site-head">
+      <a class="brand" href="#home"><span class="doodle"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav" aria-label="栏目"><a href="#home">思考</a><a href="#home">初稿</a><a href="#home">博客</a><a href="#home">作品</a><a href="#home">全部</a></nav>
+    </header>
+
+    <section class="home-hero">
+      <div class="giant v g1" aria-hidden="true">想法</div>
+      <div class="giant v g2" aria-hidden="true">灵感</div>
+      <div class="hero-body">
+        <div class="bubble"><h1>欢迎来到<br>这里。<span class="slab">finderlzy's writing</span></h1>
+          <svg class="tail" viewBox="0 0 40 32" aria-hidden="true"><path d="M4 -2 Q10 18 2 30 Q22 20 30 -2 Z" fill="var(--paper)"/><path d="M5 2 Q10 18 2 30 Q22 20 29 3" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+        <div class="welcome">
+          <p>这些文字大多是自己的想法，被人读到多少会感到不好意思。可如果一直没有人看见，我又觉得有些遗憾。如果你恰好路过、恰好读到，那也挺好。</p>
+          <p>如果有什么打动你，那这些文字就有了新的意义；或者让你有不一样的想法，都欢迎留下痕迹；如果没有，那也没关系，正常翻翻就好。</p>
+          <p class="ps">p.s. 为了方便管理写过的东西，我的学习笔记也放到这里面了。</p>
+        </div>
+      </div>
+      <div class="hero-notes" aria-hidden="true">
+        <span class="doodle" style="transform:rotate(-8deg)"><svg width="34" height="40"><use href="#note"/></svg></span>
+        <span class="doodle" style="margin-left:18px;transform:translateY(26px) rotate(10deg)"><svg width="22" height="34"><use href="#note1"/></svg></span>
+      </div>
+      <div class="count" aria-label="已发布 108 篇">
+        <span class="doodle" aria-hidden="true"><svg width="34" height="34"><use href="#star"/></svg></span>
+        <b>108</b><span>pieces</span>
+      </div>
+    </section>
+
+    <section class="lines" aria-label="两条线">
+      <div class="line"><div class="from">冒出一个想法 <span class="doodle"><svg width="22" height="26"><use href="#think"/></svg></span></div>
+        <div class="path"><span class="c-think">思考</span><span class="arr">→</span><span class="c-blog">博客</span></div>
+        <div class="n">思考 35 篇 · 博客 66 篇</div></div>
+      <div class="line"><div class="from">来了一点灵感 <span class="doodle"><svg width="22" height="26"><use href="#note1"/></svg></span></div>
+        <div class="path"><span class="c-draft">初稿</span><span class="arr">→</span><span class="c-opus">作品</span></div>
+        <div class="n">初稿 2 篇 · 作品 5 篇</div></div>
+    </section>
+
+    <section class="list" aria-label="最近写的">
+      <div class="list-head"><h2>最近写的</h2><span class="hand" aria-hidden="true">yep!</span></div>
+      <div class="month">
+        <div class="month-label">10<small>2026 · 十月</small></div>
+        <ul class="items">
+          <li><a href="#home"><span class="t"><strong>搜索解决方法</strong><span class="chip c-think">思考</span><span class="date">10.21</span></span><span class="d">想起刘未鹏说遇到问题先用搜索引擎和维基百科，自己用搜索找了很久也没找到解决方法，于是改用 AI 搜索，很快找到了官方文档。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>《怎样花两年时间去面试一个人》续</strong><span class="chip c-think">思考</span><span class="date">10.20</span></span><span class="d">从上一篇的遗留问题出发，认为 agent 时代面试官考察的是技术判断力，以兴趣驱动、做项目带动学习。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>《怎样花两年时间去面试一个人》</strong><span class="chip c-think">思考</span><span class="date">10.19</span></span><span class="d">以刘未鹏“书单 + github”的方案为起点，分析应聘者不知道学什么、招聘者难以识别人才的困境。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>方案一断连后：给账号更换 IP</strong><span class="chip c-blog">博客</span><span class="date">10.17</span></span></a></li>
+          <li><a href="#home"><span class="t"><strong>星期四</strong><span class="chip c-opus">作品</span><span class="date">10.14</span></span><span class="d">借模仿王小波的口吻，写一个星期四因为吃饭、外卖和老师训斥、又被叫去开班会的校园日常。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>关于读书</strong><span class="chip c-think">思考</span><span class="date">10.14</span></span><span class="d">反复思考“如何读书”，认为关键是读书时注意力要放在文字的意思上，并列出三个展开思考的时机。</span></a></li>
+        </ul>
+      </div>
+      <div class="month">
+        <div class="month-label">09<small>2026 · 九月</small></div>
+        <ul class="items">
+          <li><a href="#home"><span class="t"><strong>《棋王 树王 孩子王》</strong><span class="chip c-think">思考</span><span class="date">09.19</span></span><span class="d">读阿城的三篇知青短篇，谈支书形象、淳朴而无希望的基调和无力感。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>这一次，我们有了合照</strong><span class="chip c-opus">作品</span><span class="date">09.13</span></span></a></li>
+          <li><a href="#home"><span class="t"><strong>龙与虎</strong><span class="chip c-think">思考</span><span class="date">09.06</span></span><span class="d">剧情连贯、人物有血有肉，校园恋爱像夏日薄荷糖般清爽甜美。</span></a></li>
+        </ul>
+      </div>
+      <div class="month">
+        <div class="month-label">08<small>2026 · 八月</small></div>
+        <ul class="items">
+          <li><a href="#post"><span class="t"><strong>黑框眼镜</strong><span class="chip c-opus">作品</span><span class="date">08.29</span></span><span class="d">wdx 提醒我高中时认识的黑框眼镜女孩考上了我的大学，我答应照顾她，邀她吃火锅，最后目送她离开。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>我讨厌BE结局</strong><span class="chip c-opus">作品</span><span class="date">08.28</span></span><span class="d">希望虚构故事里的人物不要以分别收场，能一直留在彼此身边。</span></a></li>
+          <li><a href="#home"><span class="t"><strong>CLANNAD</strong><span class="chip c-think">思考</span><span class="date">08.20</span></span><span class="d">平静中带忧伤的基调，逐一点评朋也与渚、风子、杏、秋生、阳平。</span></a></li>
+        </ul>
+      </div>
+      <p class="more"><a href="#home">全部 108 篇 →</a></p>
+    </section>
+  </div>
+  <footer class="foot gutter"><div class="foot-in"><span>© 2026 finderlzy</span><span>X @finderlzy · RSS</span></div></footer>
+</div>
+
+<!-- ============ 文章页 ============ -->
+<div id="v-post" hidden>
+  <div class="gutter">
+    <header class="site-head">
+      <a class="brand" href="#home"><span class="doodle"><svg width="30" height="30"><use href="#star"/></svg></span>Writing</a>
+      <nav class="site-nav" aria-label="栏目"><a href="#home">思考</a><a href="#home">初稿</a><a href="#home">博客</a><a href="#home" aria-current="page">作品</a><a href="#home">全部</a></nav>
+    </header>
+
+    <section class="post-hero">
+      <div class="giant g1" aria-hidden="true">黑</div>
+      <div class="giant g2" aria-hidden="true">眼镜</div>
+      <div class="post-head">
+        <div class="kicker"><span class="chip c-opus">作品</span><span class="date">2026.08.29 写</span><span class="date">10.20 改</span></div>
+        <h1>黑框眼镜</h1>
+        <div class="en">Black-framed Glasses</div>
+        <div class="tags"><span>#大学生活</span><span>#情感</span><span>#暗恋</span></div>
+        <div class="say">wdx 提醒我高中时认识的黑框眼镜女孩考上了我的大学，我答应照顾她，邀她吃火锅，饭桌和路上的交谈里发现她已换了眼镜，最后目送她离开。</div>
+      </div>
+      <div class="ring" aria-label="读完约几分钟"><b data-fill="minutes"></b><span>min read</span></div>
+    </section>
+
+    <article class="post-body" data-fill="essay"></article>
+
+    <div class="fin" aria-hidden="true">
+      <span class="ln"></span>
+      <span class="doodle"><svg width="22" height="34"><use href="#note1"/></svg></span>
+      <span class="word">完</span>
+      <span class="doodle"><svg width="26" height="26"><use href="#star"/></svg></span>
+      <span class="ln"></span>
+    </div>
+
+    <div class="after">
+      <nav class="neigh" aria-label="上一篇和下一篇">
+        <a href="#post"><small>← prev</small><strong>我讨厌BE结局</strong></a>
+        <a class="next" href="#post"><small>next →</small><strong>这一次，我们有了合照</strong></a>
+      </nav>
+      <section class="window" aria-label="留言">
+        <div class="bar"><span>留言</span><i aria-hidden="true"><b></b><b></b></i></div>
+        <div class="in">Giscus 评论区放在这个窗口里。读到这里的话，留个痕迹吧。</div>
+      </section>
+    </div>
+  </div>
+  <footer class="foot gutter"><div class="foot-in"><span>© 2026 finderlzy</span><span>X @finderlzy · RSS</span></div></footer>
+</div>
+
+<template id="tpl-essay">
+<p>“你还记得黑框眼镜吗？”wdx发信息问我。</p>
+<p>黑框眼镜？噢，高中时遇到的那个挺好看的小女孩，因为最初见到她时她戴着黑框眼镜，于是我就这么称呼她了。说起来，第一次遇到她时，还不小心看到了人家的内衣……</p>
+<p>“记得，怎么了？怎么突然提起她？”我把思绪拉回来，免得往不好的方向发展。我也确实好奇，为什么会提起这个女孩，我已经不记得她长什么样了。</p>
+<p>“她考上你那个大学了。”</p>
+<p>“哦哦，可以哦，这么厉害。”我象征性地回复了信息。说实话，她考上什么大学和我没有关系，倒不如说，她发生了什么和我一点关系都没有。虽然她长得好看，可我不觉得天降学妹的故事会发生在我的身上，人还是要有自知之明的。</p>
+<p>“我和她关系不是还不错吗？然后就是……你懂吧，照顾一下她。”</p>
+<p>“叫声爹听听。”</p>
+<p>“爹！”</p>
+<p>“OK！”没想到他对这个小女孩这么上心。</p>
+<p>嘴上说是这么说，可实际上，我只是觉得多了一个麻烦事——帮忙？我能帮啥？上大学这两年我自己都过不好，还要帮别人？不添乱就行了。</p>
+<p>我和黑框眼镜加了微信，因为还没开学，没去学校，于是她就问了一些学校相关的东西。我也闲在家里，就一一回复了她。</p>
+<p>“学长学长，洗澡是独立卫浴还是澡堂？”</p>
+<p>“澡堂，但是有帘子。”</p>
+<p>“学长学长，学校附近有银行吗？”</p>
+<p>“学校里面就有。”</p>
+<p>“什么银行？”</p>
+<p>“中国银行。”</p>
+<p>“我知道，是中国的什么银行？像中国农业银行这种。”</p>
+<p>“就是中国银行。它就叫做中国银行……”</p>
+<p>她还问了很多，比如转专业啊、要不要买学长推销的被子啊、学校的快递站啊、怎么去学校比较好啊，等等等等。唉，世界上也就我这么闲了，但少闲人如吾一人者耳。</p>
+<p>再次和她联系，是开学之后，那时她们已经军训完了，我也在致力于研究如何更好地不上课，自己去学习。wdx发信息问我：“你和黑框眼镜见过面了吗？”</p>
+<p>“没有。”</p>
+<p>“你请人家吃个饭啊，你不是学长吗？你得爱幼啊。”</p>
+<p>“何意味？为啥不是她尊老请我吃饭？”我给他逗乐了，这就是传说中的断章取义吗？</p>
+<p>“你还不够老嘛。”</p>
+<p>“行行行，我知道了。改天吧，最近有点忙。”</p>
+<p>“除了学习，你还能干啥？就这个周末！”</p>
+<p>“okok，就这个周末，行了吧？”我回复他。往下翻了翻，点开和黑框眼镜的聊天框。</p>
+<p>犹豫了半天，思考了很久措辞，我终于发出了邀请：“这个周末有空吗？刚军训完，要不要去吃点好吃的？”在摁下发送键的下一刻，无数后悔的声音在我的脑子里炸开。为什么当初要答应帮忙啊？为什么刚刚要答应wdx啊？这样子发会不会很奇怪啊？……</p>
+<p>终于，她回了信息：“好啊，什么时候呢？吃什么呢？”</p>
+<p>“周六晚上吧。你有没有想吃的？麻辣烫？烤肉？火锅？涮肉？北京烤鸭？”</p>
+<p>“都行。”</p>
+<p>“那就火锅？离我们学校还挺近。”</p>
+<p>“ok！”</p>
+<p>“那我们到时候在南二门集合？你知道南二门吧？”</p>
+<p>“知道。”</p>
+<p>我深深地吐了一口气，好累，虽然啥也没干。</p>
+<p>周六下午，我早早地到了南二门，等她。我一边等她，一边想着等会怎么打招呼。是“hello”呢？还是“hi”呢？第一个话题该聊什么呢？“大学生活怎么样？”会不会太呆了，她大学生活怎么样和我有关系吗？那问“北京怎么样？”，感觉可以，不过她才刚军训完，应该没逛过北京吧？</p>
+<p>想着想着，后背突然被戳了两下。我回过头，发现是她，没想到她是这么出场的。</p>
+<p>看到这个小女孩的瞬间，我的内心微微地收紧了一下——她虽然是微笑的，但却给我一种淡淡的难过。</p>
+<p>“你来啦？我们走吧。”</p>
+<p>“嗯，走吧。”</p>
+<p>路上，我们一句话都没说，我事先准备好的话题，像是出门前放在最显眼处的耳机，明明费尽心思提醒自己，却还是会忘记。</p>
+<p>在我看来，出去吃饭，重要的不是吃饭这件事，而是饭桌上的人。因此，吃饭时，我开口了，“在这边过得还习惯吧？”</p>
+<p>“还好。就是宿舍有点挤。”</p>
+<p>“唉，咱们学校就是宿舍烂，烂的要死。对了，下个星期正式上课了，你买课本了吗？”</p>
+<p>“买了。我跟你说，学长。还好你之前跟我说过要买二手的，不然我要心疼死了。我室友她们跟学校买，花了好几百。我找学姐买，一本15块而已。”她的眼睛亮了起来。“狡黠”这个词忽然冒进我的脑海，不知怎么的，我又想到了猫。</p>
+<p>“那必须的。当时我可是心疼了整整一个星期啊！”</p>
+<p>“学长……你不会当时跟学校买的吧？”她的眼睛更亮了，只是我怎么觉得有点挑衅呢？</p>
+<p>“对啊。”</p>
+<p>她在憋笑，她绝对在憋笑。</p>
+<p>“没事，给学校了。反正少一点钱不会对我造成什么实质性影响，大不了就是吃的不那么丰盛。而且，这都过去了，老是惦记着过去，是看不见现在的。”</p>
+<p>“我去，学长，你说的好有道理啊！”她一脸崇拜地看着我，貌似我的有感而发被当成神经病发作了。</p>
+<p>“真的啊。要多留意现在。你现在把该做的事做了就行了，以后会是什么样，交给以后的现在。想那么多没啥用。”</p>
+<p>她不说话了，似乎在思考着什么。我也不打扰她，让她自己慢慢想。</p>
+<p>吃完饭，我便起身去结账，她收拾了一下东西，便跟了过来。付完钱走回学校的路上，她对我说：“学长，多少钱？我转给你。”</p>
+<p>“你想aa？”我问她。</p>
+<p>“对啊。”</p>
+<p>“那你想哦。我人很好的，又不是不给你想。”</p>
+<p>说完，我意识到这话说的好像不太对，便扭头看她，她也怔怔地盯着我。</p>
+<p>我这才注意到，她已经不戴黑框眼镜了，换成了深棕色的眼镜。这一刻，我们一半在没有路灯的阴影里，一半在路灯昏黄的光线下。她的脸显得格外的柔和，后面金黄的发丝灿烂地闪耀着。她就这么抬头看着我，像是疑惑，又像是害羞。</p>
+<p>“哦哦。”她把头转了回去。</p>
+<p>路上，我们又东拉西扯地聊了很多，比如我看见她的那一场球赛。</p>
+<p>到了南二门，我和她说我要去超市帮室友买点东西，就不送她了。她和我说了一句“拜拜”也走了。</p>
+<p>我站在黑暗里，看着前方的白点，一点一点地变小，拐进一边，消失。</p>
+<p>希望她可以早点适应大学生活吧。</p>
+<p>还是一脸坏笑的表情适合她。</p>
+</template>
+
+<script>
+(function () {
+  var tpl = document.getElementById('tpl-essay');
+  document.querySelectorAll('[data-fill="essay"]').forEach(function (el) { el.appendChild(tpl.content.cloneNode(true)); });
+  var chars = tpl.content.textContent.replace(/\s/g, '').length;
+  document.querySelectorAll('[data-fill="minutes"]').forEach(function (el) { el.textContent = Math.max(1, Math.round(chars / 400)); });
+
+  var views = ['home', 'post'];
+  function show() {
+    var id = location.hash.slice(1);
+    if (views.indexOf(id) < 0) id = 'home';
+    views.forEach(function (v) { document.getElementById('v-' + v).hidden = v !== id; });
+    document.querySelectorAll('[data-v]').forEach(function (a) { a.setAttribute('aria-current', a.dataset.v === id ? 'true' : 'false'); });
+  }
+  window.addEventListener('hashchange', function () { show(); window.scrollTo(0, 0); });
+  show();
+
+  var root = document.documentElement;
+  function setTheme(t) {
+    if (t === 'system') root.removeAttribute('data-theme'); else root.setAttribute('data-theme', t);
+    document.querySelectorAll('[data-t]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.t === t ? 'true' : 'false'); });
+  }
+  document.querySelectorAll('[data-t]').forEach(function (b) { b.addEventListener('click', function () { setTheme(b.dataset.t); }); });
+  setTheme(root.getAttribute('data-theme') || 'system');
+})();
+</script>
+</body>
+</html>
