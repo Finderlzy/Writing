@@ -253,30 +253,82 @@ def split_home_intro(html: str) -> tuple[str, str]
 
 `Page` 增加 `giant`、`giant_second`、`minutes`、`headline` 四个字段，由 `write_site` 填；`strip_date_notes` 在 `render_markdown` 之前对文章正文调用，不影响源文件，也不影响转换层的双链检查（检查早已在转换时做完）。首页卡片链接写成 `posts/?stage=思考`，复用 `site.js` 已有的查询参数筛选，不加新脚本。
 
-**字体（计划，V0 验证后定稿）**：新模块 `tools/fonts.py`。
+**字体（V0 已实测，2026-10-26）**：新模块 `tools/fonts.py`。结论是原设想成立，四个 woff2 合计 81.4 KB（预算 300 KB），五个文件子集化 0.62 秒，排版度量与在线字体一致；下面把 V0 改掉的三处单独标出。
 
 ```python
 @dataclass(frozen=True)
 class FontSpec:
-    role: str        # "head" | "cute" | "slab" | "hand"，对应模板里的 data-font 属性
-    source: Path     # 源字体文件
-    output: str      # 写到 site/assets/fonts/<output>.woff2
-    fixed: str = ""  # 无论页面用没用都要带上的字（数字、常用标点）
+    role: str          # "head" | "cute" | "slab" | "hand"，对应模板里的 data-font 属性
+    source: Path       # 源字体文件（可指向 theme/fonts/ 或 CI 下载到的临时目录）
+    output: str        # 写到 site/assets/fonts/<output>.woff2
+    text: str | None = None       # 固定要带的字；模板里没写 data-font 的数字、标点靠它
+    weight: int = 400             # 可变字体固定到的 wght，静态字体保持默认
+    optional: tuple[str, ...] = ()  # 只在源字体里出现过的字：有就收，没有不报错，交给下一个字体兜底
+    family: str = ""              # 覆盖 @font-face 的家族名；默认用源字体自己的名字
 
 def collect_chars(site: Path) -> dict[str, set[str]]   # 扫描生成的 HTML，按 data-font 收集各角色用到的字
+def subset_one(spec: FontSpec) -> Path                  # 子集化 + 写 woff2，返回写出的文件
 def subset_fonts(site: Path, specs: Iterable[FontSpec]) -> list[Diagnostic]
-    # 用 fontTools 按收集结果子集化成 woff2；源文件缺失报 E_FONT_SOURCE_MISSING；
-    # 全部字体合计超过 300 KB 报 W_FONT_BUDGET（只提示）
+    # 源文件缺失报 E_FONT_SOURCE_MISSING；源字体里没有某个必需字报 W_FONT_GLYPH_MISSING（只提示，
+    # 浏览器会用字体栈里的下一个字体补齐）；全部字体合计超过 300 KB 报 W_FONT_BUDGET（只提示）
 ```
 
-| 角色 | 字体（OFL） | 用在哪里 |
-| --- | --- | --- |
-| head | Noto Sans SC Black（900） | 标题、淡色大字、气泡标题、月份以外的粗字 |
-| cute | ZCOOL KuaiLe | “讲了什么”、“完”、卡片上的短句、区块标题 |
-| slab | Zilla Slab 600/700 | 站名、英文前缀、日期、数字、黑圈 |
-| hand | Gochi Hand | 首页列表标题旁手写的 “yep!” |
+| 角色 | 字体（OFL） | 用在哪里 | 实测 woff2 |
+| --- | --- | --- | --- |
+| head | Noto Sans SC 可变字体固定到 wght=900 | 标题、淡色大字、气泡标题、月份以外的粗字 | 50,336 B |
+| cute | ZCOOL KuaiLe | “讲了什么”、“完”、卡片上的短句、区块标题 | 2,512 B |
+| slab 600 | Zilla Slab SemiBold | 数字和日期（月份数字、列表日期、“10.21”）、“pieces”“min read”等短标签 | 14,684 B |
+| slab 700 | Zilla Slab Bold | 站名、气泡标题下的“finderlzy's writing”、阶段英文前缀、月份名、卡片标题 | 14,528 B |
+| hand | Gochi Hand | 首页列表标题旁手写的 “yep!” | 1,276 B |
 
-正文不加载网络字体，用系统字体栈（PingFang SC、Microsoft YaHei、Noto Sans CJK SC）。`build_pages` 在 `write_site` 之后、`check_site` 之前调用 `subset_fonts`。`@font-face` 写在 `site.css` 里，`font-display: swap`，字体加载失败时退回系统粗体，页面照样能读。依赖新增 `fonttools`、`brotli`（写 woff2 要用），版本由 V0 定。源字体放在哪里（提交进 `theme/fonts/`，或 CI 按固定网址和 SHA-256 下载）由 V0 比较后决定，写回本节。
+合计 83,336 B（81.4 KB），预算 300 KB，余量 223.8 KB。子集化单独计时：五个文件合计 0.62 秒（三次重跑 0.97、0.97、1.00 秒，含 Python 启动和读源文件）；`build_site.py` 做一次完整构建，这一步多花不到 1 秒，远低于 10 秒线。
+
+**四条成功标准都达到**：四个 woff2 合计 81.4 KB ≤ 300 KB；子集化 0.62 秒 ≤ 10 秒；head 的 388 个字、cute 的 22 个字、hand 的 4 个字在源字体里全部有；截图里的字形和在线字体一致（下面“截图对比”）。head 只收标题首字、标题正文退回系统粗体的退路用不上，不必请作者选。
+
+**收字**（`collect_chars`，V0 用的是按同样规则在仓库外跑出来的一组字，V1 要在构建里重算）：
+
+- head：全部公开文章的标题（用 `Catalog.load` 读，108 篇，不是自己解析 front matter）、`docs/index.md` 正文第一个非标题段落、`首页 全部文章 博客与作品 想法 灵感 思考 初稿 博客 作品 404`、数字 0～9。合计 388 个不同字符，Noto Sans SC 全部覆盖。V0 实测：每个汉字约 120～140 B，20 个字就是 2.5 KB，所以这个字数增长是线性的；标题总量翻一倍也只到 130 KB 左右，离 300 KB 还很远。
+- cute：`讲了什么 完 冒出一个想法 来了一点灵感 博客与作品 留言`，22 字，全部覆盖。不需要整个字符库（全字符库要 39 KB，是现在的 15 倍）。
+- slab：可打印 ASCII 32～126 共 95 个，加上排版会出现的 `· — “ ” ×`。注意 Zilla Slab 里没有汉字，模板里凡是中文（“分”“篇”“留言”“写”“改”“月”等）必须交给别的角色，否则会静默回退到系统字体。
+- hand：`yep!` 4 字。
+
+**依赖和构建顺序**：`requirements.txt` 新增 `fonttools==4.67.0`、`brotli==1.2.1`（本机 Python 3.14.4、全新的虚拟环境实测；fontTools 4.67.0 要求 `brotli>=1.1`）。`build_pages` 在 `write_site` 之后、`check_site` 之前调用 `subset_fonts`。`@font-face` 写在 `site.css` 里，`font-display: swap`，正文不加载网络字体，用系统字体栈（PingFang SC、Microsoft YaHei、Noto Sans CJK SC）。字体加载失败时退回系统字体，页面照样能读，只是没有封面感。
+
+**V0 改掉的三处设想**：
+
+1. **head 不要先生成 wght=900 的静态 TTF 再子集化。** “用 instancer 固定到 wght=900”有两种顺序，代价差很多：先实例化会把 31,036 个字形整份重算一遍，再写成 woff2 要 23.9 秒、3.9 MB；改成**先子集化可变字体、再 `instancer.instantiateVariableFont(font, {"wght": 900})`** 之后，实例化只要 0.04 秒、woff2 0.04 秒左右。两种顺序产出的字重和度量相同（子集化的字形完全一样；无 hinting 时实例化就是坐标插值，50,420 B 对 50,364 B 的差别来自时间戳和名字表）。所以 V1 直接按“先子集化、后实例化”写，不要生成中间 TTF。
+2. **slab 要两个脸、多个 output。** `FontSpec` 原来是一个角色一个文件，而 Zilla Slab 的两个字重要分别子集化成 `slab-600.woff2`、`slab-700.woff2`，模板里按 `data-font="slab"` → `--font-slab` → `font-weight: 600/700` 各取一张。`FontSpec` 增加 `weight` 和 `family`：family 统一写成 `"Zilla Slab Lzy"`（把名字里的 "SemiBold" 去掉、把 `OS/2.usWeightClass` 设成 600/700，CSS 才会把两张当同一个家族的两个字重）。注意 0.1 KB 的差别：改不改名字对体积没有意义（25,548 B 对 25,400 B），改名是为了 CSS 匹配正确。同样，`head` 的家族名从 `@font-face` 直接写成 `"Noto Sans SC"`，不要接受字体内部自带的 “Noto Sans SC Thin Black”。
+3. **子集化选项决定了体积，必须写死。** `subset.Options` 要设 `name_IDs = [1, 2, 4, 6]`、`name_languages = [0x409]`（默认会留 copyright、license、license 链接、版本等条目，head 因此多出约 3.1 KB）、`notdef_outline = True`、`drop_tables += ["FFTM"]`（不设会打一行 `FFTM NOT subset` 警告）。**不要**把 `layout_features` 写成 `["*"]`：默认值只留 `kern`，全开会把 Noto Sans SC 的 `palt`、`halt`、`vert`、`vrt2` 之类的排版特性带进来，head 从 50 KB 涨到 65 KB，而中文标题用不上这些特性。
+
+**许可**：四款都是 SIL OFL 1.1。OFL 要求分发字体时带上许可，所以 `theme/fonts/OFL.txt` 里放四份原文（`Noto Sans SC`、`ZCOOL KuaiLe`、`Zilla Slab`、`Gochi Hand`，每份前面写清对应的源文件），`theme/fonts/README.md` 记下载地址、提交号和 SHA-256。改名字（第 2 条）这一步碰到 OFL 第 3 条：改过的字体不能继续用 Reserved Font Name 宣传。Noto Sans SC 的 OFL 里保留的名字是 'Source'，Gochi Hand 保留的是 "Gochi" 和 "Gochi Hand"，Zilla Slab、ZCOOL KuaiLe 没有保留名。用 `"Zilla Slab Lzy"` 不冲突；Gochi Hand 只子集化、不改名，保留原名没有问题；head 的 @font-face 直接用 `"Noto Sans SC"`，只是 CSS 里的引用，不改字体内部名字。四款都只放子集化产物、不单独分发，许可原文随 `theme/fonts/OFL.txt` 一起放。
+
+**源字体来源**（google/fonts 仓库 `main` 分支，提交 `e7db6ca603fd4862010383ff17ffd6cc4ffac1c0`，2026-10-22；“`e7db6ca`” 就是把 URL 里的 `main` 换成这个提交号，固定下来之后内容不会再变）：
+
+| 文件 | 仓库路径 | 下载后 SHA-256 | 体积 |
+| --- | --- | --- | --- |
+| NotoSansSC-VF.ttf | `ofl/notosanssc/NotoSansSC[wght].ttf` | `a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da` | 17,772,300 B |
+| ZCOOLKuaiLe-Regular.ttf | `ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf` | `812a6fc1fe54b6d73a419245c32dfeba8aa33104d5be90d1cf6af082007cb71d` | 1,514,968 B |
+| ZillaSlab-SemiBold.ttf | `ofl/zillaslab/ZillaSlab-SemiBold.ttf` | `aafcb295b88d520357db1ecf9a1c3167055e87e9ddf5f63e560cbd139ec2805e` | 270,088 B |
+| ZillaSlab-Bold.ttf | `ofl/zillaslab/ZillaSlab-Bold.ttf` | `4ec3a04a4eef37074b42ef542e4d874e13646668cfe65256e0bf100441cf8719` | 273,044 B |
+| GochiHand-Regular.ttf | `ofl/gochihand/GochiHand-Regular.ttf` | `c46b029ab4846b2935e301af0b2cf85a1d74d2858e6a33636a3e64cf3cc4696b` | 37,352 B |
+| 许可 | `ofl/<家族>/OFL.txt` | Noto Sans SC `1c05c68c…`、ZCOOL KuaiLe `53807846…`、Zilla Slab `240b385d…`、Gochi Hand `b36cb03d…` | 每份约 4.4 KB |
+
+四个角色、五个文件的写法（提交 `e7db6ca` 下实测可取）：`https://raw.githubusercontent.com/google/fonts/e7db6ca603fd4862010383ff17ffd6cc4ffac1c0/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf` 等。
+
+**存放方式（推荐 CI 按固定网址下载）**：源字体不提交进仓库。
+
+- 提交进 `theme/fonts/`：五个源文件合计 18.95 MB（Noto Sans SC 一个就 16.95 MB，ZCOOL KuaiLe 1.44 MB，两个 Zilla Slab 各 0.26 MB，Gochi Hand 0.04 MB），克隆后这些字节一直留在 `.git` 里，删掉也回收不了。git 对汉字的字形表压缩很有限，增量基本等于这 19 MB。
+- CI 按固定网址加 SHA-256 下载（推荐）：`.github/workflows/deploy.yml` 在 `Install dependencies` 之后、`Run tests` 之前加一步 `Download font sources`，从上面四个提交号固定的地址取到 `$RUNNER_TEMP/fonts/`，逐个 `sha256sum -c`；`tools/fonts.py` 通过 `FONT_SOURCE_DIR` 环境变量找源字体。
+  - 下载失败或 SHA-256 对不上：这一步退出非零，整个构建 job 失败，**线上维持上一次部署的站点**（`deploy` job 依赖 build，`cancel-in-progress: false`），不会出现字体缺了还发出去的半成品。为了不让临时网络问题堵住写作，`curl` 用 `--retry 3 --retry-delay 3` 重试；重试完还失败就是真失败，传完了但校验不对时不重试，直接失败（内容变了说明上游改了东西，要人来看）。
+  - 本地构建：`FONT_SOURCE_DIR` 没设时，`tools/fonts.py` 去 `.cache/fonts/`（`.gitignore` 里已有 `.cache/`）找源字体；两边都没有就报 `E_FONT_SOURCE_MISSING`，提示运行 `python tools/fetch_fonts.py`（新小脚本，按上面这张表和 SHA-256 下载到 `.cache/fonts/`）。测试不需要网络：用一个只含几十个字的测试字体，盖住“收字、子集化、缺源字体、缺字形、超预算”五个分支即可。
+  - 代价：每次 CI 构建多约 19 MB 下载和一次 SHA-256 校验，换来 git 历史不膨胀。作者在本地跑构建前要先跑一次 `fetch_fonts.py`（约 19 MB，之后命中缓存）。如果作者更希望构建完全不依赖网络，可以改回把源字体提交进仓库，这个取舍留到 V1 开工前确认。
+
+**截图对比（1280 和 400 两个宽度）**：样稿由 Google Fonts 加载 4 个家族、8 个 wght，滚动时还会再拉子集分片，离线实测不可行；把 199 个分片全下载、地址改成本地后，无头 Chrome 仍会丢掉 Zilla Slab（没进“可用字体”列表）。所以改成三张图对比：原样稿照常联网截；“本地 woff2”是替换成四个本地文件的副本；“无字体”对照组是不加载任何网络字体。
+
+- 首页、1280 宽：原样稿与本地版的差异集中在正文行上，占 8.4% 的像素；正文按设计不加载网络字体，两次抓取时机器上装的中文字体不同，字形自然会变。放大看气泡标题、大字“想法”“灵感”、黑圈数字、列表标题（ZCOOL KuaiLe）和日期（Zilla Slab），本地版和原样稿的字体形状一致，没有被换成系统字体的迹象。对照组的差异更大（9.6%）且位置不同，说明本地字体确实生效。
+- 文章页、1280 宽：原样稿与本地版只差 3.5% 的像素，标题“黑框眼镜”（900）、淡色大字“黑”“眼镜”（900）、黑圈分钟数（Zilla Slab）都一致。
+- 400 宽：原样稿和本地版各截一张，都正常生成，渲染结果与 1280 宽同源；大字照旧被裁，不撑宽页面。
+- 字体名写错的坑：第一次对比时 `@font-face` 用了 `"Noto Sans SC Lzy"` 的家族名、样稿的 `--font-head` 要的是 `"Noto Sans SC"`，浏览器直接回退到系统字体，截图看不出错。V1 要按第 2 条把 @font-face 的 family 写成 CSS 实际引用的名字，并在验收时用开发者工具确认 4 个 woff2 都被请求、状态 200。
 
 **模板标记**：`base.html` 的站名、所有标题和大字加 `data-font`；顶部栏仍是“首页”“全部文章”两项（R-UI-2）。`home.html` 的列表标题保留“博客与作品”，现有测试据此判断作者的话在列表之前。
 
@@ -367,3 +419,5 @@ tests/                        # 已有：单元测试 + 仓库级检查，按新
 | 样稿删掉了正文开头“写于 / 更新于”引用块，但这些在源文件里 | 直接改源文件违反“不改正文”的边界 | 渲染时由 `strip_date_notes` 跳过，只删日期行，源文件不动；`Article` 增加 `updated` 供标题区显示 |
 
 核对过、无需修改的点：首页卡片带阶段筛选可以复用 `site.js` 现有的 `stage` 查询参数；淡色大字是文字而不是图片，深色模式只需换颜色变量；Giscus 已用 `preferred_color_scheme`，跟随系统深浅；`test_render.py` 的断言大多针对结构和链接，保留“博客与作品”这个列表标题后都不需要改。
+
+**V0 结果回填（2026-10-26）**：评审留下的字体验证任务已完成，结论已写进 §7.1 的“字体”一段。四个 woff2 合计 81.4 KB（预算 300 KB），五个文件子集化 0.62 秒，字形和在线字体一致，不需要退路；依赖定为 `fonttools==4.67.0`、`brotli==1.2.1`；源字体不提交进仓库，改为 CI 和本地都按 google/fonts 提交 `e7db6ca` 固定地址下载并校验 SHA-256。评审时设想的 `FontSpec`、`collect_chars`、`subset_fonts` 接口只多了字段和一条 `subset_one`，没有推翻。

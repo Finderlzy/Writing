@@ -2,19 +2,19 @@
 
 ## 5.1.0 视觉改版
 
-> 写于 2026-10-26。依据：[requirements.md §9](requirements.md)（R-VIS-1～7）、[architecture.md §7.1](architecture.md) 和 §14 的实施前评审、样稿 [设计样稿/5.1.0-首页与文章页.html](设计样稿/5.1.0-首页与文章页.html)。
+> 写于 2026-10-26，V0 已于同日完成。依据：[requirements.md §9](requirements.md)（R-VIS-1～7）、[architecture.md §7.1](architecture.md) 和 §14 的实施前评审、样稿 [设计样稿/5.1.0-首页与文章页.html](设计样稿/5.1.0-首页与文章页.html)。
 > 沿用 5.0.0 的做法：不使用 GitHub Issues，任务状态记在本表；每个任务的正文按 Issue 模板写，需要时可以直接贴成 Issue。下面的命令都是计划中的验收方式，没有执行过。
 > 推送 `main` 即部署。V1 推送后全站就换成新视觉，标题区先是简化版，V2～V4 逐页补齐；中间状态可以正常阅读，不需要长期分支。
 
 ### 首个可开工任务
 
-**V0 字体子集化验证**，建议档位：强。新开会话，用 `task-implement` 执行“开发文档/implementation-plan.md 的 V0”。
+**V1 全站视觉基础**，建议档位：强。V0 已完成（2026-10-26），字体方案和源字体存放方式已定稿，结论写在 [architecture.md §7.1](architecture.md) 的“字体”一段。开工前请作者看一眼 §7.1 里的“存放方式”，特别是本地构建要先跑一次 `fetch_fonts.py` 这一点。
 
 ### 任务一览
 
 | ID | 任务 | 需求 | 依赖 | 档位 | 状态 |
 | --- | --- | --- | --- | --- | --- |
-| V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 未开始 |
+| V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 已完成（结论见 architecture.md §7.1） |
 | V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 未开始 |
 | V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 待细化 |
 | V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 待细化 |
@@ -25,7 +25,7 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 
 检查点：V1 推送后作者在手机和桌面上看一眼新配色和字体；V2 做完再看一次文章页，确认后再做首页。
 
-### V0 验证：字体子集化
+### V0 验证：字体子集化（已完成，2026-10-26）
 
 **目标**：确定 R-VIS-5 的做法能不能成立。用真实内容验证四款字体按用到的字子集化成 woff2 后的体积、构建多花的时间，以及源字体放进仓库还是 CI 下载。结果写回 [architecture.md §7.1](architecture.md) 的“字体”一段，决定 V1 怎么做。这是验证任务，不改线上网站。
 
@@ -35,28 +35,26 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 
 **建议档位**：强 — 未定的设计取舍：字体体积、源文件存放和依赖选择会决定 V1 的实现。
 
-**做法**：
+**结果摘要**（细节和表都在 [architecture.md §7.1](architecture.md) 的“字体”一段）：
 
-1. 在临时虚拟环境装 `fonttools` 和 `brotli`，记下版本。
-2. 从 google/fonts 仓库取源字体，记下网址、提交号和 SHA-256：`ofl/notosanssc/NotoSansSC[wght].ttf`（用 `fontTools.varLib.instancer` 固定到 wght=900）、`ofl/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf`、`ofl/zillaslab/ZillaSlab-SemiBold.ttf` 和 `-Bold.ttf`、`ofl/gochihand/GochiHand-Regular.ttf`。路径不对时以仓库实际为准。
-3. 收字：head 用全部公开文章的标题（`Catalog.load` 的 `title`）、`docs/index.md` 第一段、“首页 全部文章 博客与作品 想法 灵感 思考 初稿 博客 作品 404”和数字；cute 用样稿里的短句（“讲了什么 完 冒出一个想法 来了一点灵感 博客与作品 留言”）；slab 用可打印 ASCII；hand 用 “yep!”。
-4. 用 `pyftsubset`（或 `fontTools.subset` 的 API）各出一个 woff2，记录体积；把 4 个文件放进样稿的一个副本，替换 Google Fonts 链接，用无头浏览器截图和样稿对比，确认字形一致。
-5. 计时：在 `.venv/bin/python tools/build_site.py` 之外单独计子集化耗时。
-6. 比较两种存放方式：提交源字体（仓库增加多少 MB）和 CI 下载（固定网址加 SHA-256，下载失败时构建怎么办）。
+- **体积**：四款字体五个 woff2 合计 **81.4 KB**（83,336 B），预算 300 KB，余量 223.8 KB。head（Noto Sans SC 固定到 wght=900）50,336 B，cute 2,512 B，slab 600/700 各 14.7/14.5 KB，hand 1,276 B。
+- **耗时**：五个文件子集化单独计时 **0.62 秒**（含读源文件、写 woff2；三次重跑 0.97～1.00 秒，含解释器启动），远低于 10 秒线。
+- **字形**：和在线字体一致。首页差 8.4% 的像素、文章页差 3.5%，差异主要在正文（正文不加载网络字体，机器上装的中文字体不同）；标题、大字、数字这些用到字体的地方，形状和在线字体一致。成功标准全部达到，不需要“head 只收首字 + 系统粗体”这条退路。
+- **依赖**：`fonttools==4.67.0`、`brotli==1.2.1`（Python 3.14.4 全新虚拟环境实测）。
+- **源字体**：google/fonts 提交 `e7db6ca603fd4862010383ff17ffd6cc4ffac1c0`，四个角色的文件名和仓库里的路径一致（`NotoSansSC[wght].ttf`、`ZCOOLKuaiLe-Regular.ttf`、`ZillaSlab-SemiBold.ttf`、`ZillaSlab-Bold.ttf`、`GochiHand-Regular.ttf`），五个文件的 SHA-256 已记在 §7.1 的表里。
+- **存放方式（推荐）**：源字体不提交进仓库（提交要多 18.95 MB 且永久留在 git 历史里），改为 CI 按提交号固定的网址下载并校验 SHA-256；本地构建先跑一次 `tools/fetch_fonts.py`（下载到 `.cache/fonts/`）；下载或校验失败时构建 job 失败，线上维持上一版。
+- **推翻的设想**：`FontSpec` 要支持一个角色多个文件（`weight`、`family`）和固定字（`text`）；head 必须“先子集化可变字体、再实例化到 900”，反过来慢 20 倍以上；子集化选项要写死（`name_IDs`、`layout_features`），否则 head 会多出 3～15 KB。
 
-**成功标准**：四个 woff2 合计不超过 300 KB；子集化耗时不超过 10 秒；截图里标题、大字、数字与样稿一致。达不到时，写清差多少，并给出退路（比如 head 只收标题首字和导航，标题正文退回系统粗体），由作者决定是否接受。
-
-**结果会影响**：V1 的 `tools/fonts.py` 接口是否成立、`requirements.txt` 加哪些依赖、`theme/fonts/` 是否存在、`.github/workflows/deploy.yml` 是否增加下载步骤。
-
-**验收**：
-- [ ] `开发文档/architecture.md` §7.1 的“字体”一段写明：依赖及版本、源字体来源与 SHA-256、存放方式、实测体积和耗时
-- [ ] 试验用的临时目录已删除
+**验收**（2026-10-26 全部通过）：
+- [x] `开发文档/architecture.md` §7.1 的“字体”一段写明：依赖及版本、源字体来源与 SHA-256、存放方式、实测体积和耗时
+- [x] 试验用的临时目录已删除：虚拟环境、源字体、截图、本地 http.server 和 Chrome 临时配置都在仓库外的试验目录里，做完即删
+- [x] 仓库里没有 `site/`、`.cache/` 或其他新产物，本次只提交两份文档
 
 ### V1 全站视觉基础
 
 **目标**：把样稿的配色、字体、描边、涂鸦和正文排版铺到全站所有页面，标题区先用简化版（标题、日期、阶段、标签照现在的结构，只换样式）。推送后线上整站换成新视觉，内容和网址不变。对应 R-VIS-1、R-VIS-5、R-VIS-6、R-VIS-7。
 
-**涉及范围**：`theme/assets/site.css`（整份重写）、`theme/templates/base.html`、`theme/templates/article.html`、`theme/templates/home.html`、`theme/templates/posts.html`、`theme/templates/404.html`（这几个只加 `data-font` 和类名，不改结构）、`tools/fonts.py`（新）、`tools/render.py`（`build_pages` 调用 `subset_fonts`）、`requirements.txt`、按 V0 结论可能有 `theme/fonts/` 或 `.github/workflows/deploy.yml`、`tests/test_fonts.py`（新）、`tests/test_render.py`。
+**涉及范围**：`theme/assets/site.css`（整份重写）、`theme/templates/base.html`、`theme/templates/article.html`、`theme/templates/home.html`、`theme/templates/posts.html`、`theme/templates/404.html`（这几个只加 `data-font` 和类名，不改结构）、`tools/fonts.py`（新）、`tools/fetch_fonts.py`（新，按 V0 的结论）、`tools/render.py`（`build_pages` 调用 `subset_fonts`）、`requirements.txt`、`.github/workflows/deploy.yml`（加下载源字体和校验 SHA-256 的步骤）、`theme/fonts/OFL.txt` 与 `theme/fonts/README.md`（许可原文和来源记录，源字体本身不进仓库）、`tests/test_fonts.py`（新）、`tests/test_render.py`。
 
 **依赖**：依赖 V0
 
@@ -64,20 +62,20 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 
 **参照**：
 - 视觉取值：样稿 `<style>` 里 `:root` 的变量、`.site-head`、`.brand`、`.site-nav`、`.chip`、`.neigh`、`.window`、`.foot` 和 `<svg>` 里的五个 `<symbol>`，直接搬，深色变量照抄。
-- 接口：[architecture.md §7.1](architecture.md) 的 `FontSpec`、`collect_chars`、`subset_fonts`（按 V0 的结论可能已调整）。
+- 接口：[architecture.md §7.1](architecture.md) 的 `FontSpec`、`collect_chars`、`subset_one`、`subset_fonts`，已按 V0 的实测改过：`FontSpec` 带 `text`、`weight`、`optional`、`family` 四个字段；head 先子集化可变字体、再实例化到 wght=900；子集化选项按 §7.1 “V0 改掉的三处设想”第 3 条写死。
 - 现有结构：`base.html` 的顶部栏两项和页脚社交链接保持不变；`test_render.py` 第 186～223 行对首页顺序、顶部栏链接、资源路径的断言必须继续通过。
 - 构建顺序：`render.build_pages` 里 `write_site` 之后、`check_site` 之前调用 `subset_fonts`。
 
 **步骤**：
 
-1. **字体流水线**（先做，独立可测）：按 V0 的结论加依赖和源字体，写 `tools/fonts.py`。`collect_chars` 用 `html.parser` 扫 `site/**/*.html`，收集带 `data-font` 属性的元素（含子元素）的文字。边界用例：同一字出现在多个角色里各收一份；属性值不认识时报 `E_FONT_ROLE_UNKNOWN`；没有任何元素用到某角色时仍生成只含 `fixed` 字的文件，CSS 引用不会 404；源字体缺失报 `E_FONT_SOURCE_MISSING`；合计超过 300 KB 报 `W_FONT_BUDGET`。
-2. **样式和模板**：重写 `site.css`，`@font-face` 指向 `../fonts/<output>.woff2`（相对 `assets/theme/site.css`），`font-display: swap`，每个角色都有系统字体兜底。`base.html` 加涂鸦 `<symbol>` 和站名旁的星星；各模板给标题、站名、日期、按钮等加 `data-font`。正文里的 `h2`～`h4`、代码块和复制按钮、表格、提示块（`.admonition`）、引用、图片、`mark`、目录、系列提示行都要有新样式；表格、代码块、公式各自横向滚动。
+1. **字体流水线**（先做，独立可测）：`requirements.txt` 加 `fonttools==4.67.0`、`brotli==1.2.1`；写 `tools/fetch_fonts.py`（从提交号固定的地址下载五个源文件和四份 OFL.txt 到 `.cache/fonts/`，逐个校验 SHA-256）和 `tools/fonts.py`。`collect_chars` 用 `html.parser` 扫 `site/**/*.html`，收集带 `data-font` 属性的元素（含子元素）的文字；每个角色的固定字用 `FontSpec.text` 补上（数字 0～9、slab 的 ASCII、`docs/index.md` 第一段和导航文字）。边界用例：同一字出现在多个角色里各收一份；属性值不认识时报 `E_FONT_ROLE_UNKNOWN`；没有任何元素用到某角色时仍生成只含 `text` 字的文件，CSS 引用不会 404；源字体缺失报 `E_FONT_SOURCE_MISSING`；需要的字在源字体里没有时报 `W_FONT_GLYPH_MISSING`（交给字体栈兜底）；合计超过 300 KB 报 `W_FONT_BUDGET`。测试不联网，用安装包里 `fontTools` 自带的小字体文件（`fontTools.ttLib.TTFont` 能打开的那种）或仓库里放一个几十字的测试字体。
+2. **样式和模板**：重写 `site.css`，`@font-face` 指向 `../fonts/<output>.woff2`（相对 `assets/theme/site.css`），`font-display: swap`，每个角色都有系统字体兜底。家族名要和 `:root` 里 CSS 变量引用的名字完全一致（V0 踩过：写成 `"Noto Sans SC Lzy"` 而变量写 `"Noto Sans SC"`，浏览器直接回退，截图看不出错）；两个 Zilla Slab 用同一个家族名加 `font-weight: 600/700`，名字和 `OS/2.usWeightClass` 由 `FontSpec.family`、`FontSpec.weight` 统一。`base.html` 加涂鸦 `<symbol>` 和站名旁的星星；各模板给标题、站名、日期、按钮等加 `data-font`。正文里的 `h2`～`h4`、代码块和复制按钮、表格、提示块（`.admonition`）、引用、图片、`mark`、目录、系列提示行都要有新样式；表格、代码块、公式各自横向滚动。
 3. **深色和动效**：深色只改变量；`prefers-reduced-motion` 时关掉卡片悬停位移。
 
 **验收**：
 - [ ] 测试：`.venv/bin/python -m unittest discover -s tests` 通过，含新的 `tests/test_fonts.py`（收字、子集化后的字体包含所需字形、缺源字体的诊断、超预算的提示）
-- [ ] 构建：`.venv/bin/python tools/build_site.py` 输出 `build succeeded`，`site/assets/fonts/` 下有 4 个 woff2，合计不超过 300 KB
-- [ ] 手工验证：`.venv/bin/python -m http.server -d site 8000`，桌面和 375px 下打开首页、全部文章、《黑框眼镜》、《三、把服务器变成节点》 → 配色、字体、描边与样稿一致；教程的代码块能复制、表格能横向滚动；没有横向滚动；开发者工具里没有对 Google Fonts 的请求
+- [ ] 构建：先 `.venv/bin/python tools/fetch_fonts.py`，再 `.venv/bin/python tools/build_site.py`，输出 `build succeeded`，`site/assets/fonts/` 下有 5 个 woff2，合计不超过 300 KB（V0 实测是 81.4 KB），整个构建比现在多不超过 1 秒
+- [ ] 手工验证：`.venv/bin/python -m http.server -d site 8000`，桌面和 375px 下打开首页、全部文章、《黑框眼镜》、《三、把服务器变成节点》 → 配色、字体、描边与样稿一致；教程的代码块能复制、表格能横向滚动；没有横向滚动；开发者工具里没有对 Google Fonts 的请求，5 个 woff2 都从本站加载（状态 200）
 - [ ] 手工验证：系统切到深色 → 上面四页没有看不清的文字或消失的边框
 
 ### V2 文章页标题区和文末（待细化）
