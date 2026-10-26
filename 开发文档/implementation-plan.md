@@ -17,7 +17,7 @@
 | V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 已完成（结论见 architecture.md §7.1） |
 | V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 已完成（ab9fdfb） |
 | V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 已完成（72d0ac7） |
-| V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 待细化 |
+| V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 已完成（{{SHA}}） |
 | V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 待细化 |
 | V5 | 整体验收与交付记录 | §9 验收表全部 | V2、V3、V4 | 标准 | 待细化 |
 
@@ -148,17 +148,74 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 - 手机断点的黑圈不压住文字——第一版用绝对定位放在右下方，标签一多就会盖住标签，改成跟在标题区内容后面的静态小圈；同时给 `.say` 加 `z-index: 2`，深色下淡色大字不会盖住对话框文字。
 - 字体：slab（阶段英文前缀 `opus`/`thoughts`、写/改日期、`min read`）里补了 `写`、`改` 两个字，做成 `FontSpec.optional`——源字体里没有这两个字，缺字只算提示、不算错误；`subset_fonts` 的缺字判断也相应把 optional 排除在“必须有”之外。
 
-### V3 首页（待细化）
+### V3 首页
 
 **目标**：做出样稿首页：气泡标题取 `docs/index.md` 第一段，右侧“想法”“灵感”大字，黑圈总数，两条线的卡片（阶段名链接到 `posts/?stage=…`），博客和作品按月分组。对应 R-VIS-2，R-UI-3 的内容规则不变。
 
-**涉及范围**：`tools/content.py`（`stage_counts`）、`tools/render.py`（`split_home_intro`、首页按月分组的数据）、`theme/templates/home.html`、`theme/assets/site.css`、`tests/test_content.py`、`tests/test_render.py`。
+**涉及范围**：`tools/content.py`（`stage_counts`）、`tools/render.py`（`split_home_intro`、首页按月分组的数据）、`theme/templates/home.html`、`theme/assets/site.css`、`tests/test_content.py`、`tests/test_render.py`。不改 `docs/index.md`、`site.js`、`base.html`、`site.toml`。
 
 **依赖**：依赖 V1（建议在 V2 之后）
 
 **建议档位**：标准 — 照样稿和已定接口实现。
 
-**验收**：需求 §9 验收表里 R-VIS-2 那一行；`test_render.py` 原有的首页断言继续通过。
+**参照**（2026-10-26 开工前补全；行号按 V2 完成后的 `7b1df54` 记）：
+
+- **样稿**：《设计样稿》第 65～123 行的 CSS（`.home-hero`、`.giant.v`、`.hero-body`、`.bubble`、`.welcome`、`.count`、`.hero-notes`、`.lines`、`.line`、`.list`、`.month`、`.items`）和第 190～262 行的 HTML（`#v-home`）。样稿里有两处是演示占位、不照抄：顶部栏五项按 R-UI-2 仍是两项（V1 已做）；列表标题是“最近写的”、列表里混了思考，按 R-UI-3 仍叫“博客与作品”、只列博客和作品。
+- **接口**（architecture.md §7.1，已定，本次不改签名）：
+
+  ```python
+  # tools/content.py
+  class Catalog:
+      def stage_counts(self) -> dict[str, int]
+          # 阶段名 → 篇数，键和值是 Layout.stages 的顺序与 LAYOUT 的阶段名（思考 35、初稿 2、博客 66、作品 5），
+          # 口径是 catalog.articles：全部公开文章，包括系列子文件夹里的各篇（和全部文章页一致），没有的阶段为 0
+
+  # tools/render.py
+  def split_home_intro(html: str) -> tuple[str, str]
+      # 去掉开头的 <h1>（docs/index.md 现在的一级标题是“首页”）；
+      # 第一个 <p> 的文字作气泡标题，其余 HTML 作作者的话；没有 <h1> 时整段都算作者的话
+  def group_by_month(articles: Iterable[Article]) -> tuple[tuple[int, int | None, tuple[Article, ...]], ...]
+      # 按 createdDate 的年、月分组，按文章原有顺序（新到旧）；没有日期的文章合成最后一组，年、月都是 None
+  class Page:  # 首页新增的四个字段
+      headline: str            # 气泡标题（index.md 第一段的文字）
+      stage_counts: dict[str, int]   # 阶段名 → 篇数，黑圈和两张卡片用
+      total: int               # 公开文章总数 = len(catalog.articles)，不是首页列表条数
+      months: tuple[tuple[int, int | None, tuple[Article, ...]], ...]  # 首页列表的按月分组
+  ```
+
+  气泡下的“finderlzy's writing”**写死在模板里**，不读 `site.toml`：它是封面上的装饰字（R-VIS-1 的“封面感”），跟着模板走，换站名或换人也不会跟着变；站名本身仍由 `site.toml` 的 `site_name` 提供，只出现在顶部栏和页脚。要改这一行字就改模板，不加配置项。
+
+- **要改的文件和位置**：
+  - `tools/content.py`：`Catalog`（第 266～303 行）加 `stage_counts`，紧挨着 `home()`。
+  - `tools/render.py`：在 `reading_minutes`（第 265～268 行）旁边加 `split_home_intro`；在 `_rows`（第 402～407 行）旁边加 `group_by_month`；`Page`（第 91～112 行）加 `headline`、`stage_counts`、`total`、`months` 四个字段；`write_site` 里首页的 `Page(...)`（第 496～499 行）把 `body` 换成 `split_home_intro` 的两段结果，并填另外三个字段。
+  - `theme/templates/home.html`：整份换成样稿的 `.home-hero`（两个 `.giant.v`、`.hero-body` 里的 `.bubble` + `.welcome`、`.hero-notes`、`.count`）→ `.lines`（两张 `.line`）→ `.list`（`.list-head` + 每个月的 `.month` + 末尾“全部文章”）。作者的话用 `page.body | safe` 原样输出。气泡标题的换行沿用样稿的“欢迎来到<br>这里。”：分隔点取标题里第一个句号、问号或感叹号（含全角）之后，没有就整句放在一行。
+  - `theme/assets/site.css`：第 307～340 行的“首页”和 `.section-head`/`.section-title`/`.hand-note` 换成样稿的 `.home-hero`～`.items` 那一组；`.more` 加在列表之后；手机断点（第 1150 行起）里加大字横排的规则。文章页和全部文章页用的 `.article-list` 不动。
+- **涂鸦**：气泡尾巴用样稿第 203 行的内联 SVG 路径（要 `var(--ink)` 描边和 `var(--paper)` 填充，不能改成 `<use>`）；黑圈旁的星星、卡片上的思考气泡和音符、`.hero-notes` 的三个涂鸦只用 `base.html` 里已有的 `star`、`think`、`note`、`note1` 四个 symbol，不新增 symbol。
+- **字体**：气泡标题写 `data-font="head"`；“finderlzy's writing”在 `.bubble h1 .slab` 里，用 `data-font="slab"`；“想法”“灵感”两个大字 `data-font="head"`；黑圈的数和 `pieces`、月份数字和“2026 · 十月”用 `data-font="slab"`；“冒出一个想法”“来了一点灵感”、“博客与作品”、气泡标签“最近写的”这类短句用 `data-font="cute"`；卡片上的“思考 35 篇 · 博客 66 篇”用 `data-font="slab"`；“yep!”用 `data-font="hand"`。注意 **Zilla Slab 没有汉字**：`pieces` 可以是 slab，“篇”“月”必须放在不带 `data-font="slab"` 的元素里，否则会静默退回系统字体（V1 已踩过的坑）。
+- **链接**：阶段名是 `<a href="{{ root }}posts/?stage=思考">`（查询参数直接写中文，浏览器会编码，`site.js` 读的是 `URLSearchParams.get("stage")` 解码后的值）；“思考 → 博客”“初稿 → 作品”两段各自链到自己的阶段；“全部文章”入口 `<a href="{{ root }}posts/">全部 {{ page.total }} 篇 →</a>`。
+
+**边界用例**（都写成 `test_render.py`、`test_content.py` 里的用例）：
+
+- `index.md` 是 `# 首页\n\n欢迎来到这里。\n\n这些文字……` → `headline == "欢迎来到这里。"`，作者的话里没有 `<h1>首页</h1>`，也没有“欢迎来到这里。”这一段。
+- `index.md` 只有一级标题、没有别的段落 → `headline == ""`，模板不画气泡标题的文字，只留“finderlzy's writing”，作者的话为空。
+- `index.md` 第一段里有双链或行内代码 → 气泡标题是纯文字（去掉标签），链接不出现在标题里。
+- `index.md` 的开头不是 `<h1>`（比如直接从一段话开始）→ 整段都算作者的话，`headline` 为空。
+- 阶段篇数：思考 1 篇、初稿 1 篇、博客 2 篇（其中一篇在系列子文件夹里）、作品 1 篇 → `stage_counts == {"思考": 1, "初稿": 1, "博客": 2, "作品": 1}`，黑圈的 `total` 是 5；首页列表只有 3 条（博客入口篇 1 + 作品 1 + 根目录博客 1… 按 `home()` 的口径），列表条数不等于 `total`。
+- 某个阶段一篇都没有 → 卡片上写 0 篇，链接照样在。
+- 按月分组：2026-10-05 和 2026-10-01 同组在前，2026-09-30 单独一组在后；同一个月内保持 `createdDate` 新到旧。
+- 没有 `createdDate` 的文章 → 单独一组排在最后，组头显示“日期不详”，构建只给 `W_POST_DATE_MISSING`。
+- 首页一条文章都没有 → 列表为空，没有月份组，`total` 为 0，“全部文章”入口仍在。
+- 阶段名里的“思考”“初稿”“博客”“作品”四个词在首页只作为卡片上的链接文字出现，列表里不出现思考和初稿的文章（R-UI-3 的旧断言）。
+
+**验收**：需求 §9 验收表里 R-VIS-2 那一行；`test_render.py` 原有的首页断言继续通过；桌面和 375px 下首页都没有横向滚动，大字不压正文，深色下可读。
+
+**结果**（2026-10-26 完成，提交 {{SHA}}）：样稿首页已上线。气泡标题读 `docs/index.md` 第一段，线上是“欢迎来到这里。”；“finderlzy's writing”写死在模板。黑圈总数 108，两张卡片是 35 篇思考、66 篇博客、2 篇初稿、5 篇作品，都和全部文章页对得上；列表按月 4 组共 13 条，只有博客和作品。实现时比上面的参照多做了一点，都已写进 `architecture.md` §7.1：
+
+- `base.html` 的五个 symbol 从写死颜色改成 `currentColor` 加 `var(--doodle-line)`，颜色由外层 `.doodle` 决定。首页压在淡色大字上的两份涂鸦要换成强调色，而 `<use>` 引用的 symbol 在 shadow 树里，外部选择器改不到它的描边。
+- 新增 `--accent-text`、`--mustard-text`、`--doodle-line` 三个变量。`--accent` 在白底上是 4.02:1、芥黄是 1.93:1，都不到小字要求的 4.5:1，所以强调色小字（黑圈数字、气泡下的签名）和“yep!”改用加深一档的同色系，色块和描边仍用原色。
+- 40rem 以下两个大字改成横排后压到了黑圈和圈外的星星，窄屏改用 `--ink-soft` 中性灰；桌面那颗星星挪进圈里并缩小，不再和大字底部相撞。
+- 页脚的分隔线仍横贯整页，375px 下压到窗口边缘。这是 V1 就在的样式，V3 没有改。
+
 
 ### V4 全部文章和 404（待细化）
 

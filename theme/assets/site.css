@@ -54,10 +54,13 @@
   --ink-soft: #6c6762;
   --rule: #e9e5e0;
   --accent: #e5461f; /* 封面上那个红橙色的“2”，全站唯一的强调色 */
+  --accent-text: #c9370f; /* 强调色当小号文字用时加深一点，白底上才够 4.5:1（黑圈里的数字用它） */
+  --mustard-text: #8a6410; /* 芥黄只作色块；当文字用这个深一档的 */
   --pink: #f0d9ec;
   --peach: #fbe1cd;
   --sky: #a8d6fb;
   --mustard: #e3b43c;
+  --doodle-line: #1d1b19; /* 涂鸦的外描边：和实心部分（currentColor）对比着看 */
   --chip-think: #f6e6f2;
   --chip-draft: #fdebdc;
   --chip-blog: #e3f1fd;
@@ -90,10 +93,13 @@
     --ink-soft: #a29c95;
     --rule: #2e2c33;
     --accent: #ff7a4f;
+    --accent-text: #ff8a63;
+    --mustard-text: #d9ad3f;
     --pink: #33263a;
     --peach: #3a2b22;
     --sky: #3f6f96;
     --mustard: #d9ad3f;
+    --doodle-line: #f2eee8;
     --chip-think: #2e2433;
     --chip-draft: #33281f;
     --chip-blog: #1f2a35;
@@ -162,14 +168,26 @@ hr {
   overflow: hidden;
 }
 
+/* 涂鸦的线条全部用 currentColor：模板里的 symbol 只写 currentColor 和背景色，
+   颜色由 .doodle 上的 color 决定（强调色、系统字体色等） */
 .doodle {
   display: inline-block;
   vertical-align: middle;
   line-height: 0;
+  color: var(--ink);
 }
 
 .doodle svg {
   display: block;
+}
+
+/* 星星一直是芥黄色；首页压在淡色大字上的两份按强调色 */
+.doodle.accent {
+  color: var(--accent);
+}
+
+.doodle[data-doodle="star"] {
+  color: var(--mustard);
 }
 
 /* 字体角色：模板里写 data-font，具体用什么看 :root 的变量 */
@@ -260,6 +278,7 @@ hr {
   min-width: 0;
 }
 
+/* 页脚的分隔线横贯整页，也就是窗口边缘 */
 .site-footer {
   border-top: 2px solid var(--ink);
 }
@@ -304,38 +323,340 @@ hr {
   letter-spacing: 0.02em;
 }
 
-/* ---- 首页 ---- */
-.home-intro h1 {
-  margin: 0 0 1rem;
-  font-size: clamp(1.9rem, 6vw, 2.6rem);
-  line-height: 1.3;
+/* ---- 首页（R-VIS-2）：气泡标题、淡色大字、黑圈、两条线、按月分组，照样稿 .home-hero ---- */
+.home-hero {
+  position: relative;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding-block: 2.5rem 3rem;
+  min-height: 34rem;
+  overflow: hidden; /* 大字往右上角溢出，裁掉；裁剪在这一层里，不撑宽页面 */
 }
 
-.home-intro p {
-  margin: 0 0 1.1rem;
-  max-width: var(--reading-width);
+.home-hero .giant {
+  line-height: 0.92;
 }
 
-.section-head {
+.home-hero .giant.v {
+  writing-mode: vertical-rl;
+  letter-spacing: -0.04em;
+}
+
+.home-hero .g1 {
+  top: -0.5rem;
+  right: 0;
+  color: var(--pink);
+  font-size: clamp(8rem, 18vw, 14rem);
+}
+
+/* 黑圈在右下角，圈外正好是大字“想法”的竖排底部：星星画在圈里、数字上面；
+   窄屏大字挪到左边，星星再挪回圈外右上角 */
+.home-hero > .count .doodle {
+  top: 0.7rem;
+  right: 0.9rem;
+  transform: scale(0.55);
+  transform-origin: top right;
+}
+
+.home-hero .g2 {
+  top: 5rem;
+  right: clamp(7.5rem, 17vw, 13rem);
+  color: var(--peach);
+  font-size: clamp(8rem, 18vw, 14rem);
+}
+
+/* 气泡和作者的话压在淡色大字前面；宽度收在 30rem，桌面下大字留在右边不被正文挡住 */
+.hero-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 1.6rem;
+  max-width: 30rem;
+}
+
+.bubble {
+  position: relative;
+  padding: 2.2rem 2.4rem 2.4rem;
+  border: 3px solid var(--ink);
+  border-radius: 50% 46% 48% 52% / 56% 50% 50% 44%;
+  background: var(--paper);
+}
+
+.bubble .tail {
+  position: absolute;
+  left: 24%;
+  bottom: -27px;
+  width: 40px;
+  height: 32px;
+}
+
+.bubble h1 {
+  margin: 0;
+  font-size: clamp(2.2rem, 7vw, 3.1rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+}
+
+/* 气泡标题下的红橙色小字：封面上的作者签名 */
+.bubble h1 .slab {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--accent-text);
+  font-size: 0.42em;
+  letter-spacing: 0.02em;
+}
+
+.bubble-word {
+  margin: 0;
+  color: var(--accent-text);
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+}
+
+.welcome {
+  max-width: 27rem;
+  margin: 0.6rem 0 0;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.95;
+}
+
+.welcome p {
+  margin: 0 0 0.6em;
+}
+
+/* 黑圈：公开文章总数；右上角一颗星星 */
+.count {
+  position: absolute;
+  z-index: 1;
+  right: 6%;
+  bottom: 2.2rem;
+  display: grid;
+  place-content: center;
+  width: 8.5rem;
+  height: 8.5rem;
+  border: 5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  text-align: center;
+}
+
+.count b {
+  color: var(--accent-text);
+  font-family: var(--font-slab);
+  font-size: 3.3rem;
+  font-weight: 700;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.count .count-unit {
+  font-size: 0.95rem;
+}
+
+.count .doodle {
+  position: absolute;
+  top: -22px;
+  right: -14px;
+}
+
+.hero-notes {
+  position: absolute;
+  z-index: 1;
+  left: 31rem;
+  top: 4rem;
+}
+
+/* 两条线：想法 思考 → 博客；灵感 初稿 → 作品。阶段名就是全部文章页的筛选链接 */
+.lines {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 14px;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding-block: 0 3rem;
+}
+
+.line {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem 1.2rem;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: var(--pop);
+}
+
+.line .from {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+.line .path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.line .path .chip {
+  padding: 2px 10px;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.line .path .chip:hover,
+.line .path .chip:focus-visible {
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
+.line .arr {
+  color: var(--ink-soft);
+}
+
+.line .n {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+/* 列表：标题“博客与作品”+ 手写 yep!，每个月一个大号数字 */
+.list {
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding-block: 0 4rem;
+}
+
+.list-head {
   display: flex;
   align-items: baseline;
-  gap: 0.6rem;
-  margin: 2.8rem 0 0.4rem;
-  border-bottom: 2px solid var(--ink);
+  gap: 12px;
+  margin: 0 0 1.4rem;
 }
 
-.section-title {
+.list-head h2 {
   margin: 0;
-  padding-bottom: 0.35rem;
   font-size: 1.7rem;
-  line-height: 1.3;
-  color: var(--ink);
+  font-weight: 400;
+  line-height: 1.4;
 }
 
-.hand-note {
-  font-size: 1.5rem;
-  color: var(--mustard);
+.list-head .hand {
+  color: var(--mustard-text);
+  font-size: 1.6rem;
+  line-height: 1.2;
   transform: rotate(-6deg);
+}
+
+.month {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0 2rem;
+  padding: 1.2rem 0;
+  border-top: 2px solid var(--ink);
+}
+
+.month-label {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 月份数字用 Zilla Slab（data-font 只包住数字，汉字留在系统字体里） */
+.month-label > span {
+  font-family: var(--font-slab);
+  font-weight: 700;
+}
+
+.month-label small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.month-label.no-date {
+  font-size: 1.6rem;
+}
+
+.items {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.items li {
+  min-width: 0;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.items li:last-child {
+  border-bottom: 0;
+}
+
+.items a {
+  display: grid;
+  gap: 4px;
+}
+
+.items .t {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.items .t strong {
+  font-size: 1.08rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.items a:hover strong,
+.items a:focus-visible strong {
+  color: var(--accent);
+}
+
+.items .t .chip {
+  padding: 0.1em 0.6em;
+  font-size: 0.75rem;
+}
+
+.items .date {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.items .d {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.more {
+  margin: 1.4rem 0 0;
+  font-weight: 500;
+}
+
+.more a {
+  border-bottom: 2px solid var(--accent);
 }
 
 /* ---- 文章列表（首页和全部文章页共用） ---- */
@@ -1215,6 +1536,80 @@ hr {
 
   .ring b {
     font-size: 2.2rem;
+  }
+
+  /* 窄屏：大字从竖排改成横排，挪到气泡下面，和黑圈并排；气泡内容保持在上方不被压住 */
+  .home-hero {
+    min-height: 0;
+    padding-block: 1.5rem 9.5rem;
+  }
+
+  /* 窄屏的大字改用不透明色：淡色在这两行大字下面，和黑圈只隔几像素就会被右下角
+     滚出去的那一点挡住，看着像压在圈上 */
+  .home-hero .giant.v {
+    writing-mode: horizontal-tb;
+    font-size: 4.2rem;
+    top: auto;
+    color: var(--ink-soft);
+  }
+
+  .home-hero .g1 {
+    left: -0.3rem;
+    right: auto;
+    bottom: 4.4rem;
+  }
+
+  .home-hero .g2 {
+    left: 3rem;
+    right: auto;
+    bottom: 0.2rem;
+  }
+
+  .bubble {
+    padding: 1.8rem 1.6rem 2rem;
+  }
+
+  .welcome {
+    font-size: 0.95rem;
+  }
+
+  .hero-notes {
+    display: none;
+  }
+
+  /* 黑圈在窄屏也跟着大字那一片走，和大字并排，不再压在气泡上 */
+  .home-hero > .count {
+    top: auto;
+    bottom: 1.5rem;
+    right: 4%;
+    width: 7.2rem;
+    height: 7.2rem;
+  }
+
+  .count b {
+    font-size: 2.7rem;
+  }
+
+  .home-hero > .count .doodle {
+    top: -18px;
+    right: -10px;
+    transform: none;
+    transform-origin: center;
+  }
+
+  /* 月份数字和条目上下排 */
+  .month {
+    gap: 0.6rem;
+  }
+
+  .month-label {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 760px) {
+  .month {
+    grid-template-columns: 9rem minmax(0, 1fr);
   }
 }
 

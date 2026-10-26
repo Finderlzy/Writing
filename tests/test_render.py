@@ -1,18 +1,22 @@
 from __future__ import annotations
 
+import datetime
 import tempfile
 import unittest
 from pathlib import Path
 
 from tools.content import Layout, Stage
 from tools.obsidian_compat.urls import legacy_redirects
+from tools.content import Article
 from tools.render import (
     SiteConfig,
     build_pages,
     giant_chars,
+    group_by_month,
     load_config,
     reading_minutes,
     render_markdown,
+    split_home_intro,
     strip_date_notes,
     strip_front_matter,
 )
@@ -231,6 +235,158 @@ class HomePageTests(unittest.TestCase):
         html = self.build().html("")
         self.assertNotIn("giscus", html)
         self.assertNotIn("data-filters", html)
+
+
+class HomeFunctionTests(unittest.TestCase):
+    """split_home_intro / group_by_month：R-VIS-2 首页的展示数据。"""
+
+    def test_heading_goes_and_first_paragraph_becomes_the_headline(self):
+        html, _ = render_markdown("# 首页\n\n欢迎来到这里。\n\n这些文字大多是自己的想法。\n")
+        headline, intro = split_home_intro(html)
+        self.assertEqual("欢迎来到这里。", headline)
+        self.assertNotIn("<h1", intro)
+        self.assertNotIn("欢迎来到这里", intro)
+        self.assertIn("这些文字大多是自己的想法。", intro)
+
+    def test_only_a_heading_leaves_an_empty_headline_and_no_words(self):
+        html, _ = render_markdown("# 首页\n")
+        self.assertEqual(("", ""), split_home_intro(html))
+
+    def test_headline_is_plain_text(self):
+        html, _ = render_markdown("# 首页\n\n你好**这里**，还有`代码`。\n\n正文。\n")
+        headline, intro = split_home_intro(html)
+        self.assertEqual("你好这里，还有代码。", headline)
+        self.assertNotIn("<strong>", headline)
+        self.assertIn("正文。", intro)
+
+    def test_heading_without_a_paragraph_keeps_the_following_html_as_words(self):
+        headline, intro = split_home_intro("<h1>首页</h1>\n<blockquote>\n<p>引用里的话。</p>\n</blockquote>\n")
+        self.assertEqual("", headline)
+        self.assertNotIn("<h1", intro)
+        self.assertIn("引用里的话。", intro)
+
+    def test_intro_that_does_not_start_with_a_heading_keeps_everything_as_words(self):
+        headline, intro = split_home_intro("<p>第一段。</p>\n<p>第二段。</p>\n")
+        self.assertEqual("", headline)
+        self.assertIn("第一段。", intro)
+        self.assertIn("第二段。", intro)
+
+    def _article(self, title: str, date) -> Article:
+        return Article(
+            source_path=Path(title + ".md"),
+            stage=Stage("04技术", "博客", "blog"),
+            title=title,
+            date=date,
+            tags=(),
+            description="",
+        )
+
+    def test_months_keep_newest_first_and_period_without_a_date_goes_last(self):
+        articles = (
+            self._article("十月五号", datetime.date(2026, 10, 5)),
+            self._article("十月一号", datetime.date(2026, 10, 1)),
+            self._article("九月三十", datetime.date(2026, 9, 30)),
+            self._article("没日期", None),
+        )
+        groups = group_by_month(articles)
+        self.assertEqual(
+            [(2026, 10, ["十月五号", "十月一号"]), (2026, 9, ["九月三十"]), (None, None, ["没日期"])],
+            [(year, month, [article.title for article in items]) for year, month, items in groups],
+        )
+
+    def test_no_articles_gives_no_groups(self):
+        self.assertEqual((), group_by_month(()))
+
+    def test_same_period_of_another_year_is_its_own_group(self):
+        articles = (
+            self._article("今年十月", datetime.date(2026, 10, 1)),
+            self._article("去年十月", datetime.date(2025, 10, 1)),
+        )
+        self.assertEqual([(2026, 10), (2025, 10)], [(year, month) for year, month, _ in group_by_month(articles)])
+
+
+class HomeCoverTests(unittest.TestCase):
+    """封面式首页（R-VIS-2）：气泡、大字、黑圈、两条线、按月分组。"""
+
+    FILES = {
+        "index.md": "# 首页\n\n欢迎来到这里。\n\n这些文字大多是自己的想法。\n\np.s. 学习笔记也放这里了。\n",
+        "03思考/一篇思考.md": "---\ncreatedDate: 2026-10-05\n---\n# 一篇思考\n",
+        "03思考/初稿/黑框眼镜.md": "---\ncreatedDate: 2026-10-06\n---\n# 黑框眼镜\n",
+        "04技术/新博客.md": "---\ncreatedDate: 2026-10-02\ndescription: 一句简介\n---\n# 新博客\n",
+        "04技术/旧博客.md": "---\ncreatedDate: 2026-09-30\n---\n# 旧博客\n",
+        "05作品/星期四.md": "---\ncreatedDate: 2026-10-01\n---\n# 星期四\n",
+    }
+
+    def build(self, files: dict[str, str] | None = None) -> Workspace:
+        workspace = Workspace(files or dict(self.FILES))
+        self.assertFalse(workspace.build(), [diagnostic.format() for diagnostic in workspace.build_pages()])
+        return workspace
+
+    def test_bubble_headline_is_the_first_paragraph_and_the_heading_is_gone(self):
+        html = self.build().html("")
+        self.assertNotIn("首页", html[html.index("<main"): html.index("</main>")])
+        self.assertIn("欢迎来到这里。", html)
+        self.assertIn("这些文字大多是自己的想法。", html)
+        self.assertIn("", html)
+        self.assertIn('<span class="slab" data-font="slab">finderlzy\'s writing</span>', html)
+        # 作者的话在列表之前
+        self.assertLess(html.index("欢迎来到这里"), html.index("博客与作品"))
+
+    def test_count_and_cards_use_every_published_article(self):
+        html = self.build().html("")
+        self.assertIn('aria-label="已发布 5 篇"', html)  # 5 篇公开文章，首页列表只有 3 篇
+        self.assertIn("<b data-font=\"slab\">5</b>", html)
+        self.assertIn("全部 5 篇", html)
+        self.assertIn('<span data-font="slab">1</span> 篇思考 · <span data-font="slab">2</span> 篇博客', html)
+        self.assertIn('<span data-font="slab">1</span> 篇初稿 · <span data-font="slab">1</span> 篇作品', html)
+
+    def test_stage_names_on_the_cards_link_to_the_filtered_list(self):
+        html = self.build().html("")
+        for stage in ("思考", "初稿", "博客", "作品"):
+            self.assertIn(f'href="./posts/?stage={stage}"', html)
+        self.assertIn("冒出一个想法", html)
+        self.assertIn("来了一点灵感", html)
+
+    def test_list_is_grouped_by_month_newest_first(self):
+        html = self.build().html("")
+        list_html = html[html.index('class="list"'):]
+        self.assertIn("· 十月</small>", list_html)
+        self.assertIn("· 九月</small>", list_html)
+        self.assertLess(list_html.index("· 十月</small>"), list_html.index("· 九月</small>"))
+        self.assertIn('<span data-font="slab">10</span><small><span data-font="slab">2026</span> · 十月</small>', list_html)
+        titles = ("新博客", "星期四", "旧博客")
+        positions = [list_html.index(title) for title in titles]
+        self.assertEqual(sorted(positions), positions)
+        self.assertIn("一句简介", list_html)
+
+    def test_only_blog_and_work_are_listed(self):
+        list_html = self.build().html("")
+        list_html = list_html[list_html.index('class="list"'):]
+        self.assertNotIn("一篇思考", list_html)
+        self.assertNotIn("黑框眼镜", list_html)
+        self.assertNotIn('data-stage="思考"', list_html)
+        self.assertNotIn('data-stage="初稿"', list_html)
+
+    def test_article_without_a_date_gets_its_own_last_group(self):
+        files = {**self.FILES, "04技术/没日期.md": "---\ndescription: 还没写日期\n---\n# 没日期\n"}
+        list_html = self.build(files).html("")
+        list_html = list_html[list_html.index('class="list"'):]
+        self.assertIn("日期<small>不详</small>", list_html)
+        self.assertLess(list_html.index("九月"), list_html.index("日期<small>不详</small>"))
+        self.assertLess(list_html.index("旧博客"), list_html.index("没日期"))
+
+    def test_home_with_no_articles_still_has_the_way_to_the_list(self):
+        html = self.build({"03思考/一篇.md": "---\ncreatedDate: 2026-10-01\n---\n# 一篇\n"}).html("")
+        self.assertIn('aria-label="已发布 1 篇"', html)
+        self.assertIn("全部 1 篇", html)
+        self.assertNotIn('class="month"', html)
+        self.assertIn('href="./posts/"', html)
+
+    def test_giant_words_and_count_have_no_reading_blocking_side_effects(self):
+        html = self.build().html("")
+        self.assertIn('<div class="giant v g1" aria-hidden="true" data-font="head">想法</div>', html)
+        self.assertIn('<div class="giant v g2" aria-hidden="true" data-font="head">灵感</div>', html)
+        self.assertIn('class="count" role="note"', html)
 
 
 class PostsPageTests(unittest.TestCase):

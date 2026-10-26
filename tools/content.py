@@ -321,6 +321,17 @@ class Catalog:
             )
         )
 
+    def stage_counts(self) -> dict[str, int]:
+        """How many published articles each stage has, including the pages inside series folders.
+
+        The keys and their order are the layout's stages, so a stage nobody writes in yet
+        still shows up with 0. This is the same set of articles as the all-articles page.
+        """
+        counts = {stage.name: 0 for stage in self.layout.stages}
+        for article in self.articles:
+            counts[article.stage.name] = counts.get(article.stage.name, 0) + 1
+        return counts
+
     def article(self, source_path: Path) -> Article | None:
         """The article read from a source path, if it was loaded."""
         for article in self.articles:

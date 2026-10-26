@@ -209,7 +209,7 @@ SERIES = {
 | 模板（`theme/templates/`，计划） | 内容 |
 | --- | --- |
 | `base.html` | 顶部栏：站名（回首页）、“首页”“全部文章”两项（R-UI-2）；页脚：社交链接 |
-| `home.html` | `docs/index.md` 渲染的作者的话；`Catalog.home()` 列表，每项标题、日期、阶段、简介；末尾“全部文章”入口；不放评论和筛选（R-UI-3） |
+| `home.html` | 封面式首页（5.1.0 V3）：气泡里的标题（`docs/index.md` 第一段）和作者的话、右侧竖排的“想法”“灵感”淡色大字、黑圈总数；两条线卡片，“冒出一个想法 → 思考 → 博客”“来了一点灵感 → 初稿 → 作品”，阶段名链到 `posts/?stage=…`，卡片上写各阶段篇数；`Catalog.home()` 的列表按月分组，组头是大号月份数字，每项标题、日期、阶段、简介；末尾“全部文章”入口；不放评论和筛选（R-UI-3） |
 | `posts.html` | 全部文章列表，每项标题、日期、阶段、系列名、简介；阶段按钮和标签按钮两组筛选；结果为空时的提示（R-UI-4） |
 | `article.html` | 标题、日期、阶段、标签、目录（条件显示）、正文、系列导航（所属系列与系列内下一篇）、上一篇 / 下一篇、Giscus（R-UI-5、R-UI-6） |
 | `404.html` | “页面不存在”加回首页、全部文章的入口（R-PUB-4） |
@@ -219,6 +219,8 @@ SERIES = {
 - 全部文章页的筛选：读写 `stage`、`tag` 查询参数，两个条件同时满足才显示，空结果时显示提示。每项的阶段和标签由构建写在 `data-` 属性里。
 - 代码块的复制按钮（`navigator.clipboard` 为主，`execCommand` 兜底）。
 
+涂鸦的五个 symbol 用 `currentColor` 和 `var(--doodle-line)` 取色，颜色由外层 `.doodle`（默认 `--ink`，首页压在大字上的两份加 `.accent`）决定：`<use>` 引用的 symbol 在 shadow 树里，外面写选择器改不到它的描边。小号文字不用纯强调色和芥黄（白底上分别只有 4.02:1 和 1.93:1），改用 `--accent-text`、`--mustard-text`；色块和描边仍用原色。
+
 实现要点（T2）：筛选按钮和筛选结果摘要默认 `hidden`，由 `site.js` 显示，所以没有 JS 时按钮不出现、列表全部可见；查询参数里的阶段或标签对不上任何按钮时按“没筛选”处理；筛选状态用 `history.replaceState` 写回地址，可以分享。样式集中在 `theme/assets/site.css` 一个文件里，颜色走 CSS 变量，`prefers-color-scheme: dark` 时整体切换；MathJax 的读屏辅助层 `mjx-assistive-mml` 挪出排版流（否则会撑出横向滚动），行内公式和行间公式各自在容器内横向滚动。
 
 去掉的前端内容：Material 主题与 `overrides/`、左侧导航树、站内搜索、不蒜子访问统计（`counter.js`，属于非目标）。`docs/javascripts/` 里的三个脚本移出 Obsidian 仓库（MathJax 配置并入 `site.js`）。
@@ -227,7 +229,7 @@ SERIES = {
 
 需求见 [requirements.md §9](requirements.md)，样稿是 [设计样稿/5.1.0-首页与文章页.html](设计样稿/5.1.0-首页与文章页.html)。信息结构和模板的数据来源都不变，改的是样式、模板标记和几处由渲染层算出来的展示数据。上面“装饰只有分隔线和灰色辅助文字”一句作废。
 
-**样式**：`theme/assets/site.css` 整份重写，颜色和字体都是 `:root` 上的变量（名字照样稿：`--paper`、`--ink`、`--ink-soft`、`--rule`、`--accent`、`--pink`、`--peach`、`--sky`、`--mustard`、四个阶段的 `--chip-*`、`--shadow`），`prefers-color-scheme: dark` 只重新定义变量。不再引入框架；涂鸦用 `base.html` 里的一份内联 SVG `<symbol>`（`star`、`note`、`note1`、`drop`、`think`），各模板用 `<use href="#star">` 引用。
+**样式**：`theme/assets/site.css` 整份重写，颜色和字体都是 `:root` 上的变量（名字照样稿：`--paper`、`--ink`、`--ink-soft`、`--rule`、`--accent`、`--pink`、`--peach`、`--sky`、`--mustard`、四个阶段的 `--chip-*`、`--shadow`，V3 又加了 `--accent-text`、`--mustard-text`、`--doodle-line`），`prefers-color-scheme: dark` 只重新定义变量。不再引入框架；涂鸦用 `base.html` 里的一份内联 SVG `<symbol>`（`star`、`note`、`note1`、`drop`、`think`），各模板用 `<use href="#star">` 引用。
 
 **数据（计划）**：
 
@@ -236,7 +238,8 @@ SERIES = {
 class Article:
     updated: date | None                    # 新增：updatedDate，标题区显示“改于”
 class Catalog:
-    def stage_counts(self) -> dict[str, int]  # 新增：阶段名 → 篇数，首页两张卡片和黑圈用
+    def stage_counts(self) -> dict[str, int]  # 新增：阶段名 → 篇数，首页两张卡片用；键按 LAYOUT 的阶段顺序，
+                                             # 口径是 catalog.articles（含系列子篇），没有的阶段为 0
 
 # tools/render.py
 def giant_chars(title: str) -> tuple[str, str]
@@ -251,10 +254,15 @@ def strip_date_notes(markdown: str) -> str
     # 说明文字的块都能正确保留说明；空行后面还有引用行时仍算同一块（渲染后是同一个 <blockquote>）。
 def reading_minutes(html: str) -> int     # 去标签后的非空白字符数 / 400，四舍五入，最少 1
 def split_home_intro(html: str) -> tuple[str, str]
-    # 去掉开头的 <h1>，第一个 <p> 的文字作气泡标题，其余 HTML 作作者的话
+    # 作者的话按原样保留这段 HTML 的其余部分。开头必须是 <h1>（docs/index.md 的一级标题），
+    # 去掉它之后紧跟的那个 <p> 的文字（去标签、压空白）作气泡标题；开头不是 <h1>、或者 <h1> 后面
+    # 不是段落，headline 为空串，去掉 <h1> 后的整段都算作者的话
+def group_by_month(articles: Iterable[Article]) -> tuple[tuple[int, int | None, tuple[Article, ...]], ...]
+    # 按 createdDate 的年、月分组，组和组内都保持传入顺序（新到旧）；没有日期的合成最后一组，
+    # 年、月都是 None。首页和 V4 的全部文章页共用它
 ```
 
-`Page` 增加 `giant`、`giant_second`、`minutes`、`headline` 四个字段，由 `write_site` 填；`strip_date_notes` 在 `render_markdown` 之前对文章正文调用，不影响源文件，也不影响转换层的双链检查（检查早已在转换时做完）。首页卡片链接写成 `posts/?stage=思考`，复用 `site.js` 已有的查询参数筛选，不加新脚本。
+`Page` 增加 `giant`、`giant_second`、`minutes`、`headline`、`stage_counts`、`total`、`months` 七个字段，由 `write_site` 填；`strip_date_notes` 在 `render_markdown` 之前对文章正文调用，不影响源文件，也不影响转换层的双链检查（检查早已在转换时做完）。首页卡片链接写成 `posts/?stage=思考`，复用 `site.js` 已有的查询参数筛选，不加新脚本。首页的 `total` 是 `len(catalog.articles)`，即公开文章总数，不是首页列表的条数；`months` 只装 `catalog.home()` 的结果（博客和作品，R-UI-3）；`stage_counts` 和全部文章页同口径。气泡下的 “finderlzy's writing” 写死在 `home.html` 里，不读 `site.toml`：它是封面上的装饰字，换站名不该跟着变。
 
 **字体（V0 已实测，2026-10-26）**：新模块 `tools/fonts.py`。结论是原设想成立，四个 woff2 合计 81.4 KB（预算 300 KB），五个文件子集化 0.62 秒，排版度量与在线字体一致；下面把 V0 改掉的三处单独标出。
 

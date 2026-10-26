@@ -12,7 +12,7 @@ import posixpath
 import re
 import shutil
 from collections.abc import Iterable
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from urllib.parse import quote, unquote
 
@@ -110,6 +110,10 @@ class Page:
     giant: str = ""  # 标题后面垫的淡色大字，“黑”“C”；空串表示不画
     giant_second: str = ""  # 小一号的第二个大字，“眼镜”“子王”；空串表示没有
     minutes: int = 0  # 读完大约几分钟；0 表示没有正文（首页、全部文章页、404）
+    headline: str = ""  # 首页气泡标题：docs/index.md 正文第一段
+    stage_counts: dict[str, int] = field(default_factory=dict)  # 首页黑圈和两张卡片：阶段名 → 篇数
+    total: int = 0  # 首页黑圈：公开文章总数，不是首页列表的条数
+    months: tuple[tuple[int, int | None, tuple[Article, ...]], ...] = ()  # 首页列表的按月分组
 
 
 def _toml_value(value: str) -> str:
@@ -212,6 +216,9 @@ _TRAILING_NOTE_RE = re.compile(r"[（(][^（()）]*[)）]\s*\Z")
 # 正文开头只写日期的引用行：`> 写于 2026-08-29`、`>更新于 2026-10-20`
 _DATE_NOTE_RE = re.compile(r"[ \t]*>\s*(?:更新于|写于)\s*\d{4}-\d{1,2}-\d{1,2}\s*\Z")
 _MINUTES_PER_CHAR = 400
+# 首页开头的 <h1> 和第一个 <p>：气泡标题取第一段的纯文字，其余 HTML 是作者的话
+_H1_RE = re.compile(r"<h1\b[^>]*>.*?</h1>\s*", re.DOTALL)
+_P_RE = re.compile(r"<p\b[^>]*>(?P<inner>.*?)</p>", re.DOTALL)
 
 
 def giant_chars(title: str) -> tuple[str, str]:
@@ -266,6 +273,25 @@ def reading_minutes(html: str) -> int:
     """How many minutes the body takes: non-space characters after removing tags / 400, at least 1."""
     text = _TAG_RE.sub("", html)
     return max(1, round(len(_SPACE_RE.sub("", text)) / _MINUTES_PER_CHAR))
+
+
+def split_home_intro(html: str) -> tuple[str, str]:
+    """Split the rendered `docs/index.md` into (bubble headline, author's words).
+
+    The heading at the top ("首页") is not shown on the home page. The text of the
+    first paragraph becomes the bubble headline; everything else stays the author's
+    words. Without a heading at the top, or without a paragraph right after it,
+    there is no headline and the rest is shown as the author's words.
+    """
+    body = html.lstrip()
+    if not _H1_RE.match(body):
+        return "", html  # 开头不是一级标题：整份都算作者的话，气泡里不画标题
+    body = _H1_RE.sub("", body, count=1).lstrip()
+    match = _P_RE.match(body)  # 只有紧跟标题的那一段才是气泡标题
+    if match is None:
+        return "", body
+    headline = _TAG_RE.sub("", match.group("inner"))
+    return _SPACE_RE.sub(" ", headline).strip(), body[: match.start()] + body[match.end() :]
 
 
 def render_markdown(text: str) -> tuple[str, tuple[dict, ...]]:
@@ -407,12 +433,34 @@ def _rows(articles: Iterable[Article]) -> tuple[dict, ...]:
     )
 
 
+_MONTH_NAMES = ("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月")
+
+
+def group_by_month(articles: Iterable[Article]) -> tuple[tuple[int, int | None, tuple[Article, ...]], ...]:
+    """Group articles into (year, month, articles), keeping their order (newest first).
+
+    Articles without a createdDate cannot be put in a month; they form one last group
+    whose year and month are both None (the build already warned about them).
+    """
+    groups: dict[tuple[int, int] | None, list[Article]] = {}
+    for article in articles:
+        if article.date is None:
+            groups.setdefault(None, []).append(article)
+        else:
+            groups.setdefault((article.date.year, article.date.month), []).append(article)
+    dated = [key for key in groups if key is not None]
+    return tuple((key[0], key[1], tuple(groups[key])) for key in dated) + (
+        ((None, None, tuple(groups[None])),) if None in groups else ()
+    )
+
+
 def _context(config: SiteConfig, page: Page, url: str) -> dict:
     return {
         "site": config,
         "page": page,
         "url": url,
         "root": _root(url),
+        "month_names": _MONTH_NAMES,
         "toc": page.toc if _heading_count(page.toc) >= _TOC_MIN_HEADINGS else (),
         "mathjax": page.has_math,
         "unit_separator": "\u0001",  # 列表项的 data-tags 用它拼多个主题标签
@@ -493,9 +541,21 @@ def write_site(
             )
         )
 
-    home_body, _ = render_markdown(strip_front_matter(converted.get(HOME_PAGE.as_posix(), "")))
+    home_html, _ = render_markdown(strip_front_matter(converted.get(HOME_PAGE.as_posix(), "")))
+    headline, home_intro = split_home_intro(home_html)
+    home_articles = catalog.home()
     pages.append(
-        Page(url=HOME_URL, title=config.site_name, body=home_body, articles=catalog.home(), highlight_nav="home")
+        Page(
+            url=HOME_URL,
+            title=config.site_name,
+            body=home_intro,
+            headline=headline,
+            articles=home_articles,
+            stage_counts=catalog.stage_counts(),
+            total=len(catalog.articles),  # 黑圈写的是公开文章总数，不是首页列表的条数
+            months=group_by_month(home_articles),
+            highlight_nav="home",
+        )
     )
     pages.append(
         Page(

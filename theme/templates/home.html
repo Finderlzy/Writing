@@ -1,29 +1,83 @@
 {% extends "base.html" %}
+{# 封面式首页（R-VIS-2）：气泡标题和作者的话、右侧的“想法”“灵感”大字、黑圈总数、
+   两条线的卡片、按月分组的博客和作品。列表规则仍是 R-UI-3：只有博客和作品，
+   系列子文件夹里的各篇不出现；不放评论区和筛选。 #}
+{% macro bubble_headline(text) -%}
+{%- if "。" in text -%}{% set cut = text.index("。") + 1 %}{{ text[:cut] }}<br>{{ text[cut:] }}
+{%- else -%}{{ text }}
+{%- endif -%}
+{%- endmacro %}
 {% block content %}
 <article class="home">
-  <div class="home-intro">
+  <section class="home-hero">
+    <div class="giant v g1" aria-hidden="true" data-font="head">想法</div>
+    <div class="giant v g2" aria-hidden="true" data-font="head">灵感</div>
+    <div class="hero-body">
+      <div class="bubble">{% if page.headline %}<h1><span data-font="head">{{ bubble_headline(page.headline) }}</span><span class="slab" data-font="slab">finderlzy's writing</span></h1>{% else %}<p class="bubble-word" data-font="slab">finderlzy's writing</p>{% endif %}
+        <svg class="tail" viewBox="0 0 40 32" aria-hidden="true"><path d="M4 -2 Q10 18 2 30 Q22 20 30 -2 Z" fill="var(--paper)"/><path d="M5 2 Q10 18 2 30 Q22 20 29 3" fill="none" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+      <div class="welcome">
 {{ page.body | safe }}
-  </div>
-  <section class="article-list-section">
-    <div class="section-head">
-      <h2 class="section-title" data-font="cute">博客与作品</h2>
-      <span class="hand-note" aria-hidden="true" data-font="hand">yep!</span>
+      </div>
     </div>
-    <ul class="article-list">
-      {% for article in page.articles %}
-      <li class="article-item">
-        <p class="article-item-head">
-          <a class="article-item-title" href="{{ root }}{{ article.url }}">{{ article.title }}</a>
-        </p>
-        <p class="article-meta">
-          <span class="article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
-          {% if article.date %}<time data-font="slab" datetime="{{ article.date.isoformat() }}">{{ article.date.isoformat() }}</time>{% endif %}
-        </p>
-        {% if article.description %}<p class="article-desc">{{ article.description }}</p>{% endif %}
-      </li>
-      {% endfor %}
-    </ul>
-    <p class="more-link"><a href="{{ root }}posts/">全部文章 →</a></p>
+    <div class="hero-notes" aria-hidden="true">
+      <span class="doodle accent" style="transform:rotate(-8deg)"><svg width="34" height="40"><use href="#note"/></svg></span>
+      <span class="doodle accent" style="margin-left:18px;transform:translateY(26px) rotate(10deg)"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    </div>
+    <div class="count" role="note" aria-label="已发布 {{ page.total }} 篇">
+      <span class="doodle" data-doodle="star" aria-hidden="true"><svg width="34" height="34"><use href="#star"/></svg></span>
+      <b data-font="slab">{{ page.total }}</b><span class="count-unit" data-font="slab">pieces</span>
+    </div>
+  </section>
+
+  <section class="lines" aria-label="两条线">
+    <div class="line">
+      <p class="from" data-font="cute">冒出一个想法 <span class="doodle" aria-hidden="true"><svg width="22" height="26"><use href="#think"/></svg></span></p>
+      <p class="path">
+        <a class="chip" data-stage="思考" href="{{ root }}posts/?stage=思考">思考</a>
+        <span class="arr" aria-hidden="true">→</span>
+        <a class="chip" data-stage="博客" href="{{ root }}posts/?stage=博客">博客</a>
+      </p>
+      <p class="n"><span data-font="slab">{{ page.stage_counts.get("思考", 0) }}</span> 篇思考 · <span data-font="slab">{{ page.stage_counts.get("博客", 0) }}</span> 篇博客</p>
+    </div>
+    <div class="line">
+      <p class="from" data-font="cute">来了一点灵感 <span class="doodle" aria-hidden="true"><svg width="22" height="26"><use href="#note1"/></svg></span></p>
+      <p class="path">
+        <a class="chip" data-stage="初稿" href="{{ root }}posts/?stage=初稿">初稿</a>
+        <span class="arr" aria-hidden="true">→</span>
+        <a class="chip" data-stage="作品" href="{{ root }}posts/?stage=作品">作品</a>
+      </p>
+      <p class="n"><span data-font="slab">{{ page.stage_counts.get("初稿", 0) }}</span> 篇初稿 · <span data-font="slab">{{ page.stage_counts.get("作品", 0) }}</span> 篇作品</p>
+    </div>
+  </section>
+
+  <section class="list" aria-label="博客与作品">
+    <div class="list-head">
+      <h2 data-font="cute">博客与作品</h2>
+      <span class="hand" aria-hidden="true" data-font="hand">yep!</span>
+    </div>
+    {% for year, month, articles in page.months %}
+    <section class="month">
+      <h3 class="month-label{% if not year %} no-date{% endif %}">
+        {%- if year -%}<span data-font="slab">{{ "%02d" % month }}</span><small><span data-font="slab">{{ year }}</span> · {{ month_names[month - 1] }}</small>
+        {%- else -%}日期<small>不详</small>{%- endif -%}
+      </h3>
+      <ul class="items">
+        {% for article in articles %}
+        <li>
+          <a href="{{ root }}{{ article.url }}">
+            <span class="t">
+              <strong>{{ article.title }}</strong>
+              <span class="chip" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
+              {% if article.date %}<span class="date" data-font="slab">{{ "%02d.%02d" % (article.date.month, article.date.day) }}</span>{% endif %}
+            </span>
+            {% if article.description %}<span class="d">{{ article.description }}</span>{% endif %}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% endfor %}
+    <p class="more"><a href="{{ root }}posts/">全部 {{ page.total }} 篇 →</a></p>
   </section>
 </article>
 {% endblock %}
