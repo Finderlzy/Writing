@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.obsidian_compat.urls import Redirect, auto_slug, front_matter_slug, plan_page_urls, redirect_html, renamed_folder_redirects
+from tools.obsidian_compat.urls import Redirect, auto_slug, front_matter_slug, legacy_redirects, plan_page_urls, redirect_html
 
 
 SECTIONS = {"02学习": "learning", "04技术": "tech", "07自己": "self", "08作品": "works"}
@@ -75,23 +75,22 @@ class PageUrlTests(unittest.TestCase):
         self.assertIn('url=../../tech/vless-reality/"', page)
         self.assertIn('href="https://finderlzy.github.io/Writing/tech/vless-reality/"', page)
 
-    def test_renamed_folder_keeps_old_urls_as_redirects(self):
-        urls = {
-            "03思考/关于读书.md": f"thoughts/{auto_slug(Path('03思考/关于读书.md'))}/",
-            "03思考/有slug.md": "thoughts/my-post/",
-            "03思考/index.md": "thoughts/",
-            "03思考/初稿/黑框眼镜.md": f"thoughts/{auto_slug(Path('03思考/初稿/黑框眼镜.md'))}/",
-            "04技术/教程.md": "tech/guide/",
-        }
-        redirects = renamed_folder_redirects(urls, {"03思考": ("03文章", "articles")})
-        self.assertCountEqual(
-            [
-                Redirect(f"articles/{auto_slug(Path('03文章/关于读书.md'))}/index.html", urls["03思考/关于读书.md"]),
-                Redirect("articles/my-post/index.html", "thoughts/my-post/"),
-                Redirect("articles/index.html", "thoughts/"),
-            ],
-            redirects,
-        )
+    def test_legacy_redirect_refuses_a_target_that_was_not_written(self):
+        """R-PUB-4：跳转目标必须是真写出来的页面，写错就让构建失败而不是留个死链。"""
+        with tempfile.TemporaryDirectory() as directory:
+            site = Path(directory)
+            (site / "blog" / "subscribe-claude-quick").mkdir(parents=True)
+            (site / "blog" / "subscribe-claude-quick" / "index.html").write_text("<!doctype html>", encoding="utf-8")
+            diagnostics = legacy_redirects(
+                site, [("tech/subscribe-claude-quick", "blog/subscribe-claude-quick")], "https://finderlzy.github.io/Writing/"
+            )
+            self.assertEqual([], diagnostics)
+            self.assertTrue((site / "tech" / "subscribe-claude-quick" / "index.html").is_file())
+
+            diagnostics = legacy_redirects(
+                site, [("tech/subscribe-claude", "blog/subscribe-claude")], "https://finderlzy.github.io/Writing/"
+            )
+            self.assertEqual(["E_REDIRECT_TARGET_MISSING"], [item.code for item in diagnostics])
 
 
 if __name__ == "__main__":

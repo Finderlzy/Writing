@@ -9,8 +9,6 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
-from mkdocs.plugins import BasePlugin
-
 from ..content import read_meta
 from .models import Diagnostic, SourceSpan
 
@@ -117,45 +115,6 @@ def _section_missing_message(source_path: Path) -> str:
     if len(source_path.parts) <= 1:
         return f"根目录的文件“{source_path.as_posix()}”没有对应的网址前缀，请把它放进某个阶段文件夹。"
     return f"文件夹“{source_path.parts[0]}”没有对应的网址前缀，请把它加入 Layout 的阶段里。"
-
-
-def renamed_folder_redirects(urls: dict[str, str], renames: dict[str, tuple[str, str]]) -> list[Redirect]:
-    """Old addresses of pages right in a renamed first-level folder: {new folder: (old folder, old prefix)}."""
-    redirects: list[Redirect] = []
-    for src_uri, url in urls.items():
-        source_path = Path(src_uri)
-        if len(source_path.parts) != 2 or source_path.parts[0] not in renames:
-            continue
-        old_folder, old_prefix = renames[source_path.parts[0]]
-        if source_path.name == "index.md":
-            redirects.append(Redirect(f"{old_prefix}/index.html", url))
-            continue
-        slug = url.rstrip("/").rsplit("/", 1)[-1]
-        if slug == auto_slug(source_path):
-            slug = auto_slug(Path(old_folder, source_path.name))
-        redirects.append(Redirect(f"{old_prefix}/{slug}/index.html", url))
-    return redirects
-
-
-class PageUrlPlugin(BasePlugin):
-    """Move pages to their planned URL and remember the old address for redirects."""
-
-    def __init__(self, urls: dict[str, str]):
-        super().__init__()
-        self.urls = urls
-        self.redirects: list[Redirect] = []
-
-    def on_files(self, files, config):
-        self.redirects = []
-        for file in files.documentation_pages():
-            new_url = self.urls.get(file.src_uri)
-            if new_url is None:
-                continue
-            self.redirects.append(Redirect(file.dest_uri, new_url))
-            file.dest_uri = new_url + "index.html"
-            for cached in ("url", "abs_dest_path"):
-                file.__dict__.pop(cached, None)
-        return files
 
 
 def redirect_html(old_dest: str, new_url: str, site_url: str | None) -> str:
