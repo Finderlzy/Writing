@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="article">
+  <header class="article-header">
+    <h1>{{ page.title }}</h1>
+    {% if page.article.date %}
+    <p class="article-meta">
+      <span class="article-stage">{{ page.article.stage.name }}</span>
+      <time datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>
+    </p>
+    {% endif %}
+    {% if page.article.description %}
+    <p class="article-description">{{ page.article.description }}</p>
+    {% endif %}
+  </header>
+  {% if toc %}
+  <nav class="article-toc">
+    <p class="article-toc-title">目录</p>
+    <ul>
+      {% for item in toc %}
+      <li><a href="#{{ item.id }}">{{ item.name }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+  <div class="article-body">
+{{ page.body | safe }}
+  </div>
+</article>
+{% endblock %}

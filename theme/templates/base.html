@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.article %}{{ page.title }} · {{ site.site_name }}{% else %}{{ page.title }}{% endif %}</title>
+    <link rel="stylesheet" href="{{ root }}assets/theme/site.css">
+    {% if mathjax %}
+    <script defer src="{{ root }}assets/theme/mathjax.js"></script>
+    {% endif %}
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="site-title" href="{{ root }}">{{ site.site_name }}</a>
+    </header>
+    <main class="site-main">
+{% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <p>{{ site.site_name }}</p>
+    </footer>
+  </body>
+</html>

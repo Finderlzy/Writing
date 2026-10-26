@@ -11,6 +11,7 @@ from pathlib import Path
 
 from mkdocs.plugins import BasePlugin
 
+from ..content import read_meta
 from .models import Diagnostic, SourceSpan
 
 _SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -23,21 +24,30 @@ class Redirect:
     new_url: str
 
 
-def front_matter_slug(text: str) -> tuple[str, int] | None:
-    """Return the raw `slug` value in YAML front matter and its line number."""
+def _slug_line(text: str) -> int | None:
+    """Line number of the `slug` entry in the first front matter block, for diagnostics only."""
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
         return None
     for index in range(1, len(lines)):
         if lines[index].strip() == "---":
             return None
-        match = _SLUG_LINE_RE.match(lines[index])
-        if match:
-            value = match.group(1)
-            if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
-                value = value[1:-1]
-            return value, index + 1
+        if _SLUG_LINE_RE.match(lines[index]):
+            return index + 1
     return None
+
+
+def front_matter_slug(text: str) -> tuple[str, int] | None:
+    """Return the `slug` value from front matter and its line number.
+
+    The value comes from `content.read_meta` (YAML), so `slug: abc # note` is `abc`;
+    a hand-written `slug:` line whose value YAML cannot read yields no slug at all.
+    """
+    line = _slug_line(text)
+    value = read_meta(text).get("slug")
+    if line is None or not isinstance(value, str) or not value.strip():
+        return None
+    return value.strip(), line
 
 
 def auto_slug(source_path: Path) -> str:
@@ -48,22 +58,25 @@ def auto_slug(source_path: Path) -> str:
 def plan_page_urls(
     docs: Path,
     pages: Iterable[Path],
-    is_unpublished: Callable[[Path], bool],
-    sections: dict[str, str],
+    is_published: Callable[[Path], bool],
+    prefix_of: Callable[[Path], str | None],
 ) -> tuple[dict[str, str], list[Diagnostic]]:
-    """Map published page src_uri to `<一级目录英文名>/<slug>/`, e.g. `tech/vless-reality/`."""
+    """Map each published page's src_uri to `<网址前缀>/<slug>/`, e.g. `blog/vless-reality/`.
+
+    `prefix_of` returns the URL prefix of the page's stage, or None when it has none.
+    """
     diagnostics: list[Diagnostic] = []
     owners: dict[str, list[tuple[Path, int]]] = {}
     for source_path in sorted(pages, key=lambda item: item.as_posix()):
-        if is_unpublished(source_path) or source_path == Path("index.md"):
+        if not is_published(source_path) or source_path == Path("index.md"):
             continue
-        section = sections.get(source_path.parts[0]) if len(source_path.parts) > 1 else None
+        section = prefix_of(source_path)
         if section is None:
             diagnostics.append(
                 Diagnostic(
                     "E_URL_SECTION_MISSING",
                     SourceSpan(source_path, 1, 1),
-                    f"一级目录“{source_path.parts[0]}”没有对应的英文网址前缀，请在 build_site.py 的 SECTION_SLUGS 中添加。",
+                    _section_missing_message(source_path),
                 )
             )
             continue
@@ -98,6 +111,12 @@ def plan_page_urls(
             continue
         urls[sources[0][0].as_posix()] = url
     return urls, diagnostics
+
+
+def _section_missing_message(source_path: Path) -> str:
+    if len(source_path.parts) <= 1:
+        return f"根目录的文件“{source_path.as_posix()}”没有对应的网址前缀，请把它放进某个阶段文件夹。"
+    return f"文件夹“{source_path.parts[0]}”没有对应的网址前缀，请把它加入 Layout 的阶段里。"
 
 
 def renamed_folder_redirects(urls: dict[str, str], renames: dict[str, tuple[str, str]]) -> list[Redirect]:

@@ -15,10 +15,10 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 
-import yaml
 from mkdocs.utils import nest_paths
 
-_FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\r?\n(.*?\r?\n)?---[ \t]*(?:\r?\n|\Z)", re.DOTALL)
+from .content import read_meta
+
 _MD_SPECIAL_RE = re.compile(r"([\\`*_\[\]])")
 _WIKI_LINK_RE = re.compile(r"\[\[([^\]|#^]+)")
 
@@ -32,15 +32,9 @@ class Post:
     description: str = ""
 
 
-def read_meta(text: str) -> dict:
-    match = _FRONT_MATTER_RE.match(text)
-    if not match:
-        return {}
-    try:
-        meta = yaml.safe_load(match.group(1) or "")
-    except yaml.YAMLError:
-        return {}
-    return meta if isinstance(meta, dict) else {}
+def read_page_meta(docs: Path, source_path: Path) -> dict:
+    """Front matter of a page in docs; the parsing itself lives in content.read_meta."""
+    return read_meta((docs / source_path).read_text(encoding="utf-8"))
 
 
 def _as_date(value) -> datetime.date | None:

@@ -10,6 +10,10 @@ from tools.obsidian_compat.urls import Redirect, auto_slug, front_matter_slug, p
 SECTIONS = {"02学习": "learning", "04技术": "tech", "07自己": "self", "08作品": "works"}
 
 
+def _prefix(path: Path) -> str | None:
+    return SECTIONS.get(path.parts[0]) if len(path.parts) > 1 else None
+
+
 class PageUrlTests(unittest.TestCase):
     def plan(self, files: dict[str, str], unpublished: tuple[str, ...] = ()):
         root = Path(tempfile.mkdtemp())
@@ -18,13 +22,19 @@ class PageUrlTests(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")
         pages = [Path(name) for name in files]
-        return plan_page_urls(root, pages, lambda path: path.parts[0] in unpublished, SECTIONS)
+        return plan_page_urls(root, pages, lambda path: path.parts[0] not in unpublished, _prefix)
 
     def test_front_matter_slug_only_reads_front_matter(self):
         self.assertEqual(("vless-reality", 2), front_matter_slug("---\nslug: vless-reality\n---\n"))
         self.assertEqual(("a-b", 3), front_matter_slug('---\ncreatedDate: 2026-09-25\nslug: "a-b"\n---\n'))
         self.assertIsNone(front_matter_slug("# 标题\n\nslug: not-meta\n"))
         self.assertIsNone(front_matter_slug("---\ncreatedDate: 2026-09-25\n---\nslug: body\n"))
+
+    def test_slug_with_a_comment_reads_the_value(self):
+        self.assertEqual(("abc", 2), front_matter_slug("---\nslug: abc # note\n---\n"))
+
+    def test_unclosed_front_matter_has_no_slug(self):
+        self.assertIsNone(front_matter_slug("---\nslug: abc\n正文\n"))
 
     def test_handwritten_slug_and_stable_auto_id(self):
         urls, diagnostics = self.plan(

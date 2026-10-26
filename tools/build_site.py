@@ -36,6 +36,22 @@ ARTICLES_URL = "thoughts/"
 HOME_RECENT_POSTS = 4
 # 改过名的一级目录：旧网址生成跳转页。4.0.0 把 03文章（articles）改名为 03思考（thoughts）
 RENAMED_SECTIONS = {"03思考": ("03文章", "articles")}
+
+
+def _is_published_4_1_0(path: Path) -> bool:
+    """4.1.0 的发布范围：一级目录不在 UNPUBLISHED_PATHS 里的页面和附件（含根目录页面）。
+
+    4.1.0 的 is_unpublished 只看一级目录，所以 09附件 里的图片也算公开；附件是否复制
+    再由嵌引用规则另行决定，原样保留。
+    """
+    return not path.parts or path.parts[0] not in UNPUBLISHED_PATHS
+
+
+def _prefix_4_1_0(path: Path) -> str | None:
+    """4.1.0 的网址前缀：按一级目录查 SECTION_SLUGS；根目录页面没有前缀。"""
+    return SECTION_SLUGS.get(path.parts[0]) if len(path.parts) > 1 else None
+
+
 sys.dont_write_bytecode = True
 
 if str(ROOT) not in sys.path:
@@ -85,7 +101,7 @@ def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
         source = DOCS / record.source_path
         result = converter.convert(record.source_path, source.read_text(encoding="utf-8"))
         diagnostics.extend(result.diagnostics)
-        unpublished = converter.is_unpublished(record.source_path)
+        unpublished = not converter.is_published(record.source_path)
         for reference in result.references:
             if reference.kind == "embed" and reference.target:
                 for attachment in index.resolve_attachment_candidates(record.source_path, reference.target):
@@ -105,7 +121,7 @@ def _copy_and_convert(index: VaultIndex, converter: Converter) -> list:
         destination.parent.mkdir(parents=True, exist_ok=True)
         destination.write_text(result.text, encoding="utf-8", newline="")
     for record in index.attachments.values():
-        if converter.is_unpublished(record.source_path) or (
+        if not converter.is_published(record.source_path) or (
             record.source_path in unpublished_embeds and record.source_path not in public_embeds
         ):
             continue
@@ -153,15 +169,15 @@ def build() -> int:
         _clean_output(CACHE, ROOT / ".cache")
         _clean_output(SITE, ROOT)
         index = VaultIndex.scan(DOCS)
-        converter = Converter(index, UNPUBLISHED_PATHS)
+        converter = Converter(index, _is_published_4_1_0)
         diagnostics = _copy_and_convert(index, converter)
-        page_urls, url_diagnostics = plan_page_urls(DOCS, index.pages, converter.is_unpublished, SECTION_SLUGS)
+        page_urls, url_diagnostics = plan_page_urls(DOCS, index.pages, converter.is_published, _prefix_4_1_0)
         diagnostics.extend(url_diagnostics)
         if diagnostics:
             emit_diagnostics(diagnostics)
             return 1
         _copy_theme_assets()
-        nav, nav_diagnostics = _write_site_pages([path for path in index.pages if not converter.is_unpublished(path)])
+        nav, nav_diagnostics = _write_site_pages([path for path in index.pages if converter.is_published(path)])
         if nav_diagnostics:
             emit_diagnostics(nav_diagnostics)
             return 1

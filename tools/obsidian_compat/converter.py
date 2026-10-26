@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote
@@ -31,6 +32,10 @@ _CALLOUT_TYPES = {
 }
 _EMBED_SIZE_RE = re.compile(r"^(?P<width>\d+)(?:x(?P<height>\d+))?$")
 _LIST_RE = re.compile(r"^(?P<indent>[ \t]*)(?:[-+*]|\d+[.)])[ \t]+")
+
+
+def _publish_everything(path: Path) -> bool:
+    return True
 
 
 @dataclass(frozen=True)
@@ -124,12 +129,9 @@ def _normalize_loose_lists(text: str) -> str:
 
 
 class Converter:
-    def __init__(self, index: VaultIndex, unpublished_paths: tuple[str, ...] = ()):
+    def __init__(self, index: VaultIndex, is_published: Callable[[Path], bool] = _publish_everything):
         self.index = index
-        self.unpublished_paths = unpublished_paths
-
-    def is_unpublished(self, path: Path) -> bool:
-        return bool(path.parts) and path.parts[0] in self.unpublished_paths
+        self.is_published = is_published
 
     def convert(self, source_path: Path, text: str) -> ConversionResult:
         lines = text.splitlines(keepends=True)
@@ -538,7 +540,7 @@ class Converter:
             return ref, original, diagnostics
         if label is None:
             label = Path(parsed.target).stem
-        if self.is_unpublished(record.source_path) and not self.is_unpublished(current):
+        if not self.is_published(record.source_path) and self.is_published(current):
             return ref, label, diagnostics
         href = "#" + quote(fragment, safe="-._~^") if not parsed.target else _relative_url(current, record.output_path)
         if parsed.target and fragment:

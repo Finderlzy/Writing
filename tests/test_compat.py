@@ -69,7 +69,7 @@ class CompatibilityTests(unittest.TestCase):
                 "私密/另一篇.md": "# 另一篇\n",
             }
         )
-        converter = Converter(index, ("私密",))
+        converter = Converter(index, lambda path: not path.parts or path.parts[0] != "私密")
         result = converter.convert(Path("公开/当前.md"), "[[私密/目标]] [[私密/目标#小节|别名]]\n")
         self.assertEqual("目标 别名\n", result.text)
         self.assertFalse(result.diagnostics)

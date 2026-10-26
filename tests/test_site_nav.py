@@ -5,7 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.site_nav import Post, articles_page, build_nav, collect_posts, home_with_recent, read_meta, section_nav
+from tools.content import read_meta
+from tools.site_nav import Post, articles_page, build_nav, collect_posts, home_with_recent, read_page_meta, section_nav
 
 
 def _write(root: Path, files: dict[str, str]) -> list[Path]:
@@ -32,6 +33,11 @@ class ReadMetaTests(unittest.TestCase):
     def test_missing_or_broken_front_matter_is_empty(self):
         self.assertEqual({}, read_meta("# 标题\n"))
         self.assertEqual({}, read_meta("---\n: [\n---\n"))
+
+    def test_read_page_meta_reads_the_page_from_docs(self):
+        root = Path(tempfile.mkdtemp())
+        _write(root, {"03思考/a.md": "---\ncreatedDate: 2026-10-14\ntags: [学习]\n---\n"})
+        self.assertEqual(["学习"], read_page_meta(root, Path("03思考/a.md"))["tags"])
 
 
 class CollectPostsTests(unittest.TestCase):

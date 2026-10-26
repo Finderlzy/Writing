@@ -105,3 +105,55 @@ def check_site(site: Path, site_url: str | None = None) -> list[Diagnostic]:
                 Diagnostic("E_HTML_RESIDUAL_OBSIDIAN", SourceSpan(Path(relative), 1, 1), "生成的 HTML 正文仍残留 Obsidian 标记。")
             )
     return diagnostics
+
+
+def check_body(site: Path, page_url: str, body: str) -> list[Diagnostic]:
+    """Check one rendered page body: internal links, images and in-page anchors.
+
+    `check_site` walks every page of a whole build; during the article-only preview
+    the templates' own links point at pages that are not written yet, so only the
+    converted body is checked here.
+    """
+    parser = _PageParser()
+    parser.feed(body)
+    relative = (page_url.rstrip("/") + "/index.html") if page_url else "index.html"
+    diagnostics: list[Diagnostic] = []
+    for kind, raw_url in parser.links:
+        parts = urlsplit(raw_url)
+        if parts.scheme or parts.netloc or raw_url.startswith(("mailto:", "javascript:", "data:")):
+            continue
+        if kind == "src" and parts.query:
+            continue
+        path = unquote(parts.path)
+        resolved = posixpath.normpath(urljoin("/" + relative, path).lstrip("/")) if path else relative
+        if path:
+            target = _target_file(site, resolved)
+            if target is None:
+                diagnostics.append(
+                    Diagnostic(
+                        "E_HTML_BROKEN_LINK",
+                        SourceSpan(Path(relative), 1, 1),
+                        f"HTML 中的 {kind} 地址无效：“{raw_url}”。",
+                    )
+                )
+                continue
+            ids = set()
+            if target.suffix == ".html":
+                target_ids = _PageParser()
+                target_ids.feed(target.read_text(encoding="utf-8"))
+                ids = target_ids.ids
+        else:
+            ids = parser.ids
+        if parts.fragment and unquote(parts.fragment) not in ids:
+            diagnostics.append(
+                Diagnostic(
+                    "E_HTML_BROKEN_ANCHOR",
+                    SourceSpan(Path(relative), 1, 1),
+                    f"HTML 片段锚点不存在：“{raw_url}”。",
+                )
+            )
+    if _OBSIDIAN_RE.search("".join(parser.text)):
+        diagnostics.append(
+            Diagnostic("E_HTML_RESIDUAL_OBSIDIAN", SourceSpan(Path(relative), 1, 1), "生成的 HTML 正文仍残留 Obsidian 标记。")
+        )
+    return diagnostics

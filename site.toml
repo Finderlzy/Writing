@@ -1,0 +1,4 @@
+# 新流水线的站点信息。旧的 tools/build_site.py + mkdocs.yml 仍按 4.1.0 的方式构建。
+site_name = "Writing"
+site_url = "https://finderlzy.github.io/Writing/"
+theme = "theme"

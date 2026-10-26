@@ -100,32 +100,43 @@ class Catalog:
 | `index.py` | `VaultIndex.scan(docs)` → 页面、附件、标题锚点、块 ID | 不变 |
 | `converter.py` | `Converter(index, is_published).convert(path, text)` → `ConversionResult(text, references, diagnostics)` | 构造参数从 `unpublished_paths` 改为 `content.is_published`；页面链接仍输出为指向目标 `.md` 的相对路径加锚点，由渲染层改写成网址 |
 | `urls.py` | `plan_page_urls(docs, pages, is_published, prefixes)`；`write_redirects(site, redirects, site_url)` | 删除 `PageUrlPlugin`、`renamed_folder_redirects` 和逐页中文路径跳转（不再保留旧网址）；`front_matter_slug` 改用 `content.read_meta` 取值，只额外定位行号 |
-| `html_check.py` | `check_site(site, site_url)` | 不变，继续检查站内链接、锚点和残留的 Obsidian 标记 |
+| `html_check.py` | `check_site(site, site_url)`；`check_body(site, page_url, body)` | 新增 `check_body`：只检查单页正文的链接、锚点和残留标记。T1 只生成文章页，模板里的站名和样式表指向尚未生成的页面，整站检查会在 T2 补齐页面后才用 |
 | `parser.py`、`slug.py`、`models.py`、`diagnostics.py` | — | 不变 |
 
-### 4.3 渲染层 `tools/render.py`（计划）
+### 4.3 渲染层 `tools/render.py`
 
-一个深模块：输入转换好的 Markdown 和目录，输出整个 `site/`。调用方只需要一个函数：
+一个深模块：输入转换好的 Markdown 和目录，输出整个 `site/`。入口是 `write_site`，
+扫描和转换在 `build_pages` 里完成后再交给它：
 
 ```python
 def write_site(
     site: Path,
     catalog: Catalog,
-    converted: Mapping[Path, str],   # 公开页面的源路径 → 转换后的 Markdown（含首页）
-    urls: Mapping[Path, str],        # 源路径 → 站内网址，如 "blog/subscribe-claude-quick/"
-    attachments: Iterable[Path],     # 要复制的附件（只含公开文章引用的）
+    converted: Mapping[str, str],   # 公开页面的源路径（POSIX 字符串）→ 转换后的 Markdown
+    urls: Mapping[str, str],        # 源路径（POSIX 字符串）→ 站内网址，如 "blog/subscribe-claude-quick/"
+    attachments: Iterable[Path],    # 要复制的附件（只含公开文章引用的）
     config: SiteConfig,
+    docs: Path,                     # 复制附件时读源文件
+    index: VaultIndex,              # 查目标页面的标题锚点
+    references: Mapping[str, list], # 源路径 → ConversionResult.references
+    diagnostics: list[Diagnostic] | None = None,
 ) -> list[Diagnostic]
+
+def build_pages(docs: Path, destination: Path, config: SiteConfig, layout: Layout = LAYOUT) -> list[Diagnostic]
 ```
+
+`build_pages` 负责 `VaultIndex.scan` → `Converter.convert`（全部公开页面）→ `plan_page_urls`
+→ `Catalog.load`，收集要复制的附件后调用 `write_site`。预览入口和单元测试都走 `build_pages`。
 
 内部负责：
 
-- Markdown → HTML。一个 Treeprocessor 把指向 `.md` 的相对链接改写成相对网址（保留 `#锚点`），图片和附件链接改写到 `assets/` 下。目标不在 `urls` 里时返回诊断 `E_LINK_UNPUBLISHED`（正常情况下转换层已把它变成纯文字，这是兜底）。
+- Markdown → HTML。先剥掉 front matter（4.1.0 由 MkDocs 的 `meta` 扩展做），再交给 Python-Markdown。指向 `.md` 的链接按 `ConversionResult.references` 里已解析的目标改写成相对网址并保留锚点；目标不在 `urls` 里（不公开或不存在）时只留文字。标题锚点用转换层同一套 slug 规则，标题没有 ASCII 字符时是 `_1`、`_2`。
+- 嵌入的附件复制到 `assets/<原目录>/<原名>`，地址按当前页面深度写成相对路径，文件名含空格和中文时按百分号编码。
 - 每篇文章用 `toc` 扩展产出的标题列表决定是否显示目录：二级和三级标题合计 ≥ 3 个时显示。【选定】
 - 套模板写出 `index.html`、`posts/index.html`、每篇文章的 `<网址>/index.html`、`404.html`，复制 `theme/assets/` 和附件。
 - 所有站内链接都写相对路径，站点在 `/Writing/` 子路径下和本地 `http.server` 下都能用。
 
-`SiteConfig` 从根目录 `site.toml`（计划，取代 `mkdocs.yml`）读取：站名、`site_url`、社交链接、Giscus 参数、`head` 里的站点验证 meta。用标准库 `tomllib`，不加依赖。
+`SiteConfig` 从根目录 `site.toml`（取代 `mkdocs.yml`）读取：站名、`site_url`、`theme` 目录。T1 只需这三项，社交链接、Giscus 参数和站点验证 meta 在 T2 加。T1 用 Jinja2 渲染模板，`requirements.txt` 已固定 `Jinja2==3.1.6`、`PyYAML==6.0.3`。
 
 ### 4.4 构建编排 `tools/build_site.py`（已有，重写后半段）
 
