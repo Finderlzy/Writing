@@ -451,9 +451,8 @@ class Converter:
             record = attachment_candidates[0]
             href = _relative_url(current, record.output_path)
             if suffix in _VIDEO_SUFFIXES:
-                # MkDocs 不改写原始 HTML 里的路径；目录式网址下，非 index 页面要多退一层。
-                video_src = href if current.name == "index.md" else f"../{href}"
-                return ref, f'<video controls preload="metadata" src="{video_src}"></video>', diagnostics
+                # 路径写相对源文件目录的形式，和图片一样由渲染层改成相对页面网址
+                return ref, f'<video controls preload="metadata" src="{href}"></video>', diagnostics
             if size:
                 attrs = f'width="{size.group("width")}"'
                 if size.group("height"):

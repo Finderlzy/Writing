@@ -276,6 +276,8 @@ def _rewrite_embeds(text: str, source_path: Path, url: str, attachments: list[Pa
         href = quote(posixpath.relpath(_asset_url(attachment), posixpath.dirname(url) or "."), safe="/-._~()!$&*,;=:@")
         for written in {relative, quote(relative, safe="/-._~()!$&*,;=:@"), quote(relative, safe="/")}:
             text = text.replace(f"]({written})", f"]({href})")
+            # 视频由转换层写成原始 HTML 的 <video src="...">，不走 Markdown 的图片语法
+            text = text.replace(f'src="{written}"', f'src="{href}"')
     return text
 
 
@@ -299,8 +301,12 @@ def _environment(theme: Path) -> Environment:
 
 
 def _root(url: str) -> str:
-    """The relative prefix that leads from page `url` back to the site root."""
-    return "../" * (url.rstrip("/").count("/") + 1)
+    """The relative prefix that leads from page `url` back to the site root.
+
+    根目录的页面（首页）本身就在站点根下，前缀是空串；站点根下的子目录才要往上一层。
+    """
+    depth = 0 if url.rstrip("/") == "" else url.rstrip("/").count("/") + 1
+    return "../" * depth or "./"
 
 
 def _href(from_url: str, to_url: str) -> str:

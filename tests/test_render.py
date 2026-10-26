@@ -53,6 +53,7 @@ class Workspace:
         ]
 
     def html(self, url: str) -> str:
+        """`url` 是文章自己的网址；首页是空串，文章不带结尾斜杠，例如 "thoughts/关于读书"。"""
         return (self.site / url / "index.html").read_text(encoding="utf-8")
 
 
@@ -195,10 +196,26 @@ class HomePageTests(unittest.TestCase):
         html = self.build().html("")
         header = html[html.index("<header"): html.index("</header>")]
         nav = header[header.index("<nav"):]
-        self.assertIn('href="../"', nav)
-        self.assertIn('href="../posts/"', nav)
+        self.assertIn('href="./"', nav)
+        self.assertIn('href="./posts/"', nav)
         self.assertEqual(2, nav.count("<a "))
-        self.assertIn('class="site-title" href="../"', header)
+        self.assertIn('class="site-title" href="./"', header)
+
+    def test_home_page_loads_theme_assets_from_the_site_root(self):
+        """首页在站点根下，资源必须用站点根相对的地址，不能多退一层到 /assets/。"""
+        html = self.build().html("")
+        self.assertIn('href="./assets/theme/site.css"', html)
+        self.assertIn('src="./assets/theme/site.js"', html)
+        self.assertNotIn('"../assets/theme/', html)
+
+    def test_article_page_loads_theme_assets_from_the_site_root(self):
+        """文章在 thoughts/<slug>/ 下，比首页深两层，资源前缀也要跟着深两层。"""
+        workspace = self.build()
+        article = sorted(workspace.site.glob("thoughts/*/index.html"))[0]
+        html = article.read_text(encoding="utf-8")
+        self.assertIn('href="../../assets/theme/site.css"', html)
+        self.assertIn('src="../../assets/theme/site.js"', html)
+        self.assertIn('href="../../"', html)
 
     def test_home_page_has_no_comments_and_no_filters(self):
         html = self.build().html("")

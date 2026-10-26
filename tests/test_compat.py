@@ -273,7 +273,8 @@ class CompatibilityTests(unittest.TestCase):
     def test_video_embed_becomes_video_tag(self):
         root, index = self.make_index({"当前.md": "# 当前\n", "录屏.webm": ""})
         result = Converter(index).convert(Path("当前.md"), "![[录屏.webm]]\n")
-        self.assertIn('<video controls preload="metadata" src="../%E5%BD%95%E5%B1%8F.webm"></video>', result.text)
+        # 路径和图片一样相对源文件目录，渲染层再改成相对页面网址
+        self.assertIn('<video controls preload="metadata" src="%E5%BD%95%E5%B1%8F.webm"></video>', result.text)
         self.assertFalse(result.diagnostics)
 
 
