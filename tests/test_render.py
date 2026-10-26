@@ -251,6 +251,14 @@ class HomePageTests(unittest.TestCase):
 
         self.assertEqual(variables(':root:not([data-theme="light"])'), variables(':root[data-theme="dark"]'))
 
+    def test_every_page_uses_the_star_as_its_icon(self):
+        workspace = self.build()
+        article = sorted(workspace.site.glob("thoughts/*/index.html"))[0].read_text(encoding="utf-8")
+        self.assertIn('<link rel="icon" href="./assets/theme/favicon.svg" type="image/svg+xml">', workspace.html(""))
+        self.assertIn('<link rel="icon" href="../../assets/theme/favicon.svg" type="image/svg+xml">', article)
+        self.assertTrue((workspace.site / "assets" / "theme" / "favicon.svg").is_file())
+        self.assertTrue((workspace.site / "assets" / "theme" / "apple-touch-icon.png").is_file())
+
     def test_home_page_has_no_comments_and_no_filters(self):
         html = self.build().html("")
         self.assertNotIn("giscus", html)
@@ -750,7 +758,7 @@ class SiteConfigTests(unittest.TestCase):
         path = Path(tempfile.mkdtemp()) / "site.toml"
         path.write_text(
             "# 注释\nsite_name = \"Writing\"\nsite_url = \"https://example.test/Writing/\"\ntheme = \"theme\"\n"
-            "\n[[social]]\nname = \"GitHub\"\nlink = \"https://github.com/example\"\n"
+            "\n[[social]]\nname = \"GitHub\"\nlink = \"https://github.com/example\"\nicon = \"github\"\n"
             "\n[[social]]\nname = \"X\"\nlink = \"https://x.com/example\"\n"
             "\n[giscus]\nrepo = \"a/b\"\nrepo_id = \"R_1\"\ncategory = \"Comments\"\ncategory_id = \"D_1\"\n",
             encoding="utf-8",
@@ -760,6 +768,8 @@ class SiteConfigTests(unittest.TestCase):
         self.assertEqual("https://example.test/Writing/", config.site_url)
         self.assertEqual(Path("theme"), config.theme)
         self.assertEqual(["GitHub", "X"], [link.name for link in config.social])
+        # icon 可写可不写：没写的只显示名字
+        self.assertEqual(["github", ""], [link.icon for link in config.social])
         self.assertEqual("a/b", config.giscus.repo)
         self.assertTrue(config.giscus.enabled)
 

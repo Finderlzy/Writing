@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% if page.url == "" %}{{ site.site_name }}{% elif page.url == "posts/" or page.article %}{{ page.title }} · {{ site.site_name }}{% else %}{{ page.title }}{% endif %}</title>
+    {# 网站图标就是顶栏那颗星星；iOS 主屏不认 SVG，另给一张 180px 的 PNG #}
+    <link rel="icon" href="{{ root }}assets/theme/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="{{ root }}assets/theme/apple-touch-icon.png">
     <link rel="stylesheet" href="{{ root }}assets/theme/site.css">
     {# 白天 / 黑夜（R-VIS-7）：在首次绘制前读出读者上次的选择，避免先闪一下另一种颜色。
        data-theme 只在读者手动选过时才有；data-theme-current 是实际生效的那一种，按钮图标看它 #}
@@ -37,8 +40,12 @@
           <ellipse cx="8" cy="38" rx="6.5" ry="5" transform="rotate(-18 8 38)" fill="currentColor"/></symbol>
         <symbol id="drop" viewBox="0 0 30 40"><path d="M15 3C11 12 5 18 5 25.5a10 10 0 0 0 20 0C25 18 19 12 15 3z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2.5" stroke-linejoin="round"/><path d="M10 26c0 3 2 5 4 5.5" fill="none" stroke="var(--paper)" stroke-width="2.4" stroke-linecap="round"/></symbol>
         <symbol id="think" viewBox="0 0 40 48"><ellipse cx="25" cy="13" rx="11" ry="8.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><ellipse cx="13" cy="31" rx="5.5" ry="4.5" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/><circle cx="6" cy="42" r="3" fill="var(--paper)" stroke="var(--doodle-line)" stroke-width="2.5"/></symbol>
+        {# 页脚联系方式的图标（site.toml 里 [[social]] 的 icon）：单色，跟着链接文字的颜色走 #}
+        <symbol id="icon-github" viewBox="0 0 24 24"><path d="M12 2.2a9.8 9.8 0 0 0-3.1 19.1c.5.1.7-.2.7-.5v-1.8c-2.7.6-3.3-1.2-3.3-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.2-.3-4.5-1.1-4.5-4.9 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.7 1a9.4 9.4 0 0 1 4.9 0c1.9-1.3 2.7-1 2.7-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.8-2.3 4.6-4.5 4.9.4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A9.8 9.8 0 0 0 12 2.2z" fill="currentColor"/></symbol>
+        <symbol id="icon-x" viewBox="0 0 24 24"><path d="M3.5 3.5h5l12 17h-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M20 3.5l-6.6 7.4M10.6 13.4 4 20.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+        <symbol id="icon-bilibili" viewBox="0 0 24 24"><path d="M7.5 3.5l2.6 3M16.5 3.5l-2.6 3M7.8 12h2.2M14 12h2.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="2.8" y="6.5" width="18.4" height="13.5" rx="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10 15.6c.7.7 1.3.7 2 0 .7.7 1.3.7 2 0" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="icon-douyin" viewBox="0 0 24 24"><path d="M13.2 3v12.2a3.7 3.7 0 1 1-3.7-3.7M13.2 3.2c.6 2.6 2.6 4.4 5.6 4.7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></symbol>
       </defs>
-    </svg>
     </svg>
     <header class="site-header">
       <a class="site-title" href="{{ root }}" data-font="slab"><span class="doodle site-title-star" data-doodle="star" aria-hidden="true"><svg width="30" height="30"><use href="#star"/></svg></span>{{ site.site_name }}</a>
@@ -58,7 +65,7 @@
       <p class="site-footer-links">
         <span class="doodle site-footer-mark" data-doodle="star" aria-hidden="true"><svg width="20" height="20"><use href="#star"/></svg></span>
         {% if site.social %}
-        {% for link in site.social %}<a href="{{ link.url }}" rel="me noopener" data-font="head">{{ link.name }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
+        {% for link in site.social %}<a href="{{ link.url }}" rel="me noopener" data-font="head">{% if link.icon %}<svg class="social-icon" width="16" height="16" aria-hidden="true" focusable="false"><use href="#icon-{{ link.icon }}"/></svg>{% endif %}{{ link.name }}</a>{% if not loop.last %} · {% endif %}{% endfor %}
         {% endif %}
         <span class="site-footer-copy">· © {{ site.site_name }}</span>
       </p>

@@ -376,7 +376,14 @@ hr {
 }
 
 .site-footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
   color: var(--ink-soft);
+}
+
+.social-icon {
+  flex: none;
 }
 
 .site-footer-links a:hover,

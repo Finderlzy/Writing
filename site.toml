@@ -3,22 +3,26 @@ site_name = "Writing"
 site_url = "https://finderlzy.github.io/writing/"
 theme = "theme"
 
-# 页脚的社交链接
+# 页脚的社交链接；icon 对应 theme/templates/base.html 里画好的 <symbol id="icon-...">，不写就只显示名字
 [[social]]
 name = "GitHub"
 link = "https://github.com/Finderlzy"
+icon = "github"
 
 [[social]]
 name = "X"
 link = "https://x.com/finderlzy"
+icon = "x"
 
 [[social]]
 name = "哔哩哔哩"
 link = "https://space.bilibili.com/1276546447"
+icon = "bilibili"
 
 [[social]]
 name = "抖音"
 link = "https://www.douyin.com/user/MS4wLjABAAAAKVCvGwZd3VF4vLg0wcOUD2S2FjqBnIdZ0kJVRJsha10"
+icon = "douyin"
 
 # Giscus 评论：数据存在仓库的 GitHub Discussions。data-mapping 固定用 pathname。
 # category_id 留空则不显示评论区；分类 ID 在 https://giscus.app/zh-CN 查询。

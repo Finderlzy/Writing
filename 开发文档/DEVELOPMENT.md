@@ -1,5 +1,12 @@
 # 开发日志
 
+## 2026-10-26 — 5.3.0
+
+- 新增：页脚联系方式前加单色图标（R-VIS-8）。`site.toml` 的 `[[social]]` 加可选的 `icon` 字段，`tools/render.py` 的 `SocialLink` 跟着加 `icon`，图标是 `base.html` 里的 `<symbol id="icon-github|x|bilibili|douyin">`。顺手去掉了 `base.html` 里多出来的一个 `</svg>`。
+- 新增：网站图标用顶栏那颗星星：`theme/assets/favicon.svg`（路径取自 `symbol#star`，颜色写死成浅色模式的值），另有 180px 的 `apple-touch-icon.png`（用 Chrome 无头模式把 SVG 截成 PNG）。
+- 验证：unittest 145 个通过（新增配置读 `icon`、每页引用 favicon 的断言）；构建成功；浏览器检查页脚在浅色、深色和 375px 下的效果，两个图标文件都能正常返回。
+- 兼容性：网址和源文件不变；`site.toml` 里不写 `icon` 的联系方式照旧只显示名字。
+
 ## 2026-10-26 — 5.2.0
 
 - 新增：顶栏右端加白天 / 黑夜切换按钮（R-VIS-7）。默认仍跟随系统；点过以后记在浏览器里，换页、刷新都沿用，打开页面不闪另一种颜色；评论区（Giscus）跟着换。没有 JS 时按钮不出现。

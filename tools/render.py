@@ -58,10 +58,11 @@ _UNSET_FONT_SPECS: object = object()
 
 @dataclass(frozen=True)
 class SocialLink:
-    """One entry of the footer: a name and where it goes."""
+    """One entry of the footer: a name, where it goes and which drawn icon goes before it."""
 
     name: str
     url: str
+    icon: str = ""  # base.html 里 <symbol id="icon-..."> 的后缀，如 "github"；空串表示只写名字
 
 
 @dataclass(frozen=True)
@@ -131,20 +132,23 @@ def _parse_config(text: str) -> tuple[dict, list[SocialLink], GiscusConfig]:
     giscus: dict[str, str] = {}
     section = ""
     current: dict[str, str] = {}
+
+    def finish_social() -> None:
+        if section == "social" and current.get("name") and current.get("link"):
+            social.append(SocialLink(current["name"], current["link"], current.get("icon", "")))
+
     for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
         if line.startswith("[[") and line.endswith("]]"):
-            if current.get("name") and current.get("link"):
-                social.append(SocialLink(current["name"], current["link"]))
+            finish_social()
             current = {}
             section = line[2:-2].strip()
             continue
         if line.startswith("[") and line.endswith("]"):
-            if section == "social" and current.get("name") and current.get("link"):
-                social.append(SocialLink(current["name"], current["link"]))
-                current = {}
+            finish_social()
+            current = {}
             section = line[1:-1].strip()
             continue
         if "=" not in line:
@@ -157,8 +161,7 @@ def _parse_config(text: str) -> tuple[dict, list[SocialLink], GiscusConfig]:
             giscus[key] = value
         elif not section:
             top[key] = value
-    if section == "social" and current.get("name") and current.get("link"):
-        social.append(SocialLink(current["name"], current["link"]))
+    finish_social()
     widget = GiscusConfig(
         repo=giscus.get("repo", ""),
         repo_id=giscus.get("repo_id", ""),
