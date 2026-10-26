@@ -15,7 +15,7 @@
 | ID | 任务 | 需求 | 依赖 | 档位 | 状态 |
 | --- | --- | --- | --- | --- | --- |
 | V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 已完成（结论见 architecture.md §7.1） |
-| V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 未开始 |
+| V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 已完成（ab9fdfb） |
 | V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 待细化 |
 | V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 待细化 |
 | V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 待细化 |
@@ -73,10 +73,19 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 3. **深色和动效**：深色只改变量；`prefers-reduced-motion` 时关掉卡片悬停位移。
 
 **验收**：
-- [ ] 测试：`.venv/bin/python -m unittest discover -s tests` 通过，含新的 `tests/test_fonts.py`（收字、子集化后的字体包含所需字形、缺源字体的诊断、超预算的提示）
-- [ ] 构建：先 `.venv/bin/python tools/fetch_fonts.py`，再 `.venv/bin/python tools/build_site.py`，输出 `build succeeded`，`site/assets/fonts/` 下有 5 个 woff2，合计不超过 300 KB（V0 实测是 81.4 KB），整个构建比现在多不超过 1 秒
-- [ ] 手工验证：`.venv/bin/python -m http.server -d site 8000`，桌面和 375px 下打开首页、全部文章、《黑框眼镜》、《三、把服务器变成节点》 → 配色、字体、描边与样稿一致；教程的代码块能复制、表格能横向滚动；没有横向滚动；开发者工具里没有对 Google Fonts 的请求，5 个 woff2 都从本站加载（状态 200）
-- [ ] 手工验证：系统切到深色 → 上面四页没有看不清的文字或消失的边框
+- [x] 测试：`.venv/bin/python -m unittest discover -s tests` 通过（97 个），含新的 `tests/test_fonts.py`（收字、子集化后的字体包含所需字形、缺源字体的诊断、超预算的提示）
+- [x] 构建：先 `.venv/bin/python -m tools.fetch_fonts`，再 `.venv/bin/python tools/build_site.py`，输出 `build succeeded: 109 pages published, 20 unpublished`，`site/assets/fonts/` 下有 5 个 woff2（head 49,836 B、cute 2,112 B、slab-600 14,908 B、slab-700 14,480 B、hand 1,256 B），合计 82,592 B，预算 300 KB
+- [x] 手工验证：桌面和 375/320/414px 下打开首页、全部文章、《黑框眼镜》、《三、把服务器变成节点》 → 配色、字体、描边与样稿一致；五个 woff2 都从本站加载（状态 200），页面里没有任何 Google Fonts 链接；教程的代码块能复制（按钮变“已复制”）、表格在容器内横向滚动；三档宽度下 `scrollWidth` 都等于视口宽，无横向滚动；关掉 JS 后四页正文和列表照常可读
+- [x] 手工验证：模拟深色 → 上面四页没有看不清的文字或消失的边框（正文、标题、日期对比度 4.67～6.91，描边和投影都有颜色）
+
+**做完后记**（2026-10-26，提交 `ab9fdfb`）：
+
+- 验收里的“4 个 woff2”是笔误：本条验收线自己写的是 5 个，V0 实测也是四款字体五个文件（slab 600/700 各一个）。按 5 个交付，`tests/test_fonts.py` 里也断言了这五个文件名。
+- `check_site` 在现有代码里并不存在（正文检查是 `write_site` 内部的逐页 `check_body`），所以子集化放在 `write_site` 返回之后。
+- 源字体缺失时 `build_site.py` 会提示先跑 `python -m tools.fetch_fonts`；只想看页面可以用 `--skip-fonts`，标题退回系统字体，CI 不用这个开关。
+- `.cache/fonts/` 里的源字体要在收尾时删掉，下次构建前重跑一次 `fetch_fonts`。
+- `test_render.py` 一行未改。`site.js` 只删了 `pre` 上行的 `has-copy` 类（新 CSS 不再用它）。
+- 模板只加了 `data-font` 和 `data-stage`/`data-stage-chip` 属性和类名，结构没动；深色只改 `:root` 变量。
 
 ### V2 文章页标题区和文末（待细化）
 

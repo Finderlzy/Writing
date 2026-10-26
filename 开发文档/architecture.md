@@ -315,6 +315,16 @@ def subset_fonts(site: Path, specs: Iterable[FontSpec]) -> list[Diagnostic]
 
 四个角色、五个文件的写法（提交 `e7db6ca` 下实测可取）：`https://raw.githubusercontent.com/google/fonts/e7db6ca603fd4862010383ff17ffd6cc4ffac1c0/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf` 等。
 
+**V1 落地后的实际接口（2026-10-26，提交 `ab9fdfb`）**：实现与上面计划一致，只有下面几处写法不同，读代码时按这几条：
+
+- `FontSpec.role` 之外字段的默认值是 `text=""`、`weight=None`、`optional=()`、`family=""`。`weight` 用 `None` 表示“不做实例化”，比用 400 更不容易误会（400 是合法的目标字重）。
+- 招数换成一个工厂函数：`default_specs(directory=None) -> tuple[FontSpec, ...]`，五个 spec 的源文件路径、固定字、字重、家族名都在这里；`source_dir()` 读环境变量 `FONT_SOURCE_DIR`，没设就是 `.cache/fonts/`。`build_site.py` 调 `default_specs()`，`--skip-fonts` 时传 `None` 给 `build_pages`。
+- `subset_fonts(site, specs=None, *, collected=None) -> list[Diagnostic]` 多了两个可选参数：`specs` 为 `None` 时用 `default_specs()`；`collected` 允许外部传入已经收好的字，测试不必重复扫盘。
+- `collect_chars` 只收 `data-font` 值在 `ROLE_NAMES`（`head`、`cute`、`slab`、`hand`）里的元素，认不出的值只记在 `unknown_roles(site)` 里、不参与收字，避免把错字收进字体。嵌套时内层 `data-font` 覆盖外层。
+- 实际产物（`build_site.py` 一次完整构建）：head 49,836 B、cute 2,112 B、slab-600 14,908 B、slab-700 14,480 B、hand 1,256 B，合计 82,592 B。比 V0 的 83,336 B 少了几百字节，因为 V1 真正按模板收字，比 V0 在仓库外估的那一组略少。
+- `render.py` 里没有 `check_site`（逐页的 `check_body` 在 `write_site` 内部），所以 `subset_fonts` 接在 `write_site` 返回之后。
+- 诊断码按计划实现：`E_FONT_SOURCE_MISSING`（直接返回，不写半成品）、`E_FONT_ROLE_UNKNOWN`、`W_FONT_GLYPH_MISSING`、`W_FONT_BUDGET`。
+
 **存放方式（推荐 CI 按固定网址下载）**：源字体不提交进仓库。
 
 - 提交进 `theme/fonts/`：五个源文件合计 18.95 MB（Noto Sans SC 一个就 16.95 MB，ZCOOL KuaiLe 1.44 MB，两个 Zilla Slab 各 0.26 MB，Gochi Hand 0.04 MB），克隆后这些字节一直留在 `.git` 里，删掉也回收不了。git 对汉字的字形表压缩很有限，增量基本等于这 19 MB。
