@@ -1,5 +1,5 @@
 // 站点的少量交互。没有 JS 时页面照常可读：
-// 全部文章页的筛选按钮默认隐藏、列表全部显示；代码块的复制按钮也不出现。
+// 全部文章页的筛选按钮默认隐藏、列表全部显示；代码块的复制按钮和白天/黑夜按钮也不出现。
 (function () {
   "use strict";
 
@@ -167,9 +167,78 @@
     });
   }
 
+  // ---- 白天 / 黑夜切换（R-VIS-7） ----
+  // 读者没选过时跟随系统；点一下就在两种之间切换并记住。初始值由 base.html 头部的内联脚本写好，
+  // 这里只负责按钮、系统设置变化和评论区（Giscus 的 iframe 要用 postMessage 告诉它换主题）。
+  var THEME_KEY = "theme";
+  var GISCUS_ORIGIN = "https://giscus.app";
+
+  function initThemeToggle() {
+    var root = document.documentElement;
+    var button = document.querySelector("[data-theme-toggle]");
+    var systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+    function current() {
+      return root.getAttribute("data-theme-current") === "dark" ? "dark" : "light";
+    }
+
+    function syncGiscus() {
+      var frame = document.querySelector("iframe.giscus-frame");
+      if (frame && frame.contentWindow) {
+        frame.contentWindow.postMessage({ giscus: { setConfig: { theme: current() } } }, GISCUS_ORIGIN);
+      }
+    }
+
+    function show(theme) {
+      root.setAttribute("data-theme-current", theme);
+      if (button) {
+        var label = theme === "dark" ? "切换到白天" : "切换到黑夜";
+        button.setAttribute("aria-label", label);
+        button.title = label;
+      }
+      syncGiscus();
+    }
+
+    // 旧版 Safari（14 以前）的 matchMedia 没有 addEventListener，那时就只在打开页面时跟随系统
+    if (systemDark.addEventListener) {
+      systemDark.addEventListener("change", function () {
+        if (!root.hasAttribute("data-theme")) {
+          show(systemDark.matches ? "dark" : "light");
+        }
+      });
+    }
+
+    // Giscus 加载完会发消息过来，这时它还是按系统深浅画的，补发一次当前主题。
+    // 只补第一次：它换主题后还会再发调整高度的消息，每次都回应会来回打转
+    var giscusSynced = false;
+    window.addEventListener("message", function (event) {
+      if (!giscusSynced && event.origin === GISCUS_ORIGIN && event.data && event.data.giscus) {
+        giscusSynced = true;
+        syncGiscus();
+      }
+    });
+
+    if (!button) {
+      return;
+    }
+    show(current());
+    button.hidden = false;
+    button.addEventListener("click", function () {
+      var next = current() === "dark" ? "light" : "dark";
+      root.setAttribute("data-theme", next);
+      try {
+        window.localStorage.setItem(THEME_KEY, next);
+      } catch (error) {
+        // 隐私模式等存不了的情况：本页照样切换，只是下次不记得
+      }
+      show(next);
+    });
+  }
+
   function init() {
     initFilters();
     initCodeCopy();
+    initThemeToggle();
   }
 
   if (document.readyState === "loading") {

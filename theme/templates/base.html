@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% if page.url == "" %}{{ site.site_name }}{% elif page.url == "posts/" or page.article %}{{ page.title }} · {{ site.site_name }}{% else %}{{ page.title }}{% endif %}</title>
     <link rel="stylesheet" href="{{ root }}assets/theme/site.css">
+    {# 白天 / 黑夜（R-VIS-7）：在首次绘制前读出读者上次的选择，避免先闪一下另一种颜色。
+       data-theme 只在读者手动选过时才有；data-theme-current 是实际生效的那一种，按钮图标看它 #}
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var theme = null;
+        try { theme = window.localStorage.getItem("theme"); } catch (error) {}
+        if (theme === "light" || theme === "dark") {
+          root.setAttribute("data-theme", theme);
+        } else {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        root.setAttribute("data-theme-current", theme);
+      })();
+    </script>
     {% if mathjax %}
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
     {% endif %}
@@ -30,6 +45,10 @@
       <nav class="site-nav">
         <a href="{{ root }}"{% if page.highlight_nav == "home" %} aria-current="page"{% endif %}>首页</a>
         <a href="{{ root }}posts/"{% if page.highlight_nav == "posts" %} aria-current="page"{% endif %}>全部文章</a>
+        <button type="button" class="theme-toggle" data-theme-toggle aria-label="切换白天和黑夜" hidden>
+          <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2" stroke-linejoin="round"/></svg>
+          <svg class="theme-icon-sun" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" stroke="var(--doodle-line)" stroke-width="2"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" stroke="var(--doodle-line)" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </nav>
     </header>
     <main class="site-main">

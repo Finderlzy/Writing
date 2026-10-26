@@ -229,7 +229,7 @@ SERIES = {
 
 需求见 [requirements.md §9](requirements.md)，样稿是 [设计样稿/5.1.0-首页与文章页.html](设计样稿/5.1.0-首页与文章页.html)。信息结构和模板的数据来源都不变，改的是样式、模板标记和几处由渲染层算出来的展示数据。上面“装饰只有分隔线和灰色辅助文字”一句作废。
 
-**样式**：`theme/assets/site.css` 整份重写，颜色和字体都是 `:root` 上的变量（名字照样稿：`--paper`、`--ink`、`--ink-soft`、`--rule`、`--accent`、`--pink`、`--peach`、`--sky`、`--mustard`、四个阶段的 `--chip-*`、`--shadow`，V3 又加了 `--accent-text`、`--mustard-text`、`--doodle-line`），`prefers-color-scheme: dark` 只重新定义变量。不再引入框架；涂鸦用 `base.html` 里的一份内联 SVG `<symbol>`（`star`、`note`、`note1`、`drop`、`think`），各模板用 `<use href="#star">` 引用。
+**样式**：`theme/assets/site.css` 整份重写，颜色和字体都是 `:root` 上的变量（名字照样稿：`--paper`、`--ink`、`--ink-soft`、`--rule`、`--accent`、`--pink`、`--peach`、`--sky`、`--mustard`、四个阶段的 `--chip-*`、`--shadow`，V3 又加了 `--accent-text`、`--mustard-text`、`--doodle-line`），深色只重新定义变量（5.2.0 起写两份：`prefers-color-scheme: dark` 下的 `:root:not([data-theme="light"])`，和读者手动选黑夜时的 `:root[data-theme="dark"]`）。不再引入框架；涂鸦用 `base.html` 里的一份内联 SVG `<symbol>`（`star`、`note`、`note1`、`drop`、`think`），各模板用 `<use href="#star">` 引用。
 
 **数据（计划）**：
 
@@ -406,11 +406,19 @@ tests/                        # 已有：单元测试 + 仓库级检查，按新
 
 命令沿用：`.venv/bin/python -m unittest discover -s tests`，然后 `.venv/bin/python tools/build_site.py`；本地预览 `.venv/bin/python -m http.server -d site 8000`。
 
+### 7.2 5.2.0 白天 / 黑夜切换
+
+对应 R-VIS-7。`<html>` 上有两个属性：`data-theme` 只在读者手动选过时才有（`light` 或 `dark`），CSS 靠它压过系统设置；`data-theme-current` 永远是实际生效的那一种，按钮图标和评论区看它。选择存在 `localStorage` 的 `theme` 键里，读写都包在 `try` 里，存不了时本页照样切换。
+
+- `base.html` 的 `<head>` 里有一段内联脚本，在样式表之后、`<body>` 之前设好这两个属性，所以首次绘制就是对的颜色。按钮默认 `hidden`，由 `site.js` 的 `initThemeToggle` 显示。
+- 读者没选过时，`site.js` 监听 `prefers-color-scheme` 的变化，只更新 `data-theme-current`。
+- Giscus 在跨域 iframe 里，模板里 `data-theme` 仍写 `preferred_color_scheme`；紧跟在它后面的内联脚本在异步的 `client.js` 执行前，把读者选过的主题写进这个属性，评论区一出现就是对的颜色。之后点按钮时，`site.js` 向 `https://giscus.app` 发 `{giscus: {setConfig: {theme}}}`；收到 Giscus 第一条消息时也补发一次，作为兜底。只回应第一条，因为它换主题后会再发调整高度的消息。
+
 ## 12. 待定与留给作者的事项
 
 - **README 过时内容**（README 由作者维护，Ask first）：5.0.0 落地后，以下段落不再准确，需要作者决定怎么改：开头的“MkDocs + Material”和“学习笔记”；“日常写作流程”的“移到对应文件夹”；“导航与思考列表”整节；“页面网址”里的中文路径跳转、`RENAMED_SECTIONS`、“不能动的链接”；“评论区与外链”里的 `mkdocs.yml`、`repo_url`、Material 图标；“仓库结构”整节。
 - **系列的阅读顺序**沿用 4.1.0 规则，如果实施时发现某个系列的顺序不对，再考虑在 `SERIES` 里改为显式列出顺序。
-- **深色模式**按需求默认跟随系统，不做手动切换。
+- **深色模式**按需求默认跟随系统；5.2.0 加了手动切换，见 §7.2。
 
 ## 13. 实施前评审（2026-10-26）
 

@@ -233,6 +233,24 @@ class HomePageTests(unittest.TestCase):
         self.assertIn('src="../../assets/theme/site.js"', html)
         self.assertIn('href="../../"', html)
 
+    def test_theme_toggle_is_hidden_without_javascript_and_theme_is_set_before_body(self):
+        """白天/黑夜按钮没有 JS 时不出现；读者的选择要在 <body> 之前写到 <html> 上，免得闪一下。"""
+        html = self.build().html("")
+        self.assertIn('class="theme-toggle" data-theme-toggle aria-label="切换白天和黑夜" hidden', html)
+        head = html[: html.index("<body>")]
+        self.assertIn('localStorage.getItem("theme")', head)
+        self.assertIn('setAttribute("data-theme-current"', head)
+
+    def test_system_dark_and_chosen_dark_use_the_same_colours(self):
+        """深色变量写了两份（跟随系统、手动选黑夜），改颜色时漏改一份就会两种黑夜不一样。"""
+        css = _article("site.css")
+
+        def variables(selector):
+            start = css.index(selector + " {") + len(selector) + 2
+            return sorted(line.strip() for line in css[start:css.index("}", start)].splitlines() if line.strip())
+
+        self.assertEqual(variables(':root:not([data-theme="light"])'), variables(':root[data-theme="dark"]'))
+
     def test_home_page_has_no_comments_and_no_filters(self):
         html = self.build().html("")
         self.assertNotIn("giscus", html)

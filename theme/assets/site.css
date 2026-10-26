@@ -1,7 +1,7 @@
 /* 读者网站的样式（5.1.0，R-VIS-1）。
    明亮、可爱的轻小说封面感：白底，空白处垫少量涂鸦，粗黑描边加实心投影，
    全站只有一个红橙色强调色。正文区域不放装饰，保证长文好读。
-   颜色全部走 CSS 变量；深色跟随系统设置，只重新定义变量，不做手动切换（R-VIS-7）。
+   颜色全部走 CSS 变量；深色默认跟随系统，读者也可以用顶栏按钮手动切换（R-VIS-7），两种情况都只重新定义变量。
    字体：标题、数字和手写短句用本站按需子集化的 woff2（R-VIS-5），正文用系统字体。 */
 
 /* ---- 字体：四个角色，文件和 tools/fonts.py 的 output 一一对应 ----
@@ -89,8 +89,10 @@
   --gutter: 1rem;
 }
 
+/* 深色变量写两份：系统是深色且读者没手动选白天时用第一份，读者手动选了黑夜时用第二份。
+   data-theme 由 base.html 头部的内联脚本在首次绘制前写到 <html> 上，改颜色时两份一起改。 */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --paper: #18171c;
     --ink: #f2eee8;
     --ink-soft: #a29c95;
@@ -110,6 +112,27 @@
     --shadow: #000000;
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --paper: #18171c;
+  --ink: #f2eee8;
+  --ink-soft: #a29c95;
+  --rule: #2e2c33;
+  --accent: #ff7a4f;
+  --accent-text: #ff8a63;
+  --mustard-text: #d9ad3f;
+  --pink: #33263a;
+  --peach: #3a2b22;
+  --sky: #3f6f96;
+  --mustard: #d9ad3f;
+  --doodle-line: #f2eee8;
+  --chip-think: #2e2433;
+  --chip-draft: #33281f;
+  --chip-blog: #1f2a35;
+  --chip-opus: #3a231d;
+  --shadow: #000000;
+  color-scheme: dark;
 }
 
 /* ---- 基础 ---- */
@@ -274,6 +297,57 @@ hr {
 .site-nav a[aria-current="page"] {
   color: var(--ink);
   border-bottom-color: var(--accent);
+}
+
+/* 白天 / 黑夜切换：没有 JS 时保持 hidden，页面跟随系统。
+   按钮画的是“点了会变成什么”：白天显示月亮，黑夜显示太阳 */
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  margin-left: 0.2rem;
+  padding: 0;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--shadow);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.theme-toggle[hidden] {
+  display: none;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--shadow);
+}
+
+.theme-toggle:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+.theme-toggle svg {
+  display: block;
+}
+
+.theme-toggle .theme-icon-sun {
+  color: var(--mustard);
+}
+
+.theme-toggle .theme-icon-moon {
+  color: var(--accent);
+}
+
+:root[data-theme-current="dark"] .theme-icon-moon,
+:root:not([data-theme-current="dark"]) .theme-icon-sun {
+  display: none;
 }
 
 /* ---- 页面容器 ---- */
@@ -1729,7 +1803,8 @@ hr {
   .neighbour,
   .back-link,
   .site-title-star,
-  .code-copy {
+  .code-copy,
+  .theme-toggle {
     transition: none;
   }
 
@@ -1744,7 +1819,10 @@ hr {
     transform: rotate(-12deg);
   }
 
-  .code-copy:active {
+  .code-copy:active,
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible,
+  .theme-toggle:active {
     transform: none;
   }
 }

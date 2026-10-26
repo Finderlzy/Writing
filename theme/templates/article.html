@@ -91,6 +91,16 @@
       crossorigin="anonymous"
       async>
     </script>
+    {# Giscus 的脚本是异步的，执行时才读 data-theme；读者手动选过白天 / 黑夜时，赶在它执行前改成那一种，评论区就不会先按系统深浅闪一下 #}
+    <script>
+      (function () {
+        var theme = document.documentElement.getAttribute("data-theme");
+        var giscus = document.currentScript.previousElementSibling;
+        if (theme && giscus) {
+          giscus.setAttribute("data-theme", theme);
+        }
+      })();
+    </script>
     </div>
   </section>
   {% endif %}
