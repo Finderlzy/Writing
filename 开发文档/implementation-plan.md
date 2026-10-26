@@ -81,6 +81,17 @@
 - [ ] 作者检查点：作者在手机和桌面上看过预览站点并同意进入 T3
 - [ ] 验收后删除临时目录和 `site/`
 
+**作者检查预览的方法**（仓库里执行）：
+
+```
+.venv/bin/python tools/preview_v5.py preview-t2
+.venv/bin/python -m http.server -d preview-t2 8765
+```
+
+然后打开 `http://127.0.0.1:8765/`。手机在同一局域网里访问 `http://<电脑的局域网地址>:8765/`。
+要看的页面：`/`（首页）、`/posts/`（全部文章，点“思考”和“二次元”看筛选）、`/blog/subscribe-claude/`（长文：目录、上下篇、复制按钮、评论）、`/thoughts/05af6b0e/`（从首页或全部文章点进去的代表作）、`/tech/subscribe-claude-quick/`（应跳到 `/blog/subscribe-claude-quick/`）；随便打开一个不存在的地址看 404 页。
+`preview-t2/` 已在 `.gitignore` 里，看完直接删掉即可。
+
 ## T3 切换上线
 
 **目标**：内容迁移到新文件夹，线上换成新网站，删除旧流水线，完成 5.0.0 的验收和记录。对应 R-STR-1～R-STR-5、R-CLN-1～R-CLN-3、R-PUB-1、R-PUB-2、R-PUB-4，以及需求第 7 节全部验收。开工前按 T2 落地的代码补全参照。

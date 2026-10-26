@@ -2,6 +2,9 @@
 site/
 .cache/
 
+# 5.0.0 预览站点：tools/preview_v5.py 的输出目录
+preview-t2/
+
 # Obsidian shared settings and local workspace state
 docs/.obsidian/*
 !docs/.obsidian/app.json
