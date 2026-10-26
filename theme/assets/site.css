@@ -82,8 +82,9 @@
   --pop-lift: 6px 6px 0 var(--shadow);
 
   --page-width: 64rem; /* 站头、页脚、页面容器 */
-  --reading-width: 48rem; /* 标题区、目录、文末卡片、留言框 */
-  /* 正文：铺满页面容器，左右只留 --gutter；和 --page-width 取同一个值，改的时候一起改 */
+  --reading-width: 48rem; /* 标题区和目录：比正文窄一档 */
+  /* 正文：铺满页面容器，左右只留 --gutter；和 --page-width 取同一个值，改的时候一起改。
+     文末的“完”、上一篇下一篇、留言框跟着正文用这个宽度，和正文右边界对齐 */
   --body-width: 64rem;
   --gutter: 1rem;
 }
@@ -1318,7 +1319,7 @@ hr {
   display: flex;
   align-items: center;
   gap: 0.7rem;
-  max-width: var(--reading-width);
+  max-width: var(--body-width);
   margin: 2.6rem 0 0;
 }
 
@@ -1336,7 +1337,7 @@ hr {
 
 /* 系列提示行、上一页下一页、评论窗口 */
 .series-next {
-  max-width: var(--reading-width);
+  max-width: var(--body-width);
   margin: 2.4rem 0 0;
   padding: 0.8rem 1.1rem;
   border: 2px solid var(--ink);
@@ -1354,7 +1355,7 @@ hr {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   gap: 14px;
-  max-width: var(--reading-width);
+  max-width: var(--body-width);
   margin: 3rem 0 0;
   padding: 0;
   font-size: 0.95rem;
@@ -1395,7 +1396,7 @@ hr {
 
 /* 评论：带标题栏的小窗口 */
 .comments {
-  max-width: var(--reading-width);
+  max-width: var(--body-width);
   margin: 3rem 0 0;
   border: var(--stroke) solid var(--ink);
   border-radius: 12px;
