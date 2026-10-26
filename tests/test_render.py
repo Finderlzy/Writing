@@ -521,10 +521,15 @@ class ArticleHeaderFunctionTests(unittest.TestCase):
         self.assertEqual(("棋", "子王"), giant_chars("《棋王 树王 孩子王》"))
         self.assertEqual(("黑", "眼镜"), giant_chars("黑框眼镜(作品)"))
 
-    def test_giant_chars_takes_letters_of_a_latin_title_in_capitals(self):
-        self.assertEqual(("C", "RY"), giant_chars("CLANNAD~AFTER STORY~"))  # 第二个只该是汉字；英文标题退回字母
-        self.assertEqual(("C", "AD"), giant_chars("《CLANNAD》"))
-        self.assertEqual(("A", "ca"), giant_chars("Ave Mujica"))
+    def test_giant_chars_of_a_latin_title_is_only_its_capital_initial(self):
+        # 第二个大字只取汉字（R-VIS-3）：英文标题只有首字母
+        self.assertEqual(("C", ""), giant_chars("CLANNAD~AFTER STORY~"))
+        self.assertEqual(("C", ""), giant_chars("《CLANNAD》"))
+        self.assertEqual(("A", ""), giant_chars("Ave Mujica"))
+
+    def test_giant_chars_of_a_mixed_title_takes_its_last_two_chinese_characters(self):
+        self.assertEqual(("如", "订阅"), giant_chars("如何订阅claude（纯操作版）"))
+        self.assertEqual(("C", "环境"), giant_chars("CLANNAD 的环境"))
 
     def test_giant_chars_second_only_when_four_or_more_characters(self):
         self.assertEqual(("龙", ""), giant_chars("龙与虎"))  # 三个字：只要一个

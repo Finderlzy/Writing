@@ -226,16 +226,23 @@ def giant_chars(title: str) -> tuple[str, str]:
 
     The main character is the first letter (upper-cased) or Chinese character of the
     title, skipping punctuation and the trailing parenthetical note; the second is the
-    last two characters when the title still has four or more after removing
-    punctuation, and "" otherwise. A title of punctuation only gives ("", "").
+    last two Chinese characters when the title still has four or more characters after
+    removing punctuation (R-VIS-3), and "" otherwise, so a Latin title gets only its
+    initial. A title of punctuation only gives ("", "").
     """
     title = _TRAILING_NOTE_RE.sub("", title)
     letters = [char for char in title if char.isalnum()]
     if not letters:
         return "", ""
     main = letters[0].upper()
-    second = "".join(letters[-2:]) if len(letters) >= 4 else ""
+    han = [char for char in letters if _is_han(char)]
+    second = "".join(han[-2:]) if len(letters) >= 4 and len(han) >= 2 else ""
     return main, second
+
+
+def _is_han(char: str) -> bool:
+    """CJK unified ideographs, including extension A."""
+    return "\u4e00" <= char <= "\u9fff" or "\u3400" <= char <= "\u4dbf"
 
 
 def strip_date_notes(markdown: str) -> str:
