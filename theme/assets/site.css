@@ -670,20 +670,22 @@ hr {
   margin: 0 auto;
 }
 
-/* 标题区：大字留在右上角。只裁横向，竖向不裁——行高 0.85 让“全”的字面比行盒高，
-   竖向也裁掉就会把字的上半截切掉（需求允许裁大字，但这里要整个字才看得清） */
+/* 标题区：标题和说明在左，淡色大字放右侧空当，底部留出缝隙，不和下面的筛选按钮挨着 */
 .archives .hero {
   position: relative;
   padding-block: 1.5rem 2rem;
+  /* 大字只裁横向（竖排/大字不撑宽页面）；竖向不裁，整个字才露得出来 */
   overflow-x: clip;
 }
 
-/* 大字压到标题说明那一层：字面从说明下方开始，底部和“全部文章”的标题行对齐 */
+/* 大字：整个字面落在标题右侧的空白里，大小以“放得下、不挡东西”为准，不追求铺满右上角。
+   行高 0.85 让字面往上冒出一截，字号乘约 0.87 是字面高度：这里全程 7.5rem，
+   配 top 3.5rem，整字落在标题说明下沿到底部空当之间，底边离筛选按钮还有缝 */
 .archives .giant.g1 {
-  top: -6rem;
-  right: -1%;
+  top: 3.5rem;
+  right: 0;
   color: var(--pink);
-  font-size: clamp(10rem, 32vw, 22rem);
+  font-size: 7.5rem;
 }
 
 .archives .hero-body {
@@ -1539,15 +1541,15 @@ hr {
     white-space: normal;
   }
 
-  /* 窄屏：全部文章的大字小一档、挪到标题右侧；标题区留白收一点；404 的按钮各占一行 */
+  /* 窄屏：标题占满一整行，大字放不到标题旁边；塞在标题和第一排筛选按钮之间的细缝里，收小 */
   .archives .giant.g1 {
-    top: -1rem;
-    right: -26%;
-    font-size: 9.5rem;
+    top: 3.3rem;
+    right: 0.5rem;
+    font-size: 3.6rem;
   }
 
   .archives .hero {
-    padding-block: 1rem 1.4rem;
+    padding-block: 1rem 1.5rem;
   }
 
   .not-found .giant {
