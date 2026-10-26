@@ -48,7 +48,7 @@ flowchart LR
 
 ### 4.1 发布范围与内容目录 `tools/content.py`（计划，取代 `tools/site_nav.py`）
 
-一个深模块，回答“哪些是文章、它们是什么、怎么排”。其他模块不再自己判断是否公开，也不再自己读 front matter（顺带修掉架构评审的 S1、F3）。
+一个深模块，回答“哪些是文章、它们是什么、怎么排”。其他模块不再自己判断是否公开，也不再自己读 front matter。4.1.0 里“是否公开”在转换器、发布计数、附件规则和测试里各写了一遍，slug 用正则读、其他元数据用 YAML 读，两者对同一份 front matter 会给出不同结果，这一版都收进这个模块。
 
 ```python
 STAGES: tuple[Stage, ...]          # 02思考/思考/thoughts、03初稿/初稿/drafts、04博客/博客/blog、05作品/作品/opus
@@ -194,7 +194,7 @@ tests/                        # 已有：单元测试 + 仓库级检查，按新
 .github/workflows/deploy.yml  # 已有
 ```
 
-删除（计划）：`mkdocs.yml`、`overrides/`、`theme/extra.css`、`docs/javascripts/`、`tools/site_nav.py`、`scripts/setup.sh`（R-CLN-3）、根目录误建的 `.obsidian/`（架构评审已指出）。
+删除（计划）：`mkdocs.yml`、`overrides/`、`theme/extra.css`、`docs/javascripts/`、`tools/site_nav.py`、`scripts/setup.sh`（R-CLN-3）。
 
 放置规则：新的构建代码放 `tools/`，Obsidian 专有的处理放 `tools/obsidian_compat/`；模板和静态资源放 `theme/`，不放进 `docs/`；测试按被测模块命名为 `tests/test_<模块>.py`；设计文档放 `开发文档/`（不能放 `docs/`，那是 Obsidian 仓库）。
 
