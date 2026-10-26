@@ -16,7 +16,7 @@
 | --- | --- | --- | --- | --- | --- |
 | V0 | 验证：字体子集化的体积、构建时间和源字体存放方式 | R-VIS-5 | 可立即开工 | 强 | 已完成（结论见 architecture.md §7.1） |
 | V1 | 全站视觉基础：配色、字体流水线、顶部栏和页脚、涂鸦、正文排版 | R-VIS-1、R-VIS-5～7 | V0 | 强 | 已完成（ab9fdfb） |
-| V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 待细化 |
+| V2 | 文章页标题区和文末 | R-VIS-3 | V1 | 标准 | 已完成（见 §V2 实际做法） |
 | V3 | 首页：气泡、大字、篇数、两条线、按月分组 | R-VIS-2 | V1 | 标准 | 待细化 |
 | V4 | 全部文章和 404 | R-VIS-4 | V1 | 标准 | 待细化 |
 | V5 | 整体验收与交付记录 | §9 验收表全部 | V2、V3、V4 | 标准 | 待细化 |
@@ -88,7 +88,7 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 - `site.js` 只删了 `pre` 上行的 `has-copy` 类（新 CSS 不再用它）。
 - 模板只加了 `data-font` 和 `data-stage`/`data-stage-chip` 属性和类名，结构没动；深色只改 `:root` 变量。
 
-### V2 文章页标题区和文末（待细化）
+### V2 文章页标题区和文末
 
 **目标**：做出样稿文章页的完整标题区和文末：淡色大字、读完时间黑圈、“讲了什么”对话框、阶段英文前缀、改于日期、跳过正文开头的日期引用块、文末涂鸦和“完”。对应 R-VIS-3。
 
@@ -98,9 +98,55 @@ V2、V3、V4 都改 `site.css`、`render.py` 和模板，建议按 V2 → V3 →
 
 **建议档位**：标准 — 接口已在 architecture.md §7.1 定好，照样稿实现。
 
-**已知边界用例**（细化时补参照）：“黑框眼镜（作品）”→ 黑、眼镜；“CLANNAD~AFTER STORY~” → C、无第二个；“《棋王 树王 孩子王》” → 棋、子王；《CLANNAD》开头的 `>写于 2026-08-20` 没有空格、同一引用块里还有星级和“下一季”链接；操作版入口篇的引用块在日期行之后还有说明文字；没有 description 的文章。
+**参照**（2026-10-26 开工前补全；行号按 V1 完成后的 `35357e3` 记）：
 
-**验收**：需求 §9 验收表里 R-VIS-3 的三行。
+- **样稿**：《设计样稿》第 125～160 行的 CSS（`.post-hero`、`.post-hero .g1/.g2`、`.post-head`、`.kicker`、`.say`、`.ring`、`.tags`、`.post-body`、`.fin`、`.after`、`.neigh`、`.window`）和第 265～307 行的 HTML（`#v-post`）。两处占位不照抄：`.en` 里手写的英文译名换成 `stage.prefix`；顶部栏五项按 R-UI-2 仍是两项（V1 已做）。
+- **接口**（architecture.md §7.1，已定，本次不改签名）：
+
+  ```python
+  # tools/content.py
+  class Article:
+      updated: datetime.date | None   # 新增：front matter 的 updatedDate，复用 _as_date；没写就是 None
+  # tools/render.py
+  def giant_chars(title: str) -> tuple[str, str]
+  def strip_date_notes(markdown: str) -> str
+  def reading_minutes(html: str) -> int
+  class Page:
+      giant: str          # 新增：主大字，“黑”“C”；空串表示模板不画
+      giant_second: str   # 新增：最后两个汉字，“眼镜”“子王”；空串表示没有
+      minutes: int        # 新增：读完时间，最少 1
+  ```
+
+  实现细节按 §7.1 的注释：`giant_chars` 先去掉标题末尾的括号注释再取字，主大字是去掉标点后的第一个汉字或字母（字母转大写），去掉标点后不少于 4 个字时第二个取最后两个非标点字符（汉字优先，英文标题就是最后两个字母），全是标点时返回 `("", "")`；`strip_date_notes` 只看正文开头的引用块区域，删掉整行日期，遇到第一行既不是引用也不是空行就停；`reading_minutes` 是去标签后的非空白字符数 ÷ 400，四舍五入，最少 1。`strip_date_notes` 在 `render_markdown` 之前对转换后的正文调用，不改 `docs/` 下的源文件。
+- **要改的文件和位置**：
+  - `tools/content.py`：`Article` 字段表（第 117～126 行）加 `updated`；`_read_article`（第 129～143 行）用 `_as_date(meta.get("updatedDate"))` 填。
+  - `tools/render.py`：在 `strip_front_matter` / `render_markdown`（第 199～214 行）旁边加三个纯函数；`Page`（第 89～107 行）加 `giant`、`giant_second`、`minutes`；`write_site` 里每篇文章的 `Page(...)`（第 404～422 行）填这三个字段，并在 `render_markdown` 之前对正文跑 `strip_date_notes`。
+  - `theme/templates/article.html`：标题区（第 4～17 行）改成 `.post-hero` → 两个 `.giant` → `.post-head`（`.kicker` 里阶段小标签 + 写于日期 + 改于日期、`h1`、阶段英文前缀、主题标签、description 对话框）→ `.ring`；正文（第 30～32 行）外面套 `.post-body`；正文之后、系列提示行之前插 `.fin`（虚线、音符、“完”、星星、虚线）。`.article-header`、`.article-title`、`.article-meta` 这三个类名随之不再使用。
+  - `theme/assets/site.css`：第 524～553 行的“文章页标题区（简化版）”整段换成样稿的 `.post-hero`／`.giant`／`.post-head`／`.kicker`／`.say`／`.ring`／`.tags`；`.fin` 加在正文样式之后；正文仍然用 `.article-body`（宽度由 `.post-hero` 和正文共用的 `--reading-width` 控制，不再另加容器）；手机断点里把 `.ring` 改成跟在标题区内容后面的静态小圈（`position: relative` + `margin-left: auto`），避免小圈压住标题和标签。
+  - `tests/test_render.py`：新增三个纯函数的用例和 `Workspace` 搭真实页面的标题区用例；`tests/test_content.py`：`test_reads_title_stage_date_and_description` 旁边加 `updated` 的读取用例。
+- **字体**：大字元素写 `data-font="head"`，V1 的 `collect_chars` 会自动收进 head 子集，不用改 `tools/fonts.py`。
+
+**边界用例**（下面的已经对着真实内容核过，都写成测试）：
+
+- “黑框眼镜（作品）” → `("黑", "眼镜")`：文件名的“（作品）”要去掉，否则第二个大字会取成“作品”。
+- “CLANNAD~AFTER STORY~” → `("C", "RY")`：去掉标点后是“CLANNADAFTERSTORY”，所以第二个大字是最后两个字母。实现按“非标点字符”取，不区分汉字和字母，英文标题照样出两个大字（站上《Ave Mujica》是 `("A", "ca")`）。
+- “《棋王 树王 孩子王》” → `("棋", "子王")`。
+- “《怎样花两年时间去面试一个人》续” → `("怎", "人续")`：末尾“续”不是标点，第二个大字取的是去掉标点后的最后两个字。
+- 全是标点的标题 → `("", "")`，模板不输出 `.giant` 元素。
+- 《CLANNAD》的开头：`> 更新于 2026-10-20` 和 `> 写于 2026-08-20` 是两个独立引用块，两行都要删。
+- 《从零开始的异世界生活 第二季》的开头：`> 写于 2026-06-25` 后面是同一引用块里的 `>⭐⭐⭐⭐⭐` 和 `>第一季的想法在这里——>[[…]]`（实测日期行和星级行之间还有一个空行），只删日期行，其余保留。
+- 操作版入口篇（`如何订阅claude（纯操作版）.md`）的开头：`> 写于 2026-10-08`、`> 更新于 2026-10-12` 之后同一引用块里还有说明文字（`> **新版**：…`），说明文字必须保留。
+- 正文中间出现的 `> 写于 …` 不删。
+- 没有 description 的文章不输出 `.say`；没有 `updatedDate` 或它的日期和 `createdDate` 相同的文章不显示“改”。
+
+**验收**：需求 §9 验收表里 R-VIS-3 的三行；外加桌面和 375px 下《黑框眼镜》和一篇订阅教程没有横向滚动（大字可以被裁掉、不能撑宽页面），深色下标题区和文末可读。
+
+**实际做法**（2026-10-26 完成）：
+
+- `strip_date_notes` 按“块”处理，不按行：正文开头连续的引用块里，只要某块含日期行就把块里的日期行删掉，其余行（星级、链接、“新版”说明）原样留着；块用空行隔开也算同一块，因为渲染后是同一个 `<blockquote>`。遇到第一行既不是空行也不是引用就停。这样《CLANNAD》的两个独立日期块、入口篇日期块和说明块都各自处理对了。
+- `.fin`、`.after` 只做了虚线、音符、“完”、星星；样稿的 `.after` 窗口卡片留给 V4 的“系列里的下一篇”。
+- 手机断点的黑圈不压住文字——第一版用绝对定位放在右下方，标签一多就会盖住标签，改成跟在标题区内容后面的静态小圈；同时给 `.say` 加 `z-index: 2`，深色下淡色大字不会盖住对话框文字。
+- 字体：slab（阶段英文前缀 `opus`/`thoughts`、写/改日期、`min read`）里补了 `写`、`改` 两个字，做成 `FontSpec.optional`——源字体里没有这两个字，缺字只算提示、不算错误；`subset_fonts` 的缺字判断也相应把 optional 排除在“必须有”之外。
 
 ### V3 首页（待细化）
 

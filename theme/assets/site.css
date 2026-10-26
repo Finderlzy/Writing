@@ -521,20 +521,155 @@ hr {
   color: var(--ink-soft);
 }
 
-/* ---- 文章页标题区（简化版：结构照旧，只换样式；完整标题区留给 V2） ---- */
-.article-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1.2rem;
-  border-bottom: 2px solid var(--ink);
+/* ---- 文章页标题区（R-VIS-3）：淡色大字、黑圈、对话框，照样稿 .post-hero ---- */
+.post-hero {
+  position: relative;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  /* 大字往右上方溢出，裁掉；裁剪在自身的 overflow 里，不影响整页宽度 */
+  padding-block: 2rem 2rem;
+  overflow: hidden;
 }
 
-.article-title {
-  margin: 0 0 0.7rem;
-  font-size: clamp(2rem, 9vw, 3.4rem);
-  line-height: 1.12;
-  letter-spacing: 0.02em;
+/* 淡色大字：不参与排版、不挡住标题的点击，纯装饰 */
+.giant {
+  position: absolute;
+  z-index: 0;
+  font-family: var(--font-head);
+  font-weight: 900;
+  line-height: 0.85;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+
+.post-hero .g1 {
+  top: -0.3rem;
+  right: -2%;
+  color: var(--pink);
+  font-size: clamp(6rem, 30vw, 20rem);
+}
+
+.post-hero .g2 {
+  right: clamp(10rem, 34vw, 22rem);
+  bottom: -0.6rem;
+  color: var(--peach);
+  font-size: clamp(3.2rem, 11vw, 7rem);
+}
+
+.post-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.7rem;
+  max-width: var(--reading-width);
+}
+
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.kicker .date {
+  color: var(--ink-soft);
+  font-family: var(--font-slab);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.kicker .article-stage {
+  font-size: 0.8rem;
+}
+
+.post-title {
+  margin: 0;
   color: var(--ink);
+  font-family: var(--font-head);
+  font-size: clamp(2.2rem, 9vw, 4rem);
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: 0.02em;
   overflow-wrap: break-word;
+}
+
+/* 阶段的英文前缀（R-VIS-3）：内容里没有手写译名，用网址前缀 thoughts / drafts / blog / opus */
+.post-prefix {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--font-slab);
+  font-size: clamp(1rem, 3vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+/* “讲了什么”对话框：只在写了 description 时出现 */
+.say {
+  position: relative;
+  z-index: 2; /* 盖住压在右上角的淡色大字，免得深色下字和大字叠在一起看不清 */
+  max-width: 30rem;
+  margin-top: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 18px;
+  background: var(--paper);
+  font-size: 0.925rem;
+  line-height: 1.8;
+}
+
+.say::before {
+  content: "讲了什么";
+  position: absolute;
+  top: -0.85rem;
+  left: 1rem;
+  padding: 0 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-cute);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* 右上角黑圈：读完大约几分钟；手机上改成跟在标题区里的静态小圈 */
+.ring {
+  position: absolute;
+  z-index: 1;
+  top: 2.2rem;
+  right: 4%;
+  display: grid;
+  place-content: center;
+  width: 7.6rem;
+  height: 7.6rem;
+  border: 5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  text-align: center;
+}
+
+.ring b {
+  color: var(--accent);
+  font-family: var(--font-slab);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 0.9;
+  font-variant-numeric: tabular-nums;
+}
+
+.ring span {
+  font-family: var(--font-slab);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .article-series-line {
@@ -592,7 +727,7 @@ hr {
 /* ---- 正文：装饰少、行距宽，长文好读 ---- */
 .article-body {
   max-width: var(--reading-width);
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   font-size: 1.0625rem;
   line-height: 2;
   overflow-wrap: break-word;
@@ -876,8 +1011,28 @@ hr {
   background: var(--chip-think);
 }
 
-/* ---- 文末：系列提示行、上一页下一页、评论窗口 ---- */
-.series-next {
+/* ---- 文末（R-VIS-3）：虚线、音符、“完”、星星、虚线 ---- */
+.fin {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: var(--reading-width);
+  margin: 2.6rem 0 0;
+}
+
+.fin .ln {
+  flex: 1;
+  height: 0;
+  border-top: 2px dashed var(--rule);
+}
+
+.fin .word {
+  color: var(--ink);
+  font-size: 1.4rem;
+  line-height: 1.4;
+}
+
+/* 系列提示行、上一页下一页、评论窗口 */
   max-width: var(--reading-width);
   margin: 2.4rem 0 0;
   padding: 0.8rem 1.1rem;
@@ -1020,6 +1175,46 @@ hr {
 
   .article-neighbours {
     grid-template-columns: 1fr;
+  }
+
+  /* 窄屏：黑圈改成跟在标题区里的静态小圈，大字更小一点、允许被裁 */
+  .post-hero {
+    padding-block: 1.5rem 1.5rem;
+  }
+
+  .post-hero .g1 {
+    font-size: 3.2rem;
+  }
+
+  .post-hero .g2 {
+    font-size: 1.6rem;
+  }
+
+  /* 窄屏：小圈不再绝对定位压在右上角，改成跟在标题区内容后面的静态小圈，靠右；
+     大字更小、允许被标题区裁掉 */
+  .post-hero {
+    flex-direction: column;
+  }
+
+  .post-head {
+    flex: none;
+  }
+
+  .post-hero > .ring {
+    position: relative;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    margin-left: auto;
+    margin-top: 0.6rem;
+    margin-bottom: 0.6rem;
+    width: 5.8rem;
+    height: 5.8rem;
+    border-width: 4px;
+  }
+
+  .ring b {
+    font-size: 2.2rem;
   }
 }
 

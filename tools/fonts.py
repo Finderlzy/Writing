@@ -89,6 +89,9 @@ def default_specs(directory: Path | None = None) -> tuple[FontSpec, ...]:
             output="slab-600",
             text=_PRINTABLE_ASCII + "·—×“”·",
             weight=600,
+            # 文章页标题区的“写”“改”跟着日期显示；Zilla Slab 没有中日韩字形，
+            # 它们退回字体栈里的中文字体，不算缺字
+            optional=("写", "改"),
             family="Zilla Slab Lzy",
         ),
         FontSpec(
@@ -97,6 +100,7 @@ def default_specs(directory: Path | None = None) -> tuple[FontSpec, ...]:
             output="slab-700",
             text=_PRINTABLE_ASCII,
             weight=700,
+            optional=("写", "改"),
             family="Zilla Slab Lzy",
         ),
         FontSpec(
@@ -329,7 +333,9 @@ def subset_fonts(
     for spec in specs:
         required = _required_chars(spec, collected)
         covered = _codepoints(spec, required + "".join(spec.optional)) if required or spec.optional else set()
-        absent = sorted(char for char in required if ord(char) not in covered)
+        # 只在 template 里自然出现的字（如日期后面的“写”“改”）放进 optional：
+        # 源字体没有它们时退回字体栈，不算缺字
+        absent = sorted(char for char in required if char not in spec.optional and ord(char) not in covered)
         if absent:
             found.append(
                 Diagnostic(

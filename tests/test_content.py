@@ -111,6 +111,18 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual("黑框眼镜", by_path["03思考/初稿/黑框眼镜.md"].title)
         self.assertFalse(diagnostics)
 
+    def test_reads_updated_date(self):
+        catalog, diagnostics = self.load(
+            {
+                "03思考/改过.md": "---\ncreatedDate: 2026-08-29\nupdatedDate: 2026-10-20\n---\n",
+                "03思考/没改.md": "---\ncreatedDate: 2026-08-29\n---\n",
+            }
+        )
+        by_path = {article.source_path.as_posix(): article for article in catalog.articles}
+        self.assertEqual(datetime.date(2026, 10, 20), by_path["03思考/改过.md"].updated)
+        self.assertIsNone(by_path["03思考/没改.md"].updated)
+        self.assertFalse(diagnostics)
+
     def test_date_string_with_a_time(self):
         catalog, _ = self.load({"03思考/a.md": "---\ncreatedDate: '2026-10-14 10:00'\n---\n"})
         self.assertEqual(datetime.date(2026, 10, 14), catalog.articles[0].date)

@@ -9,8 +9,11 @@ from tools.obsidian_compat.urls import legacy_redirects
 from tools.render import (
     SiteConfig,
     build_pages,
+    giant_chars,
     load_config,
+    reading_minutes,
     render_markdown,
+    strip_date_notes,
     strip_front_matter,
 )
 
@@ -294,6 +297,124 @@ class WarningTests(unittest.TestCase):
         self.assertEqual(1, sum("mathjax@3.2.2" in html for html in pages.values()))
         self.assertNotIn("mathjax", workspace.html("posts/"))
         self.assertNotIn("mathjax", workspace.html(""))
+
+
+class ArticleHeaderFunctionTests(unittest.TestCase):
+    """giant_chars / strip_date_notes / reading_minutes：R-VIS-3 的展示数据。"""
+
+    def test_giant_chars_skips_the_note_and_punctuation(self):
+        self.assertEqual(("黑", "眼镜"), giant_chars("黑框眼镜（作品）"))
+        self.assertEqual(("棋", "子王"), giant_chars("《棋王 树王 孩子王》"))
+        self.assertEqual(("黑", "眼镜"), giant_chars("黑框眼镜(作品)"))
+
+    def test_giant_chars_takes_letters_of_a_latin_title_in_capitals(self):
+        self.assertEqual(("C", "RY"), giant_chars("CLANNAD~AFTER STORY~"))  # 第二个只该是汉字；英文标题退回字母
+        self.assertEqual(("C", "AD"), giant_chars("《CLANNAD》"))
+        self.assertEqual(("A", "ca"), giant_chars("Ave Mujica"))
+
+    def test_giant_chars_second_only_when_four_or_more_characters(self):
+        self.assertEqual(("龙", ""), giant_chars("龙与虎"))  # 三个字：只要一个
+        self.assertEqual(("完", ""), giant_chars("完"))
+        self.assertEqual(("怎", "人续"), giant_chars("《怎样花两年时间去面试一个人》续"))
+
+    def test_giant_chars_of_a_title_with_only_punctuation_is_empty(self):
+        self.assertEqual(("", ""), giant_chars("《》"))
+        self.assertEqual(("", ""), giant_chars("……？"))
+
+    def test_date_block_at_the_top_is_removed(self):
+        markdown = "> 更新于 2026-10-20\n\n> 写于 2026-08-20\n\n正文\n"
+        self.assertEqual("\n\n正文\n", strip_date_notes(markdown))
+
+    def test_date_lines_inside_a_block_of_stars_and_links_are_removed(self):
+        markdown = (
+            "> 更新于 2026-10-20\n\n> 写于 2026-08-20\n\n"
+            ">写于 2026-08-20\n> 更新于 2026-10-20\n>⭐⭐⭐⭐⭐\n>下一季：[[02思考/CLANNAD~AFTER STORY~]]\n\n正文\n"
+        )
+        self.assertEqual("\n\n>⭐⭐⭐⭐⭐\n>下一季：[[02思考/CLANNAD~AFTER STORY~]]\n\n正文\n", strip_date_notes(markdown))
+
+    def test_explanation_after_the_dates_stays(self):
+        markdown = "> 写于 2026-10-08\n> 更新于 2026-10-12\n\n> 这是只有操作步骤的版本。\n\n正文\n"
+        self.assertEqual("\n> 这是只有操作步骤的版本。\n\n正文\n", strip_date_notes(markdown))
+
+    def test_date_note_in_the_middle_of_the_body_stays(self):
+        markdown = "正文\n\n> 写于 2026-01-01\n"
+        self.assertEqual(markdown, strip_date_notes(markdown))
+
+    def test_reading_minutes_counts_characters_and_never_goes_below_one(self):
+        self.assertEqual(1, reading_minutes("<p>短</p>"))
+        self.assertEqual(1, reading_minutes("<p>" + "字" * 199 + "</p>"))  # 199/400 不到半分钟
+        self.assertEqual(2, reading_minutes("<p>" + "字" * 600 + "</p>"))
+        self.assertEqual(5, reading_minutes("<p>" + "字" * 2000 + "</p>"))
+        self.assertEqual(1, reading_minutes("<p><strong>字</strong> 字</p>"))
+
+    def test_reading_minutes_ignores_tags_and_spaces(self):
+        text = "<h2 id=\"_1\">标题</h2><p>正文正文</p>"
+        self.assertEqual(1, reading_minutes(text))
+
+
+class ArticlePageTests(unittest.TestCase):
+    """文章页标题区和文末（R-VIS-3）。"""
+
+    def build(self, files: dict[str, str] | None = None) -> Workspace:
+        workspace = Workspace(
+            files
+            or {
+                "05作品/黑框眼镜（作品）.md": (
+                    "---\ncreatedDate: 2026-08-29\nupdatedDate: 2026-10-20\ntags: [暗恋]\n"
+                    "description: 黑框眼镜女孩考上了我的大学。\n---\n> 写于 2026-08-29\n\n> 更新于 2026-10-20\n\n正文。\n"
+                ),
+                "03思考/CLANNAD~AFTER STORY~.md": "---\ncreatedDate: 2026-09-04\n---\n正文。\n",
+                "03思考/没简介.md": "---\ncreatedDate: 2026-09-01\n---\n正文。\n",
+            }
+        )
+        self.assertFalse(workspace.build())
+        return workspace
+
+    def page(self, workspace: Workspace, folder: str, title: str) -> str:
+        for path in (workspace.site / folder).glob("*/index.html"):
+            html = path.read_text(encoding="utf-8")
+            if title + "</h1>" in html:
+                return html
+        raise AssertionError(f"没有找到《{title}》")
+
+    def test_giant_characters_are_hidden_and_use_the_head_font(self):
+        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        self.assertIn('<div class="giant g1" aria-hidden="true" data-font="head">黑</div>', html)
+        self.assertIn('<div class="giant g2" aria-hidden="true" data-font="head">眼镜</div>', html)
+        other = self.page(self.build(), "thoughts", "CLANNAD~AFTER STORY~")
+        self.assertIn('data-font="head">C</div>', other)
+        only = self.page(self.build(), "thoughts", "没简介")
+        self.assertIn('data-font="head">没</div>', only)  # 三个字：只有一个大字
+        self.assertNotIn('class="giant g2"', only)
+
+    def test_minutes_ring_shows_reading_time(self):
+        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        self.assertIn('aria-label="读完大约 1 分钟"', html)
+        self.assertIn("min read", html)
+
+    def test_header_dates_and_stage_prefix(self):
+        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        self.assertIn("2026.08.29 写", html)
+        self.assertIn("10.20 改", html)
+        self.assertIn('class="post-prefix" data-font="slab">opus', html)
+        self.assertIn('data-stage="作品"', html)
+        self.assertIn("黑框眼镜女孩考上了我的大学。", html)
+
+    def test_article_without_updated_date_has_no_rewrite_date(self):
+        html = self.page(self.build(), "thoughts", "没简介")
+        self.assertNotIn(" 改<", html)
+        self.assertNotIn('<div class="say">', html)
+
+    def test_date_block_at_the_top_is_not_rendered(self):
+        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        body = html[html.index('<div class="article-body">'):]
+        self.assertNotIn("写于 2026-08-29", body)
+        self.assertNotIn("更新于 2026-10-20", body)
+
+    def test_fin_mark_closes_the_body(self):
+        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        self.assertIn('class="fin"', html)
+        self.assertIn('data-font="cute">完', html)
 
 
 class NotFoundTests(unittest.TestCase):

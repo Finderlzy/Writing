@@ -47,6 +47,8 @@ _PAGE_SUFFIXES = (".md", ".markdown")
 _TOC_DEPTH = 3
 _TOC_MIN_HEADINGS = 3
 _MATH_RE = re.compile(r"\$[^$\n]+\$|\$\$")
+_TAG_RE = re.compile(r"<[^>]*>")
+_SPACE_RE = re.compile(r"\s+")
 _FRONT_MATTER_RE = re.compile(r"\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\Z)", re.DOTALL)
 # build_pages 的 font_specs 哨兵：没传时按 site/fonts.py 的四个角色子集化，
 # 明确传 None 则跳过字体步骤（页面的标题退回系统字体，仍然可读）
@@ -105,6 +107,9 @@ class Page:
     comments: bool = False
     tags: tuple[str, ...] = ()  # 全部文章页的筛选按钮：全站出现过的主题标签，按篇数从多到少
     rows: tuple[dict, ...] = ()  # 全部文章页的列表项：每条文章和它的筛选数据
+    giant: str = ""  # 标题后面垫的淡色大字，“黑”“C”；空串表示不画
+    giant_second: str = ""  # 小一号的第二个大字，“眼镜”“子王”；空串表示没有
+    minutes: int = 0  # 读完大约几分钟；0 表示没有正文（首页、全部文章页、404）
 
 
 def _toml_value(value: str) -> str:
@@ -200,6 +205,67 @@ def strip_front_matter(text: str) -> str:
     """Drop the leading front matter block; MkDocs' `meta` extension did this in 4.1.0."""
     match = _FRONT_MATTER_RE.match(text)
     return text[match.end():] if match else text
+
+
+# 标题末尾的括号注释，如“黑框眼镜（作品）”的“（作品）”或 “标题(xxx)”；后面不能再有别的字
+_TRAILING_NOTE_RE = re.compile(r"[（(][^（()）]*[)）]\s*\Z")
+# 正文开头只写日期的引用行：`> 写于 2026-08-29`、`>更新于 2026-10-20`
+_DATE_NOTE_RE = re.compile(r"[ \t]*>\s*(?:更新于|写于)\s*\d{4}-\d{1,2}-\d{1,2}\s*\Z")
+_MINUTES_PER_CHAR = 400
+
+
+def giant_chars(title: str) -> tuple[str, str]:
+    """The big faded characters behind the article title: (main, second).
+
+    The main character is the first letter (upper-cased) or Chinese character of the
+    title, skipping punctuation and the trailing parenthetical note; the second is the
+    last two characters when the title still has four or more after removing
+    punctuation, and "" otherwise. A title of punctuation only gives ("", "").
+    """
+    title = _TRAILING_NOTE_RE.sub("", title)
+    letters = [char for char in title if char.isalnum()]
+    if not letters:
+        return "", ""
+    main = letters[0].upper()
+    second = "".join(letters[-2:]) if len(letters) >= 4 else ""
+    return main, second
+
+
+def strip_date_notes(markdown: str) -> str:
+    """Drop the "写于 / 更新于 日期" quote block at the top of the body; the source stays as it is.
+
+    The title block already shows those dates. Only the opening quote region is
+    touched: a block made of date lines (with blank lines between them) goes away
+    as a whole; other blocks (star ratings, links, the note on the entry page) are
+    left as they are; the walk stops at the first line that is neither blank nor a
+    quote.
+    """
+    lines = markdown.split("\n")
+    removed: set[int] = set()
+    index = 0
+    while index < len(lines):
+        line = lines[index].strip()
+        if not line:
+            index += 1
+        elif line.startswith(">"):
+            # 一块一块地看：整块只有日期就整块删，否则只删块里的日期行
+            end = index
+            while end + 1 < len(lines) and (not lines[end + 1].strip() or lines[end + 1].strip().startswith(">")):
+                end += 1
+            while end > index and not lines[end].strip():
+                end -= 1
+            if any(_DATE_NOTE_RE.match(lines[number].strip()) for number in range(index, end + 1)):
+                removed.update(number for number in range(index, end + 1) if _DATE_NOTE_RE.match(lines[number].strip()))
+            index = end + 1
+        else:
+            break
+    return "\n".join(line for number, line in enumerate(lines) if number not in removed)
+
+
+def reading_minutes(html: str) -> int:
+    """How many minutes the body takes: non-space characters after removing tags / 400, at least 1."""
+    text = _TAG_RE.sub("", html)
+    return max(1, round(len(_SPACE_RE.sub("", text)) / _MINUTES_PER_CHAR))
 
 
 def render_markdown(text: str) -> tuple[str, tuple[dict, ...]]:
@@ -401,8 +467,11 @@ def write_site(
         text = converted[key]
         text = _rewrite_embeds(text, article.source_path, url, attachments)
         text = _rewrite_page_links(text, url, urls, index, references.get(key, ()))
-        body, toc = render_markdown(strip_front_matter(text))
+        # 标题区已经写了日期，正文开头那几行只写日期的引用块不再显示；源文件不动
+        text = strip_date_notes(strip_front_matter(text))
+        body, toc = render_markdown(text)
         previous, following = catalog.neighbours(article)
+        giant, giant_second = giant_chars(article.title)
         # 公式在转换后的 Markdown 里保持原样（$...$ / $...$），渲染成 HTML 后也能看
         has_math = bool(_MATH_RE.search(strip_front_matter(text)))
         pages.append(
@@ -418,6 +487,9 @@ def write_site(
                 series=catalog.series(article),
                 headings=bool(toc),
                 comments=config.giscus.enabled,
+                giant=giant,
+                giant_second=giant_second,
+                minutes=reading_minutes(body),
             )
         )
 

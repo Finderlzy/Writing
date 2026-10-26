@@ -122,6 +122,7 @@ class Article:
     date: datetime.date | None  # createdDate
     tags: tuple[str, ...]
     description: str
+    updated: datetime.date | None = None  # updatedDate，标题区显示“改于”；没写就是 None
     url: str = ""  # 站内相对网址，如 "blog/subscribe-claude/"，由 plan_page_urls 给出
     series: str | None = None  # 所属系列名（入口篇标题）；入口篇自己也属于系列
 
@@ -137,6 +138,7 @@ def _read_article(docs: Path, source_path: Path, stage: Stage, layout: Layout = 
         stage=stage,
         title=str(title).strip() if title else source_path.stem,
         date=_as_date(meta.get("createdDate")),
+        updated=_as_date(meta.get("updatedDate")),
         tags=_as_tags(meta.get("tags")),
         description=str(meta.get("description") or "").strip(),
         series=_series_name(docs, source_path, layout),

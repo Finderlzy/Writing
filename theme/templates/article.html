@@ -1,18 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
 <article class="article">
-  <header class="article-header">
-    <h1 class="article-title" data-font="head">{{ page.title }}</h1>
-    <p class="article-meta">
-      <span class="article-stage" data-stage="{{ page.article.stage.name }}">{{ page.article.stage.name }}</span>
-      {% if page.article.date %}<time data-font="slab" datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.isoformat() }}</time>{% endif %}
-      {% for tag in page.article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}
-    </p>
-    {% if page.series %}
-    <p class="article-series-line">
-      属于系列
-      <a href="{{ root }}{{ page.series[0].url }}">{{ page.article.series }}</a>（共 {{ page.series | length }} 篇）
-    </p>
+  <header class="post-hero">
+    {% if page.giant %}<div class="giant g1" aria-hidden="true" data-font="head">{{ page.giant }}</div>{% endif %}
+    {% if page.giant_second %}<div class="giant g2" aria-hidden="true" data-font="head">{{ page.giant_second }}</div>{% endif %}
+    <div class="post-head">
+      <div class="kicker">
+        <span class="article-stage" data-stage="{{ page.article.stage.name }}">{{ page.article.stage.name }}</span>
+        {% if page.article.date %}<time class="date" data-font="slab" datetime="{{ page.article.date.isoformat() }}">{{ page.article.date.strftime("%Y.%m.%d") }} 写</time>{% endif %}
+        {% if page.article.updated and page.article.updated != page.article.date %}<time class="date" data-font="slab" datetime="{{ page.article.updated.isoformat() }}">{{ page.article.updated.strftime("%m.%d") }} 改</time>{% endif %}
+      </div>
+      <h1 class="post-title" data-font="head">{{ page.title }}</h1>
+      <p class="post-prefix" data-font="slab">{{ page.article.stage.prefix }}</p>
+      {% if page.article.tags %}
+      <p class="tags">{% for tag in page.article.tags %}<span class="article-tag">{{ tag }}</span>{% endfor %}</p>
+      {% endif %}
+      {% if page.article.description %}
+      <div class="say">{{ page.article.description }}</div>
+      {% endif %}
+      {% if page.series %}
+      <p class="article-series-line">
+        属于系列
+        <a href="{{ root }}{{ page.series[0].url }}">{{ page.article.series }}</a>（共 {{ page.series | length }} 篇）
+      </p>
+      {% endif %}
+    </div>
+    {% if page.minutes %}
+    <div class="ring" role="note" aria-label="读完大约 {{ page.minutes }} 分钟"><b data-font="slab">{{ page.minutes }}</b><span data-font="slab">min read</span></div>
     {% endif %}
   </header>
   {% if toc %}
@@ -30,6 +44,13 @@
   <div class="article-body">
 {{ page.body | safe }}
   </div>
+  <div class="fin" aria-hidden="true">
+    <span class="ln"></span>
+    <span class="doodle"><svg width="22" height="34"><use href="#note1"/></svg></span>
+    <span class="word" data-font="cute">完</span>
+    <span class="doodle"><svg width="26" height="26"><use href="#star"/></svg></span>
+    <span class="ln"></span>
+  </div>
   {% if page.series %}
   <p class="series-next">
     {% if page.following and page.following.series %}
@@ -42,10 +63,10 @@
   {% if page.previous or page.following %}
   <nav class="article-neighbours" aria-label="上一篇和下一篇">
     {% if page.previous %}
-    <a class="neighbour previous" href="{{ root }}{{ page.previous.url }}" rel="prev"><span class="neighbour-label">上一篇</span><span class="neighbour-title">{{ page.previous.title }}</span></a>
+    <a class="neighbour previous" href="{{ root }}{{ page.previous.url }}" rel="prev"><span class="neighbour-label" data-font="slab">← prev</span><span class="neighbour-title">{{ page.previous.title }}</span></a>
     {% endif %}
     {% if page.following %}
-    <a class="neighbour next" href="{{ root }}{{ page.following.url }}" rel="next"><span class="neighbour-label">下一篇</span><span class="neighbour-title">{{ page.following.title }}</span></a>
+    <a class="neighbour next" href="{{ root }}{{ page.following.url }}" rel="next"><span class="neighbour-label" data-font="slab">next →</span><span class="neighbour-title">{{ page.following.title }}</span></a>
     {% endif %}
   </nav>
   {% endif %}
