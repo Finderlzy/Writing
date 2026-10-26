@@ -1,18 +1,15 @@
 ---
 createdDate: 2026-08-20
-updatedDate: 2026-10-20
+updatedDate: 2026-10-26
 tags:
   - 二次元
   - CLANNAD
   - 情感
 description: "作者评价动画《CLANNAD》平静中带忧伤的基调，并逐一点评朋也与渚、风子、杏、秋生、阳平等角色的刻画，以及自己喜欢的原因。"
+slug: clannad-season-one-review
 ---
-> 更新于 2026-10-20
-
 > 写于 2026-08-20
-
->写于 2026-08-20
-> 更新于 2026-10-20
+> 更新于 2026-10-26
 >⭐⭐⭐⭐⭐
 >下一季：[[02思考/CLANNAD~AFTER STORY~]]
 
