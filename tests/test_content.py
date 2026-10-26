@@ -111,6 +111,16 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual("黑框眼镜", by_path["03思考/初稿/黑框眼镜.md"].title)
         self.assertFalse(diagnostics)
 
+    def test_title_drops_a_trailing_note_that_repeats_the_stage(self):
+        catalog, _ = self.load(
+            {
+                "05作品/黑框眼镜（作品）.md": "---\ncreatedDate: 2026-08-29\n---\n",
+                "05作品/与篮球（DeepSeek改）.md": "---\ncreatedDate: 2026-05-07\n---\n",
+                "05作品/星期四(作品).md": "---\ncreatedDate: 2026-10-14\n---\n",
+            }
+        )
+        self.assertEqual(["星期四", "黑框眼镜", "与篮球（DeepSeek改）"], [article.title for article in catalog.articles])
+
     def test_reads_updated_date(self):
         catalog, diagnostics = self.load(
             {

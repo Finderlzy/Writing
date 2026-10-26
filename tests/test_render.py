@@ -18,6 +18,7 @@ from tools.render import (
     render_markdown,
     split_home_intro,
     strip_date_notes,
+    strip_leading_title,
     strip_front_matter,
 )
 
@@ -531,6 +532,24 @@ class ArticleHeaderFunctionTests(unittest.TestCase):
         self.assertEqual(("如", "订阅"), giant_chars("如何订阅claude（纯操作版）"))
         self.assertEqual(("C", "环境"), giant_chars("CLANNAD 的环境"))
 
+    def test_giant_chars_skip_a_leading_ordinal(self):
+        # “三”做大字只剩三道横条，序号跳过
+        self.assertEqual(("把", "节点"), giant_chars("三、把服务器变成节点"))
+        self.assertEqual(("购", "代理"), giant_chars("二、购买 ISP 代理"))
+        self.assertEqual(("前", ""), giant_chars("12. 前言"))
+        self.assertEqual(("三", ""), giant_chars("三体"))  # 不带顿号的不算序号
+
+    def test_leading_title_heading_is_dropped(self):
+        body, _ = render_markdown("# 三、把服务器变成节点\n\n## 用 SSH 连上\n\n正文\n")
+        kept = strip_leading_title(body, ["三、把服务器变成节点"])
+        self.assertNotIn("<h1", kept)
+        # 后面标题的编号不变：别的文章链到 #_1 这类锚点，不能因为删了一级标题而错位
+        self.assertIn(body[body.index("<h2"):], kept)
+        self.assertEqual(body, strip_leading_title(body, ["别的标题"]))
+        # 只看开头：正文中间的同名一级标题保留
+        later, _ = render_markdown("正文\n\n# 标题\n")
+        self.assertEqual(later, strip_leading_title(later, ["标题"]))
+
     def test_giant_chars_second_only_when_four_or_more_characters(self):
         self.assertEqual(("龙", ""), giant_chars("龙与虎"))  # 三个字：只要一个
         self.assertEqual(("完", ""), giant_chars("完"))
@@ -597,7 +616,7 @@ class ArticlePageTests(unittest.TestCase):
         raise AssertionError(f"没有找到《{title}》")
 
     def test_giant_characters_are_hidden_and_use_the_head_font(self):
-        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        html = self.page(self.build(), "opus", "黑框眼镜")
         self.assertIn('<div class="giant g1" aria-hidden="true" data-font="head">黑</div>', html)
         self.assertIn('<div class="giant g2" aria-hidden="true" data-font="head">眼镜</div>', html)
         other = self.page(self.build(), "thoughts", "CLANNAD~AFTER STORY~")
@@ -607,12 +626,12 @@ class ArticlePageTests(unittest.TestCase):
         self.assertNotIn('class="giant g2"', only)
 
     def test_minutes_ring_shows_reading_time(self):
-        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        html = self.page(self.build(), "opus", "黑框眼镜")
         self.assertIn('aria-label="读完大约 1 分钟"', html)
         self.assertIn("min read", html)
 
     def test_header_dates_and_stage_prefix(self):
-        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        html = self.page(self.build(), "opus", "黑框眼镜")
         self.assertIn("2026.08.29 写", html)
         self.assertIn("10.20 改", html)
         self.assertIn('class="post-prefix" data-font="slab">opus', html)
@@ -625,13 +644,13 @@ class ArticlePageTests(unittest.TestCase):
         self.assertNotIn('<div class="say">', html)
 
     def test_date_block_at_the_top_is_not_rendered(self):
-        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        html = self.page(self.build(), "opus", "黑框眼镜")
         body = html[html.index('<div class="article-body">'):]
         self.assertNotIn("写于 2026-08-29", body)
         self.assertNotIn("更新于 2026-10-20", body)
 
     def test_fin_mark_closes_the_body(self):
-        html = self.page(self.build(), "opus", "黑框眼镜（作品）")
+        html = self.page(self.build(), "opus", "黑框眼镜")
         self.assertIn('class="fin"', html)
         self.assertIn('data-font="cute">完', html)
 

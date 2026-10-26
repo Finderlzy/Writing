@@ -127,6 +127,19 @@ class Article:
     series: str | None = None  # 所属系列名（入口篇标题）；入口篇自己也属于系列
 
 
+def _title_from_name(stem: str, stage: Stage) -> str:
+    """The file name as title, without a trailing note that only repeats the stage.
+
+    “黑框眼镜（作品）” in 05作品 shows as “黑框眼镜”: the stage label beside the title already
+    says 作品. Other notes such as “与篮球（DeepSeek改）” stay.
+    """
+    for left, right in (("（", "）"), ("(", ")")):
+        note = f"{left}{stage.name}{right}"
+        if stem.endswith(note) and stem != note:
+            return stem[: -len(note)].rstrip()
+    return stem
+
+
 def _read_article(docs: Path, source_path: Path, stage: Stage, layout: Layout = LAYOUT) -> Article:
     text = (docs / source_path).read_text(encoding="utf-8")
     meta = read_meta(text)
@@ -136,7 +149,7 @@ def _read_article(docs: Path, source_path: Path, stage: Stage, layout: Layout = 
     return Article(
         source_path=source_path,
         stage=stage,
-        title=str(title).strip() if title else source_path.stem,
+        title=str(title).strip() if title else _title_from_name(source_path.stem, stage),
         date=_as_date(meta.get("createdDate")),
         updated=_as_date(meta.get("updatedDate")),
         tags=_as_tags(meta.get("tags")),

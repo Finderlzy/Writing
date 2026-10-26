@@ -61,10 +61,10 @@
   --sky: #a8d6fb;
   --mustard: #e3b43c;
   --doodle-line: #1d1b19; /* 涂鸦的外描边：和实心部分（currentColor）对比着看 */
-  --chip-think: #f6e6f2;
-  --chip-draft: #fdebdc;
-  --chip-blog: #e3f1fd;
-  --chip-opus: #fde3db;
+  --chip-think: #f1d6ea;
+  --chip-draft: #fbdcc2;
+  --chip-blog: #d2e7fb;
+  --chip-opus: #fbd2c4;
   --shadow: #1d1b19;
 
   /* 标题字体：中文粗黑，每个都留系统字体兜底 */
@@ -792,6 +792,36 @@ hr {
   border-color: var(--ink);
   background: var(--ink);
   color: var(--paper);
+}
+
+/* 阶段小标签：首页卡片、首页和全部文章的列表、文章页标题区共用，按阶段着色（样稿 .c-think 等）。
+   各处的内边距和字号由各自的规则定，这里只给底色和圆角 */
+.chip[data-stage],
+.article-stage[data-stage] {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--chip-think);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.article-stage[data-stage] {
+  padding: 0.1em 0.6em;
+}
+
+.chip[data-stage="初稿"],
+.article-stage[data-stage="初稿"] {
+  background: var(--chip-draft);
+}
+
+.chip[data-stage="博客"],
+.article-stage[data-stage="博客"] {
+  background: var(--chip-blog);
+}
+
+.chip[data-stage="作品"],
+.article-stage[data-stage="作品"] {
+  background: var(--chip-opus);
 }
 
 /* 阶段按钮用各自的 --chip-* 颜色（样稿 .c-think 等），按下去是黑底白字，和主题按钮一样。

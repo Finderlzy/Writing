@@ -13,6 +13,7 @@ import re
 import shutil
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
+from html import unescape
 from pathlib import Path
 from urllib.parse import quote, unquote
 
@@ -213,6 +214,10 @@ def strip_front_matter(text: str) -> str:
 
 # 标题末尾的括号注释，如“黑框眼镜（作品）”的“（作品）”或 “标题(xxx)”；后面不能再有别的字
 _TRAILING_NOTE_RE = re.compile(r"[（(][^（()）]*[)）]\s*\Z")
+# 标题开头的序号：“三、”“12.”。做大字时跳过，否则“三”会变成三道横条
+_ORDINAL_RE = re.compile(r"\A\s*(?:[一二三四五六七八九十百零〇两]+|\d+)\s*[、.．]\s*")
+# 渲染后正文开头的一级标题
+_LEADING_H1_RE = re.compile(r"\A\s*<h1\b[^>]*>(.*?)</h1>\s*", re.S)
 # 正文开头只写日期的引用行：`> 写于 2026-08-29`、`>更新于 2026-10-20`
 _DATE_NOTE_RE = re.compile(r"[ \t]*>\s*(?:更新于|写于)\s*\d{4}-\d{1,2}-\d{1,2}\s*\Z")
 _MINUTES_PER_CHAR = 400
@@ -230,7 +235,7 @@ def giant_chars(title: str) -> tuple[str, str]:
     removing punctuation (R-VIS-3), and "" otherwise, so a Latin title gets only its
     initial. A title of punctuation only gives ("", "").
     """
-    title = _TRAILING_NOTE_RE.sub("", title)
+    title = _ORDINAL_RE.sub("", _TRAILING_NOTE_RE.sub("", title))
     letters = [char for char in title if char.isalnum()]
     if not letters:
         return "", ""
@@ -243,6 +248,24 @@ def giant_chars(title: str) -> tuple[str, str]:
 def _is_han(char: str) -> bool:
     """CJK unified ideographs, including extension A."""
     return "\u4e00" <= char <= "\u9fff" or "\u3400" <= char <= "\u4dbf"
+
+
+def strip_leading_title(html: str, titles: Iterable[str]) -> str:
+    """Drop the rendered body's opening <h1> when it repeats the title.
+
+    The title block already shows the title; tutorials often start with `# 标题` as well.
+    This works on the rendered HTML, not the Markdown: heading ids are numbered in order
+    (`_1`, `_2`, …) and links from other pages point at them, so the heading has to be
+    rendered first and removed afterwards. Only an exact match goes; the source stays.
+    """
+    match = _LEADING_H1_RE.match(html)
+    if match and _plain_text(match.group(1)) in {title.strip() for title in titles}:
+        return html[match.end():]
+    return html
+
+
+def _plain_text(fragment: str) -> str:
+    return unescape(re.sub(r"<[^>]+>", "", fragment)).strip()
 
 
 def strip_date_notes(markdown: str) -> str:
@@ -525,6 +548,7 @@ def write_site(
         # 标题区已经写了日期，正文开头那几行只写日期的引用块不再显示；源文件不动
         text = strip_date_notes(strip_front_matter(text))
         body, toc = render_markdown(text)
+        body = strip_leading_title(body, (article.title, article.source_path.stem))
         previous, following = catalog.neighbours(article)
         giant, giant_second = giant_chars(article.title)
         # 公式在转换后的 Markdown 里保持原样（$...$ / $...$），渲染成 HTML 后也能看
