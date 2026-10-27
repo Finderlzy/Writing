@@ -6,7 +6,7 @@ theme = "theme"
 description = "finderlzy 的个人文章：想法、思考、博客和作品。"
 author = "finderlzy"
 # Google Search Console 选“HTML 标记”验证时，把 content 里的那串码填这里；不用就留空
-google_site_verification = ""
+google_site_verification = "ZaspVWmHtUhuHTOw16yl43FhyLr_hkydKn5SF_kAVgk"
 
 # 页脚的社交链接；icon 对应 theme/templates/base.html 里画好的 <symbol id="icon-...">，不写就只显示名字
 [[social]]
