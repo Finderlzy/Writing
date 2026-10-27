@@ -2,6 +2,11 @@
 site_name = "Writing"
 site_url = "https://finderlzy.github.io/writing/"
 theme = "theme"
+# SEO（tools/seo.py）：description 用在首页的搜索摘要和链接预览；文章用自己的 description，没写就取正文开头
+description = "finderlzy 的个人文章：想法、思考、博客和作品。"
+author = "finderlzy"
+# Google Search Console 选“HTML 标记”验证时，把 content 里的那串码填这里；不用就留空
+google_site_verification = ""
 
 # 页脚的社交链接；icon 对应 theme/templates/base.html 里画好的 <symbol id="icon-...">，不写就只显示名字
 [[social]]

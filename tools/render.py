@@ -22,6 +22,7 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .content import HOME_PAGE, LAYOUT, Article, Catalog, Layout, is_published, series_diagnostics
 from .fonts import FontSpec, default_specs, subset_fonts
+from .seo import page_meta, write_sitemap
 from .obsidian_compat.converter import Converter
 from .obsidian_compat.index import VaultIndex
 from .obsidian_compat.html_check import check_body
@@ -85,6 +86,9 @@ class SiteConfig:
 
     site_name: str = "Writing"
     site_url: str = "https://finderlzy.github.io/writing/"
+    description: str = ""  # 首页和 404 的 meta description；文章用自己的 description 或正文开头
+    author: str = ""  # 结构化数据里的作者名；空串时用 site_name
+    google_site_verification: str = ""  # Google Search Console 的 HTML 标记验证码，只写进首页
     theme: Path = Path("theme")
     social: tuple[SocialLink, ...] = ()
     giscus: GiscusConfig = GiscusConfig()
@@ -177,6 +181,9 @@ def load_config(path: Path) -> SiteConfig:
     return SiteConfig(
         site_name=top.get("site_name", SiteConfig.site_name),
         site_url=top.get("site_url", SiteConfig.site_url),
+        description=top.get("description", ""),
+        author=top.get("author", ""),
+        google_site_verification=top.get("google_site_verification", ""),
         theme=Path(top.get("theme", str(SiteConfig.theme))),
         social=tuple(social),
         giscus=giscus,
@@ -497,6 +504,7 @@ def _context(config: SiteConfig, page: Page, url: str) -> dict:
         "toc": page.toc if _heading_count(page.toc) >= _TOC_MIN_HEADINGS else (),
         "mathjax": page.has_math,
         "unit_separator": "\u0001",  # 列表项的 data-tags 用它拼多个主题标签
+        "seo": page_meta(config, page),
     }
 
 
@@ -628,6 +636,7 @@ def write_site(
         found += legacy_redirects(site, [(old_url, new_url)], config.site_url)
 
     _copy_theme_assets(config.theme, site)
+    write_sitemap(site, config.site_url, pages)
     for page in pages:
         found.extend(check_body(site, page.url, page.body))
     return found
