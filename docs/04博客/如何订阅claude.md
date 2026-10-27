@@ -144,7 +144,7 @@ ssh root@你的服务器IP
 3. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v2.0.2/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v2.0.3/setup.sh)
 ```
 
 4. 问服务器 IP 对不对时，和你的一样就回车；问住宅代理时，依次填第 2 步记下的 IP、端口、用户名、密码。
