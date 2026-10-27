@@ -1300,6 +1300,11 @@ hr {
   margin: 2.5rem 0;
 }
 
+/* Obsidian 里常在标题下一行写 ---，标题自带下划线，这条分隔线就不再画 */
+.article-body :is(h1, h2, h3, h4, h5, h6) + hr {
+  display: none;
+}
+
 .article-body a {
   color: var(--ink);
   border-bottom: 2px solid var(--accent);
