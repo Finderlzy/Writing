@@ -1,14 +1,15 @@
 {% extends "base.html" %}
 {# 全部文章（R-UI-4、R-VIS-4）：淡色的大号文章总数垫在标题后面，阶段按钮用各自的 --chip-* 颜色，
-   主题按钮用中性色，列表复用首页的按月分组。筛选由 site.js 按 data-stage、data-tags 隐藏条目，
-   没有 JS 时按钮不出现、列表全部可见；分组以后某个月被筛空，整个 .month 一起隐藏。 #}
+   主题按钮用中性色，列表复用首页的按月分组。系列文章不进列表，收在筛选下面的“合集”区，
+   每个系列一张卡片链到入口篇。筛选由 site.js 按 data-stage、data-tags 隐藏卡片和条目，
+   没有 JS 时按钮不出现、卡片和列表全部可见；分组或合集被筛空时整块一起隐藏。 #}
 {% block content %}
 <section class="archives">
   <header class="hero">
     <div class="giant g1 giant-count" aria-hidden="true" data-font="slab">{{ page.total }}</div>
     <div class="hero-body">
       <h1 class="page-title" data-font="head">全部文章</h1>
-      <p class="hero-lead"><span class="hero-lead-count" data-font="slab">{{ page.total }} pieces</span><span class="hero-lead-unit">· 按时间倒序，按月分组</span></p>
+      <p class="hero-lead"><span class="hero-lead-count" data-font="slab">{{ page.total }} pieces</span><span class="hero-lead-unit">· 系列文章收在合集里，其余按时间倒序、按月分组</span></p>
     </div>
   </header>
   <div class="filters" data-filters hidden>
@@ -26,6 +27,25 @@
     </div>
   </div>
   <p class="filter-summary" data-filter-summary hidden></p>
+  {% if page.collections %}
+  <section class="collections" data-collections aria-labelledby="collections-heading">
+    <h2 class="section-label" id="collections-heading" data-font="cute">合集</h2>
+    <ul class="collection-cards">
+      {% for card in page.collections %}
+      <li class="collection-card" data-stage="{{ card.stage }}" data-tags="{{ card.tags | join(unit_separator) }}">
+        <a href="{{ root }}{{ card.entry.url }}">
+          <span class="collection-head">
+            <strong class="collection-title">{{ card.entry.title }}</strong>
+            <span class="collection-count"><span data-font="slab">{{ card.count }}</span> 篇</span>
+          </span>
+          {% if card.entry.description %}<span class="collection-say">{{ card.entry.description }}</span>{% endif %}
+          {% if card.entry.date %}<span class="collection-date" data-font="slab">{{ "%04d.%02d.%02d" % (card.entry.date.year, card.entry.date.month, card.entry.date.day) }}</span>{% endif %}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
   <div class="archive-list" data-article-list>
     {% for year, month, articles in page.months %}
     <section class="month" data-month="{% if year %}{{ year }}-{{ '%02d' % month }}{% else %}no-date{% endif %}">
@@ -40,7 +60,6 @@
             <span class="t">
               <strong>{{ article.title }}</strong>
               <span class="chip article-stage" data-stage="{{ article.stage.name }}">{{ article.stage.name }}</span>
-              {% if article.series %}<span class="article-series">系列：{{ article.series }}</span>{% endif %}
               {% if article.date %}<span class="date" data-font="slab">{{ "%02d.%02d" % (article.date.month, article.date.day) }}</span>{% endif %}
             </span>
             {% if article.description %}<span class="d">{{ article.description }}</span>{% endif %}

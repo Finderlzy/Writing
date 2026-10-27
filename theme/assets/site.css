@@ -807,6 +807,91 @@ hr {
   font-size: 0.9rem;
 }
 
+/* ---- 合集：系列文章不进下面的按月列表，在这里每个系列一张卡片，链到入口篇 ----
+   桌面两张并排，窄屏单列；卡片沿用两条线和上一篇 / 下一篇的粗描边加实心投影 */
+.collections {
+  margin-bottom: 2.2rem;
+}
+
+.collections[hidden],
+.collection-card[hidden] {
+  display: none;
+}
+
+.section-label {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-cute);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.collection-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 系列卡片用博客的阶段色；深色下 --chip-blog 跟着换 */
+.collection-card {
+  min-width: 0;
+  border: var(--stroke) solid var(--ink);
+  border-radius: 14px;
+  background: var(--chip-blog);
+  box-shadow: var(--pop);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.collection-card:hover,
+.collection-card:focus-within {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--pop-lift);
+}
+
+.collection-card a {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem 1.2rem;
+  color: var(--ink);
+}
+
+.collection-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.3rem 0.7rem;
+}
+
+.collection-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.collection-count {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.collection-say {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.collection-date {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
 .archive-list {
   display: block;
 }
@@ -819,13 +904,6 @@ hr {
 
 .article-item {
   min-width: 0;
-}
-
-/* 系列名：和标题同一行，灰色小字，窄屏允许折行 */
-.article-series {
-  color: var(--ink-soft);
-  font-size: 0.8125rem;
-  white-space: nowrap;
 }
 
 /* 主题标签的旧写法（灰色 # 前缀）还在文章页标题区用 */
@@ -1659,10 +1737,6 @@ hr {
     line-height: 1.95;
   }
 
-  .article-series {
-    white-space: normal;
-  }
-
   /* 窄屏：数字收到 7rem，放在标题那一行的右边，不垫在标题文字底下，也不压住顶栏导航 */
   .archives .giant.g1 {
     top: -1.6rem;
@@ -1798,6 +1872,11 @@ hr {
   /* 月份数字和条目上下排 */
   .month {
     gap: 0.6rem;
+  }
+
+  /* 窄屏：合集卡片单列 */
+  .collection-cards {
+    grid-template-columns: 1fr;
   }
 
   .month-label {

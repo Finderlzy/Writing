@@ -119,7 +119,8 @@ class Page:
     headline: str = ""  # 首页气泡标题：docs/index.md 正文第一段
     stage_counts: dict[str, int] = field(default_factory=dict)  # 首页黑圈和两张卡片：阶段名 → 篇数
     total: int = 0  # 首页黑圈：公开文章总数，不是首页列表的条数
-    months: tuple[tuple[int, int | None, tuple[Article, ...]], ...] = ()  # 列表的按月分组：首页是博客和作品，全部文章页是全部文章
+    months: tuple[tuple[int, int | None, tuple[Article, ...]], ...] = ()  # 列表的按月分组：首页是博客和作品，全部文章页是不属于系列的文章
+    collections: tuple[dict, ...] = ()  # 全部文章页的合集卡片：每个系列一张，带筛选数据
 
 
 def _toml_value(value: str) -> str:
@@ -473,6 +474,28 @@ def _rows(articles: Iterable[Article]) -> tuple[dict, ...]:
     )
 
 
+def _collection_rows(pairs: Iterable[tuple[Article, tuple[Article, ...]]]) -> tuple[dict, ...]:
+    """One card per series, carrying the filter data of the entry page and all its members.
+
+    The card stands for the whole series, so it answers to the stage and the topics of every
+    member: a topic only a sub-page carries still finds its series.
+    """
+    rows = []
+    for entry, members in pairs:
+        tags: list[str] = []
+        for article in members:
+            tags.extend(tag for tag in article.tags if tag not in tags)
+        rows.append(
+            {
+                "entry": entry,
+                "count": len(members),
+                "stage": entry.stage.name,
+                "tags": tags,
+            }
+        )
+    return tuple(rows)
+
+
 _MONTH_NAMES = ("一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月")
 
 
@@ -605,10 +628,11 @@ def write_site(
             title="全部文章",
             articles=catalog.articles,
             highlight_nav="posts",
-            tags=_tag_counts(catalog.articles),
-            rows=_rows(catalog.articles),
-            # 全部文章页和首页共用按月分组；首页只装博客和作品，这里装全部公开文章
-            months=group_by_month(catalog.articles),
+            tags=_tag_counts(catalog.articles),  # 主题按钮按全部公开文章统计，子篇的主题也能筛出它的合集
+            rows=_rows(catalog.loose()),
+            # 系列收进上面的合集卡片，按月列表只留不属于系列的文章
+            months=group_by_month(catalog.loose()),
+            collections=_collection_rows(catalog.collections()),
             total=len(catalog.articles),  # 标题下面那行写的是全部文章篇数
         )
     )

@@ -508,19 +508,40 @@ class PostsPageTests(unittest.TestCase):
         self.assertIn("日期<small>不详</small>", html)
         self.assertLess(html.index('data-month="2025-09"'), html.index('data-month="no-date"'))
 
-    def test_series_name_is_still_shown_in_the_list(self):
+    def test_series_goes_into_a_collection_card_and_leaves_the_month_list(self):
         files = {
-            "04技术/订阅教程.md": "---\ncreatedDate: 2026-10-01\n---\n# 订阅教程\n",
-            "04技术/原理版/一.md": "---\ncreatedDate: 2026-09-30\n---\n# 一\n",
+            "04技术/订阅教程.md": "---\ncreatedDate: 2026-10-01\ntags: [教程]\ndescription: 订阅教程简介\n---\n# 订阅教程\n",
+            "04技术/原理版/一.md": "---\ncreatedDate: 2026-09-30\ntags: [原理]\n---\n# 一\n",
+            "04技术/原理版/二.md": "---\ncreatedDate: 2026-09-29\ntags: [教程]\n---\n# 二\n",
         }
         html = self.build(files, series={"04技术/原理版": "04技术/订阅教程.md"}).html("posts/")
-        self.assertIn('<span class="article-series">系列：订阅教程</span>', html)
+        # 合集区在筛选摘要之后、按月列表之前，只有一张卡片，链到入口篇，写篇数和简介
+        self.assertLess(html.index("data-filter-summary"), html.index("data-collections"))
+        self.assertLess(html.index("data-collections"), html.index("data-article-list"))
+        self.assertIn(">合集</h2>", html)
+        self.assertEqual(1, html.count('class="collection-card"'))
+        card = html[html.index('class="collection-card"'):html.index("data-article-list")]
+        self.assertIn('href="../blog/', card)
+        self.assertIn('<span data-font="slab">3</span> 篇', card)
+        self.assertIn("订阅教程简介", card)
+        # 卡片的筛选数据：阶段是博客，主题是入口篇和全部子篇的并集
+        self.assertIn('data-stage="博客" data-tags="教程\x01原理"', card)
+        # 按月列表只剩不属于系列的文章，入口篇也不在
+        self.assertNotIn('class="article-item"', html)
 
     def test_script_hides_the_months_that_the_filter_emptied(self):
         script = _article("site.js")
         self.assertIn('list.querySelectorAll("[data-month]")', script)
         self.assertIn('month.querySelectorAll(".article-item:not([hidden])")', script)
         self.assertIn("month.hidden = shown.length === 0", script)
+
+    def test_script_filters_the_cards_and_counts_them_in_the_summary(self):
+        script = _article("site.js")
+        self.assertIn('document.querySelectorAll(".collection-card")', script)
+        self.assertIn('document.querySelector("[data-collections]")', script)
+        self.assertIn("collections.hidden = !cards.some", script)
+        # 卡片算进结果：有卡片可见时 empty.hidden 为真
+        self.assertIn("empty.hidden = visible > 0", script)
 
 
 class WarningTests(unittest.TestCase):

@@ -21,6 +21,8 @@
   // ---- 全部文章页：按阶段和主题筛选，状态写在查询参数里 ----
   // 列表按月分组：条目自己的 data-stage、data-tags 决定显不显示，某个月的条目全被筛掉时，
   // 那个月份（[data-month] 的 .month）也一起隐藏，免得标题下空出一块。
+  // 上面的“合集”卡片同样按 data-stage、data-tags 筛；卡片全被筛掉时整个合集区隐藏。
+  // 卡片算进结果：一屏上还有卡片可见，就不算空结果。
   function initFilters() {
     var list = document.querySelector("[data-article-list]");
     var panel = document.querySelector("[data-filters]");
@@ -29,6 +31,8 @@
     }
     var items = Array.prototype.slice.call(list.querySelectorAll(".article-item"));
     var months = Array.prototype.slice.call(list.querySelectorAll("[data-month]"));
+    var cards = Array.prototype.slice.call(document.querySelectorAll(".collection-card"));
+    var collections = document.querySelector("[data-collections]");
     var stageButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-stage]"));
     var tagButtons = Array.prototype.slice.call(panel.querySelectorAll("[data-tag]"));
     var summary = document.querySelector("[data-filter-summary]");
@@ -58,6 +62,20 @@
 
     function apply(state) {
       var visible = 0;
+      cards.forEach(function (card) {
+        var tags = (card.getAttribute("data-tags") || "").split("\u0001");
+        var matchesStage = !state.stage || card.getAttribute("data-stage") === state.stage;
+        var matchesTag = !state.tag || tags.indexOf(state.tag) !== -1;
+        var show = matchesStage && matchesTag;
+        card.hidden = !show;
+        if (show) {
+          visible += 1;
+        }
+      });
+      // 卡片全被筛掉时连“合集”这个小标题一起收起来
+      if (collections) {
+        collections.hidden = !cards.some(function (card) { return !card.hidden; });
+      }
       items.forEach(function (item) {
         var tags = (item.getAttribute("data-tags") || "").split("\u0001");
         var matchesStage = !state.stage || item.getAttribute("data-stage") === state.stage;

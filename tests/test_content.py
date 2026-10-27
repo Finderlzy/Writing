@@ -160,6 +160,29 @@ class CatalogTests(unittest.TestCase):
         )
         self.assertEqual(["入口", "单篇"], [article.title for article in catalog.home()])
 
+    def test_collections_list_each_series_with_its_entry_and_member_count(self):
+        layout = Layout(
+            stages=PREVIEW_LAYOUT.stages,
+            series={"04技术/操作版": "04技术/入口.md", "04技术/原理版": "04技术/原理.md"},
+        )
+        catalog, _ = self.load(
+            {
+                "04技术/入口.md": "---\ncreatedDate: 2026-10-05\n---\n[[操作版/一]]\n",
+                "04技术/操作版/一.md": "---\ncreatedDate: 2026-10-06\n---\n",
+                "04技术/原理.md": "---\ncreatedDate: 2026-10-03\n---\n[[原理版/一]]\n",
+                "04技术/原理版/一.md": "---\ncreatedDate: 2026-10-04\n---\n",
+                "04技术/单篇.md": "---\ncreatedDate: 2026-10-02\n---\n",
+            },
+            layout,
+        )
+        collections = catalog.collections()
+        # 按入口篇日期从新到旧；篇数含入口篇，顺序是入口篇在前
+        self.assertEqual(["入口", "原理"], [entry.title for entry, _ in collections])
+        self.assertEqual(2, len(collections[0][1]))
+        self.assertEqual(["入口", "一"], [article.title for article in collections[0][1]])
+        # 不属于系列的文章只进按月列表
+        self.assertEqual(["单篇"], [article.title for article in catalog.loose()])
+
     def test_stage_counts_include_series_pages_and_keep_empty_stages(self):
         layout = Layout(stages=PREVIEW_LAYOUT.stages, series={"04技术/操作版": "04技术/入口.md"})
         catalog, _ = self.load(

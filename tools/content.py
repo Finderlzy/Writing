@@ -334,6 +334,28 @@ class Catalog:
             )
         )
 
+    def collections(self) -> tuple[tuple[Article, tuple[Article, ...]], ...]:
+        """Every series as (entry article, its members in reading order), newest entry first.
+
+        The members include the entry page itself. Series whose entry page is not published
+        are left out: they have nothing to link to.
+        """
+        pairs = []
+        for folder in self.layout.series:
+            entry = self.entry_of(folder)
+            members = self.series(entry) if entry is not None else ()
+            if entry is not None and len(members) > 1:
+                pairs.append((entry, members))  # 只有入口篇、没有子篇的空系列不出卡片
+        order = {article.source_path: index for index, article in enumerate(_newest_first(entry for entry, _ in pairs))}
+        return tuple(sorted(pairs, key=lambda pair: order[pair[0].source_path]))
+
+    def loose(self) -> tuple[Article, ...]:
+        """Articles of no series, newest first: what the month list of the all-articles page shows.
+
+        Series members (entry pages too) are left out; they are reached through their card.
+        """
+        return tuple(article for article in self.articles if article.series is None)
+
     def stage_counts(self) -> dict[str, int]:
         """How many published articles each stage has, including the pages inside series folders.
 

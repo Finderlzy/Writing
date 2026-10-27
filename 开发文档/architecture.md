@@ -87,6 +87,8 @@ class Catalog:
     def neighbours(self, a: Article) -> tuple[Article | None, Article | None]   # 上一篇、下一篇
     def series(self, a: Article) -> tuple[Article, ...]                        # a 所在系列的阅读顺序，不在系列里时为空
     def entry_of(self, folder: str) -> Article | None                          # 系列的入口篇
+    def collections(self) -> tuple[tuple[Article, tuple[Article, ...]], ...]   # 各系列的 (入口篇, 成员)，按入口篇日期从新到旧
+    def loose(self) -> tuple[Article, ...]                                     # 不属于系列的文章，全部文章页的按月列表用
     def article(self, source_path: Path) -> Article | None
 
 def series_diagnostics(docs: Path, pages: Iterable[Path], layout: Layout = LAYOUT) -> list[Diagnostic]
@@ -198,7 +200,7 @@ SERIES = {
 }
 ```
 
-- 系列名是入口篇的标题。入口篇在 `04博客` 根目录，出现在首页；子文件夹里的各篇只出现在全部文章页，并标出系列名。
+- 系列名是入口篇的标题。入口篇在 `04博客` 根目录，出现在首页；子文件夹里的各篇只出现在全部文章页，并收在页面顶部（筛选下面、按月列表上面）的“合集”区里：每个系列一张卡片，写系列名、篇数（含入口篇）、入口篇的 `description` 和日期，整张卡片链到入口篇。入口篇自己也从按月列表里拿掉，列表只剩不属于系列的文章。卡片带入口篇的阶段和“入口篇 + 全部子篇”的主题并集，`site.js` 的阶段、主题筛选同样作用在卡片上，卡片全被筛掉时整个合集区隐藏；有卡片可见就不算空结果。`Catalog.collections()` 返回 `(入口篇, 系列成员)` 对，按入口篇日期从新到旧，`Catalog.loose()` 返回不属于系列的文章。
 - 阅读顺序：入口篇在前，然后是子文件夹里的文章，沿用 4.1.0 导航的排序规则（组内链接最多的页面在前，其余按它链接过去的顺序，没被链到的按文件名排在最后）。
 - `04博客` 下出现没配置的子文件夹，或配置的入口篇不存在时，报 `E_SERIES_UNCONFIGURED` / `E_SERIES_ENTRY_MISSING` 并停止。其他阶段文件夹出现子文件夹时报 `E_STAGE_SUBFOLDER`。
 
@@ -210,13 +212,13 @@ SERIES = {
 | --- | --- |
 | `base.html` | 顶部栏：站名（回首页）、“首页”“全部文章”两项（R-UI-2）；页脚：社交链接 |
 | `home.html` | 封面式首页（5.1.0 V3）：气泡里的标题（`docs/index.md` 第一段）和作者的话、右侧竖排的“想法”“灵感”淡色大字、黑圈总数；两条线卡片，“冒出一个想法 → 思考 → 博客”“来了一点灵感 → 初稿 → 作品”，阶段名链到 `posts/?stage=…`，卡片上写各阶段篇数；`Catalog.home()` 的列表按月分组，组头是大号月份数字，每项标题、日期、阶段、简介；末尾“全部文章”入口；不放评论和筛选（R-UI-3） |
-| `posts.html` | 全部文章列表，每项标题、日期、阶段、系列名、简介；阶段按钮和标签按钮两组筛选；结果为空时的提示（R-UI-4） |
+| `posts.html` | 全部文章列表，每项标题、日期、阶段、简介；阶段按钮和标签按钮两组筛选；筛选下面的“合集”区（每个系列一张卡片，链到入口篇）；按月列表不含系列文章；结果为空时的提示（R-UI-4） |
 | `article.html` | 标题、日期、阶段、标签、目录（条件显示）、正文、系列导航（所属系列与系列内下一篇）、上一篇 / 下一篇、Giscus（R-UI-5、R-UI-6） |
 | `404.html` | “页面不存在”加回首页、全部文章的入口（R-PUB-4） |
 
 脚本 `theme/assets/site.js`（计划）只做两件事，没有 JS 时页面照常可读：
 
-- 全部文章页的筛选：读写 `stage`、`tag` 查询参数，两个条件同时满足才显示，空结果时显示提示。每项的阶段和标签由构建写在 `data-` 属性里。
+- 全部文章页的筛选：读写 `stage`、`tag` 查询参数，两个条件同时满足才显示，空结果时显示提示。每项的阶段和标签由构建写在 `data-` 属性里。合集卡片和列表条目用同一套 `data-stage`、`data-tags` 一起筛，卡片全被筛掉时整个合集区隐藏；结果摘要和空结果提示把卡片也算进去。
 - 代码块的复制按钮（`navigator.clipboard` 为主，`execCommand` 兜底）。
 
 涂鸦的五个 symbol 用 `currentColor` 和 `var(--doodle-line)` 取色，颜色由外层 `.doodle`（默认 `--ink`，首页压在大字上的两份加 `.accent`）决定：`<use>` 引用的 symbol 在 shadow 树里，外面写选择器改不到它的描边。小号文字不用纯强调色和芥黄（白底上分别只有 4.02:1 和 1.93:1），改用 `--accent-text`、`--mustard-text`；色块和描边仍用原色。
@@ -264,7 +266,7 @@ def group_by_month(articles: Iterable[Article]) -> tuple[tuple[int, int | None, 
     # 年、月都是 None。首页和 V4 的全部文章页共用它
 ```
 
-`Page` 增加 `giant`、`giant_second`、`minutes`、`headline`、`stage_counts`、`total`、`months` 七个字段，由 `write_site` 填；`strip_date_notes` 在 `render_markdown` 之前对文章正文调用，不影响源文件，也不影响转换层的双链检查（检查早已在转换时做完）。首页卡片链接写成 `posts/?stage=思考`，复用 `site.js` 已有的查询参数筛选，不加新脚本。首页的 `total` 是 `len(catalog.articles)`，即公开文章总数，不是首页列表的条数；`months` 只装 `catalog.home()` 的结果（博客和作品，R-UI-3）；`stage_counts` 和全部文章页同口径。气泡下的 “finderlzy's writing” 写死在 `home.html` 里，不读 `site.toml`：它是封面上的装饰字，换站名不该跟着变。
+`Page` 增加 `giant`、`giant_second`、`minutes`、`headline`、`stage_counts`、`total`、`months` 七个字段，由 `write_site` 填（之后又加了 `collections`：全部文章页的合集卡片，每项带入口篇、篇数和筛选用到的 `stage`、`tags`；全部文章页的 `months` 改用 `catalog.loose()`，系列文章不再进按月列表）；`strip_date_notes` 在 `render_markdown` 之前对文章正文调用，不影响源文件，也不影响转换层的双链检查（检查早已在转换时做完）。首页卡片链接写成 `posts/?stage=思考`，复用 `site.js` 已有的查询参数筛选，不加新脚本。首页的 `total` 是 `len(catalog.articles)`，即公开文章总数，不是首页列表的条数；`months` 只装 `catalog.home()` 的结果（博客和作品，R-UI-3）；`stage_counts` 和全部文章页同口径。气泡下的 “finderlzy's writing” 写死在 `home.html` 里，不读 `site.toml`：它是封面上的装饰字，换站名不该跟着变。
 
 **字体（V0 已实测，2026-10-26）**：新模块 `tools/fonts.py`。结论是原设想成立，四个 woff2 合计 81.4 KB（预算 300 KB），五个文件子集化 0.62 秒，排版度量与在线字体一致；下面把 V0 改掉的三处单独标出。
 
