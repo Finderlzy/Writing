@@ -113,7 +113,7 @@ ssh root@你的服务器IP
 1. 粘贴这行命令，回车：
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v2.0.1/setup.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Finderlzy/reality-setup/v2.0.2/setup.sh)
 ```
 
 ![[09附件/订阅claude-脚本-5-粘贴命令.jpg|640]]
