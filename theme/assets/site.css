@@ -1236,7 +1236,7 @@ hr {
   max-width: var(--body-width);
   margin-top: 1.5rem;
   font-size: 1.0625rem;
-  line-height: 2;
+  line-height: 1.75;
   overflow-wrap: break-word;
 }
 
@@ -1280,7 +1280,7 @@ hr {
 .article-body p,
 .article-body ul,
 .article-body ol {
-  margin: 0 0 1.05em;
+  margin: 0 0 1.3em;
 }
 
 .article-body ul,
@@ -1734,7 +1734,7 @@ hr {
 
   .article-body {
     font-size: 1.0625rem;
-    line-height: 1.95;
+    line-height: 1.75;
   }
 
   /* 窄屏：数字收到 7rem，放在标题那一行的右边，不垫在标题文字底下，也不压住顶栏导航 */
