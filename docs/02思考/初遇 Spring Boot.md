@@ -31,3 +31,5 @@ public class HelloController {
 ```
 
 hello 方法里面有一个参数是 name，然后参数的前面贴了 `@RequestParam` 标签 。当一个请求来了，假设是 `http://localhost:8080/hello?name=小明`。由于访问路径是 `/hello` 正好是 `@GetMapping` 监听的路径，于是就会调用 hello 方法。由于有 `@RequestParam` 标签，程序就会在请求路径的 `?` 去找有没有 name 类型的参数，找到了，是“小明”，就把它作为 hello 方法的参数值。最后输出：“小明你好呀”。
+
+controller负责接收用户的请求以及回复。用户的请求中会有要生成的文本，controller会把这个文本发送给service。service负责向GSV发请求，以及回复给controller
