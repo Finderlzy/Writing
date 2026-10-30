@@ -61,6 +61,8 @@ public String classify(String text) {
 
 这个方法先接收 TtsController 传进来的文本，然后调用 deepseek 的接口，把提示词什么的传进去，最后返回 emotion。
 
+发出去的 `request` 和收回来的 `ChatResponse` 都是**照着 JSON 结构写的 record**，Jackson 负责在 Java 对象和 JSON 之间自动转换`.choices().get(0).message().content()` 就是顺着返回 JSON 的路径（choices → 第 0 个 → message → content）取出答案。
+
 得到 emotion 之后，TtsController 就把它传入 TtsService 的方法中（`byte[] wav = ttsService.synthesize(text, emotion);`），去调用 GSV 来生成音频：
 ```java
 // TtsService.java
@@ -103,3 +105,10 @@ public class TtsService {
 ```
 
 8080 端口就会向9880 端口发送请求，并带上“text”、“text_lang”等等接口参数。
+
+一些小坑：
+- **8080 和 9880 是两个不同的服务**，参数不能混用
+- URL 里的多个参数要用 `&` 隔开，漏了就会被当成上一个参数值的一部分
+- 路径写错，服务**照样能启动**，要到用这段音频时才报错（可以用 fail fast 在启动时就检查出来）
+- 参考音频要在 3～10 秒以内；参考文本要和音频完全一致；参考音频太短会让生成结果不稳定，有时出空音频
+- 排查问题时**一次只改一个变量**
