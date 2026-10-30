@@ -7,5 +7,6 @@
   "focusNewTab": true,
   "useMarkdownLinks": false,
   "promptDelete": false,
-  "showUnsupportedFiles": true
+  "showUnsupportedFiles": true,
+  "showLineNumber": true
 }
