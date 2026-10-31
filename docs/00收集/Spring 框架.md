@@ -35,7 +35,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 
 public class UserDao {
 
-	// 这里是把建立连接封装为依赖
+	// 这里是把建立连接的过程封装为一个方法
     public DataSource newDataSource() {
         MysqlDataSource dataSource = new MysqlDataSource(); // (3)
         dataSource.setUser("root");
@@ -45,7 +45,6 @@ public class UserDao {
     }
 
     public User findById(Integer id) {
-									// 这里就是依赖注入
         try (Connection connection = newDataSource().getConnection()) { // (1)
                PreparedStatement selectStatement = connection.prepareStatement("select * from users where id =  ?");
                // TODO execute the select , handle exceptions, return the user
@@ -53,7 +52,6 @@ public class UserDao {
     }
 
     public User findByFirstName(String firstName) {
-									// 这里也是依赖注入
         try (Connection connection = newDataSource().getConnection()) { // (2)
                PreparedStatement selectStatement = connection.prepareStatement("select * from users where first_name =  ?");
                // TODO execute the select ,  handle exceptions, return the user
@@ -159,3 +157,31 @@ spring.datasource.password=123456
 ## 小结
 ---
 Spring 框架是用来解决依赖的问题，通过贴标签让管家管理错综复杂的依赖，我们就可以把重心放在业务逻辑上。
+
+
+## claude 认为需要修正的地方
+---
+**① 第二段代码其实还不是「依赖注入」**
+
+文章里那一步只是把创建 DataSource 的代码**抽成了一个方法**，作用是消除重复代码。它有两个问题：
+
+- `newDataSource()` 每调用一次，就会 `new` 一个新的 DataSource。所以并没有做到「只建立一次」，`findById` 和 `findByFirstName` 各建了一个。
+- 依赖还是 UserDao **自己去造的**。
+
+**依赖注入的标志是：依赖从外面递进来，类自己不造。** 你后面写的 `public UserDao(DataSource dataSource)` 才是依赖注入。所以那两处注释「这里就是依赖注入」要改成「这里是调用抽出来的方法」。
+
+还有一处顺带要改：DI 要解决的核心问题不是「连接成本高」。连接贵这个问题，是靠**连接池**（就是你后面写的 HikariDataSource）来解决的。DI 要解决的是：**谁来创建依赖，以及怎么让大家共用同一个**。
+
+**② 「串行 / 并行」的说法不太准**
+
+就算只有一条直线的依赖链，也已经很麻烦了：你必须按 AppConfig → DataSource → UserRepository → UserService 的顺序，一个个手动 `new`，再一个个传进去。你画的那张网状图，难点则在于**共享**：UserRepository 和 AuditService 必须拿到**同一个** DataSource。如果各 new 一个，就又回到了第 1 个问题。
+
+所以可以改成这样的表述：依赖一多，**创建顺序**和**共享同一个实例**这两件事，手动管理起来就会非常痛苦。
+
+**③ Bean 也是 Object**
+
+Bean 和 Object 不是两种东西。Bean 只是「**由容器创建和管理的 Object**」，它本质上还是一个普通的 Java 对象。
+
+**④ 你的「疑问」，答案其实是 Spring Boot，不是 Spring**
+
+光写 `spring.datasource.url` 就能自动得到一个 DataSource，这是 **Spring Boot 的自动配置**在起作用，纯 Spring 不会这么做。这一点正好就是 Marco Behler 第二篇文章《How Spring Boot’s Autoconfigurations Work》要讲的内容。另外「优先读取」这几个字可以删掉，读配置只是启动过程中的一个步骤而已。
