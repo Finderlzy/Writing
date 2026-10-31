@@ -1,9 +1,25 @@
 ---
 createdDate: 2026-10-30
+updatedDate: 2026-10-31
+tags:
+  - GPT-SoVITS
+  - 语音合成
+  - AI
+  - SpringBoot
+  - Web服务
+  - DeepSeek
+  - 情绪识别
+description: "介绍在自己的 Java 服务中接入 DeepSeek 判断文本情绪，再按情绪挑选参考音频发送给 GSV 合成语音的完整流程，包含 TtsController、EmotionService、TtsService 的关键代码和踩坑记录。"
+slug: deepseek-emotion-tts
 ---
+> 写于 2026-10-30
+> 更新于 2026-10-31
+
 核心思路：用浏览器向 8080 端口发请求之后，先在我的程序通过调用 deepseek 判断情绪是什么，再根据情绪选择参考音频，然后发送给 9880 端口，交给 GSV 合成音频。
 
 首先先看 TtsController.java ：
+
+> 相关：[[02思考/初遇 Spring Boot|初遇 Spring Boot]] —— 你文中的 @GetMapping、@RequestParam 在旧文里已经逐个解释过一遍，读它能先弄懂这些注解怎么把请求接进来，再看本文的 controller 就不会卡在语法层。
 ```java
 //TtsController.java
 
@@ -22,6 +38,8 @@ return ResponseEntity.ok()
 ```
 
 8080 端口接收到请求之后，会去寻找 emotion 类型（11 行代码），如果没有找到，就会进入下面的 if 语句，调用 emotionService 的服务，判断这个文本的情绪。
+
+> 相关：[[02思考/接口与GSV 的合成接口|接口与GSV 的合成接口]] —— 这篇旧文已经把「接口就是传参数换结果」以及请求方法、路径、参数、返回结果这四部分讲清楚了，读它能把你这篇文章里 8080 调 DeepSeek、再调 GSV 9880 的整个调用链串成同一个概念。
 
 接下来看 EmotionService.java 里面的 classify 方法：
 ```java
